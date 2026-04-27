@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Flávio Vitacon — Plano 60 Dias</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#090910;--s1:#101018;--s2:#181825;--s3:#1e1e2e;
+  --br:#2a2a3d;--br2:#353550;
+  --acc:#ff6b2b;--blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--purple:#a855f7;--red:#ef4444;
+  --wa:#25D366;--txt:#f1f1f8;--txt2:#a0a0c0;--txt3:#606080;
+  --font:'DM Sans',sans-serif;--disp:'Bebas Neue',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--font)}
+body{display:flex;flex-direction:column}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex:1;overflow:hidden}
+.sidebar{width:200px;background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:18px 14px 12px;border-bottom:1px solid var(--br)}
+.sidebar-logo .logo{font-family:var(--disp);font-size:17px;letter-spacing:2px;color:var(--acc)}
+.sidebar-logo .day{font-size:10px;color:var(--txt3);margin-top:4px}
+.sidebar-nav{padding:10px 8px;flex:1}
+.snav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:9px;border:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;background:transparent;color:var(--txt3);text-align:left;border-left:3px solid transparent;transition:all .15s}
+.snav-btn span{font-size:17px}
+.snav-btn.active{background:rgba(255,107,43,.12);color:var(--acc);border-left-color:var(--acc)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── HEADER ── */
+.hdr{background:linear-gradient(135deg,#0d0d1e,#15102a);padding:14px 18px 12px;border-bottom:1px solid var(--br);flex-shrink:0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.logo{font-family:var(--disp);font-size:17px;letter-spacing:2px;color:var(--acc)}
+.day-badge{background:var(--acc);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.prog-bar{flex:1;height:6px;background:var(--br);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--yellow));border-radius:3px;transition:width .5s}
+.prog-pct{font-size:11px;font-weight:700;color:var(--yellow);min-width:32px;text-align:right}
+.meta{display:grid;gap:4px}
+.meta-cell{text-align:center}
+.meta-val{font-family:var(--disp);font-size:18px;letter-spacing:.5px}
+.meta-lbl{font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── MOBILE TABS ── */
+.tabs-mobile{display:none;background:var(--s1);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.tabs-mobile::-webkit-scrollbar{display:none}
+.tab-m{flex:1;min-width:50px;padding:9px 4px;text-align:center;font-size:8px;font-weight:700;color:var(--txt3);cursor:pointer;border:none;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;background:none;font-family:var(--font)}
+.tab-m span{display:block;font-size:15px;margin-bottom:2px}
+.tab-m.active{color:var(--txt);border-bottom-color:var(--acc)}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto}
+.page{display:none;padding:18px;padding-bottom:30px}
+.page.active{display:block}
+
+/* Desktop grid */
+.d-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.d-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:15px;margin-bottom:12px}
+.card-title{font-family:var(--disp);font-size:16px;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px}
+.grp{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin:14px 0 8px 2px}
+
+/* ── TASKS ── */
+.task{display:flex;align-items:flex-start;gap:10px;padding:11px;background:var(--s2);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:opacity .2s}
+.task.done{opacity:.4}
+.task.done .task-txt{text-decoration:line-through;color:var(--txt3)}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--br2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all .2s;margin-top:1px}
+.task.done .chk{background:var(--green);border-color:var(--green);color:#000}
+.task-body{flex:1}
+.task-txt{font-size:13px;line-height:1.4;margin-bottom:3px}
+.task-sub{font-size:11px;color:var(--txt2)}
+.task-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;margin-top:4px;background:rgba(255,107,43,.12);color:var(--acc)}
+
+/* ── WEEK NAV ── */
+.week-nav{display:flex;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid var(--br);border-radius:10px;padding:9px 12px;margin-bottom:12px}
+.week-nav button{background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px}
+.week-lbl{font-family:var(--disp);font-size:13px;color:var(--yellow);letter-spacing:1px}
+
+/* ── LEAD CARD ── */
+.lead-card{background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:13px;margin-bottom:10px}
+.lead-top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+.lead-av{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:18px;flex-shrink:0}
+.lead-info{flex:1;min-width:0}
+.lead-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.lead-sub{font-size:11px;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lead-comm{font-size:11px;font-weight:700;color:var(--green);margin-top:3px}
+.stage-badge{font-size:9px;font-weight:700;padding:3px 7px;border-radius:7px;white-space:nowrap;flex-shrink:0}
+.fu-bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;font-size:11px;margin-bottom:8px}
+.lead-btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--wa);color:#fff;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;text-decoration:none;border:none;font-family:var(--font)}
+.btn-msg{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--blue);color:#fff;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;border:none;font-family:var(--font)}
+.btn-icon{background:var(--s3);border:1px solid var(--br);color:var(--txt);padding:8px 10px;border-radius:9px;cursor:pointer;font-size:13px}
+
+/* ── INPUTS ── */
+.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:10px 12px;color:var(--txt);font-size:14px;outline:none;font-family:var(--font);transition:border .2s}
+.inp:focus{border-color:var(--acc)}
+textarea.inp{resize:vertical;min-height:80px;line-height:1.5}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23606080' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select.inp option{background:var(--s1)}
+.inp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:6px;display:block}
+.field{margin-bottom:12px}
+
+/* ── BUTTONS ── */
+.btn{border:none;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary{background:var(--acc);color:#fff;width:100%}
+.btn-ghost{background:var(--s2);color:var(--txt);border:1px solid var(--br);width:100%}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2);width:100%}
+.btn-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;border:1px dashed var(--br);background:transparent;color:var(--txt3);cursor:pointer;font-size:12px;font-family:var(--font);margin-top:4px}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--br);border-radius:18px 18px 0 0;padding:18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
+.modal-hdr{font-family:var(--disp);font-size:19px;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:var(--s2);border:1px solid var(--br);color:var(--txt3);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* ── TEMPLATES ── */
+.tpl-item{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border .2s}
+.tpl-item.sel{border-color:var(--acc);background:rgba(255,107,43,.06)}
+.tpl-name{font-size:10px;font-weight:700;color:var(--acc);text-transform:uppercase;margin-bottom:4px}
+.tpl-preview{font-size:12px;line-height:1.4;color:var(--txt2)}
+
+/* ── GAUGES ── */
+.gauge-wrap{position:relative;width:160px;height:88px;overflow:hidden;margin:8px auto 4px}
+.gauge-wrap svg{width:160px;height:160px;margin-top:-72px}
+.gauge-center{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.gauge-val{font-family:var(--disp);font-size:22px;color:var(--green)}
+.gauge-lbl{font-size:9px;color:var(--txt3)}
+
+.ring-card{background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:12px;text-align:center}
+.ring-wrap{position:relative;width:64px;height:64px;margin:0 auto 7px}
+.ring-wrap svg{transform:rotate(-90deg);width:64px;height:64px}
+.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--disp);font-size:15px}
+.ring-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase}
+.ring-sub{font-size:9px;color:var(--green);font-weight:700;margin-top:2px}
+
+/* ── WORKOUT ── */
+.workout-day{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:11px;margin-bottom:8px}
+.wd-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.wd-name{font-family:var(--disp);font-size:13px;letter-spacing:1px;flex:1}
+.wd-type{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0}
+.wd-actions{display:flex;gap:4px}
+.ex-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--br)}
+.ex-row:last-child{border:none}
+.ex-sets{color:var(--yellow);font-weight:700;font-size:11px}
+.ex-actions{display:flex;gap:4px}
+
+/* ── MEAL ── */
+.meal{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:11px;margin-bottom:8px}
+.meal-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.meal-name{font-family:var(--disp);font-size:13px;letter-spacing:1px;flex:1}
+.meal-kcal{font-size:9px;color:var(--yellow);font-weight:700}
+.meal-item{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.meal-item:last-child{border:none}
+.macro{color:var(--txt3);font-size:11px}
+
+/* ── MISC ── */
+.sec-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.sec-tab{padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--br);color:var(--txt3);background:var(--s2);font-family:var(--font);transition:all .15s}
+.sec-tab.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.macro-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
+.macro-cell{background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:9px;text-align:center}
+.ig-metric{display:flex;align-items:center;justify-content:space-between;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px}
+.ci{background:var(--s2);border-left:3px solid var(--acc);border-radius:0 8px 8px 0;padding:9px 11px;margin-bottom:7px}
+.ci-tag{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;margin-bottom:3px}
+.ci-txt{font-size:12px;line-height:1.4}
+.pipe-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--br)}
+.pipe-row:last-child{border:none}
+.fu-today{background:rgba(255,107,43,.07);border:1px solid rgba(255,107,43,.2);border-radius:10px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:18px;font-weight:700;font-size:12px;z-index:999;transition:bottom .3s;white-space:nowrap;pointer-events:none}
+.toast.show{bottom:24px}
+.notif{position:fixed;top:-100px;left:50%;transform:translateX(-50%);max-width:500px;width:calc(100% - 20px);background:#1a1a2e;border:1px solid var(--acc);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:top .4s cubic-bezier(.34,1.56,.64,1)}
+.notif.show{top:10px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .tabs-mobile{display:flex}
+  .meta{grid-template-columns:repeat(4,1fr)}
+  .page{padding:14px;padding-bottom:80px}
+  .d-grid2{grid-template-columns:1fr}
+  .d-grid3{grid-template-columns:1fr}
+}
+@media(min-width:769px){
+  .meta{grid-template-columns:repeat(6,1fr)}
+  .tabs-mobile{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="notif" id="notif">
+  <div id="notif-icon" style="font-size:22px"></div>
+  <div style="flex:1"><div id="notif-title" style="font-size:12px;font-weight:700"></div><div id="notif-sub" style="font-size:10px;color:var(--txt3)"></div></div>
+  <button onclick="closeNotif()" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">✕</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="logo">⚡ PLANO 60 DIAS</div>
+    <div class="day-badge" id="dayBadge">DIA 1/60</div>
+  </div>
+  <div class="prog-row">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="prog-pct" id="progPct">0%</div>
+  </div>
+  <div class="meta" id="metaStrip">
+    <div class="meta-cell"><div class="meta-val" id="mTarefas" style="color:var(--acc)">0%</div><div class="meta-lbl">Tarefas</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mVendas" style="color:var(--green)">0/6</div><div class="meta-lbl">Vendas</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mSeguidores" style="color:var(--blue)">0</div><div class="meta-lbl">Seguidores</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mComissao" style="color:var(--yellow)">R$0</div><div class="meta-lbl">Comissão</div></div>
+    <div class="meta-cell" id="mNegCell"><div class="meta-val" id="mNegociando" style="color:var(--purple)">R$0</div><div class="meta-lbl">Negociando</div></div>
+    <div class="meta-cell" id="mVGVCell"><div class="meta-val" id="mVGV" style="color:#f43f5e">R$0</div><div class="meta-lbl">VGV Total</div></div>
+  </div>
+</div>
+
+<!-- MOBILE TABS -->
+<div class="tabs-mobile">
+  <button class="tab-m active" onclick="showTab('hoje',this)"><span>🎯</span>Hoje</button>
+  <button class="tab-m" onclick="showTab('vendas',this)"><span>💰</span>Vendas</button>
+  <button class="tab-m" onclick="showTab('insta',this)"><span>📱</span>Insta</button>
+  <button class="tab-m" onclick="showTab('treino',this)"><span>💪</span>Treino</button>
+  <button class="tab-m" onclick="showTab('nutri',this)"><span>🥗</span>Nutri</button>
+  <button class="tab-m" onclick="showTab('config',this)"><span>⚙️</span>Config</button>
+</div>
+
+<!-- APP BODY -->
+<div class="app">
+  <!-- SIDEBAR (desktop) -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo">⚡ VITACON</div>
+      <div class="day" id="sideDay">Dia 1 de 60</div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="snav-btn active" onclick="showTab('hoje',this)"><span>🎯</span>Hoje</button>
+      <button class="snav-btn" onclick="showTab('vendas',this)"><span>💰</span>Vendas</button>
+      <button class="snav-btn" onclick="showTab('insta',this)"><span>📱</span>Instagram</button>
+      <button class="snav-btn" onclick="showTab('treino',this)"><span>💪</span>Treino</button>
+      <button class="snav-btn" onclick="showTab('nutri',this)"><span>🥗</span>Nutrição</button>
+      <button class="snav-btn" onclick="showTab('config',this)"><span>⚙️</span>Config</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="content">
+
+      <!-- HOJE -->
+      <div class="page active" id="page-hoje">
+        <div id="fu-hoje"></div>
+        <div class="week-nav">
+          <button onclick="changeWeek(-1)">‹</button>
+          <div class="week-lbl" id="weekLbl">SEMANA 1</div>
+          <button onclick="changeWeek(1)">›</button>
+        </div>
+        <div class="d-grid2">
+          <div>
+            <div class="grp">💰 VENDAS & LEADS</div><div id="t-vendas"></div>
+            <div class="grp">📱 INSTAGRAM</div><div id="t-insta"></div>
+          </div>
+          <div>
+            <div class="grp">💪 TREINO</div><div id="t-treino"></div>
+            <div class="grp">🥗 ALIMENTAÇÃO</div><div id="t-nutri"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VENDAS -->
+      <div class="page" id="page-vendas">
+        <div class="d-grid2">
+          <div class="card">
+            <div class="card-title">💰 COMISSÕES</div>
+            <div class="gauge-wrap">
+              <svg viewBox="0 0 160 160">
+                <path d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--br2)" stroke-width="14" stroke-linecap="round"/>
+                <path id="gaugeArc" d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--green)" stroke-width="14" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .8s"/>
+              </svg>
+              <div class="gauge-center"><div class="gauge-val" id="gaugeVal">R$0</div><div class="gauge-lbl">meta: <span id="gaugeMeta">R$70k</span></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--green)" id="statVendas">0</div><div class="meta-lbl">VENDAS</div></div>
+              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--yellow)" id="statPct">0%</div><div class="meta-lbl">DA META</div></div>
+              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--acc)" id="statFaltam">6</div><div class="meta-lbl">FALTAM</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 PIPELINE VGV</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+              <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center">
+                <div style="font-family:var(--disp);font-size:18px;color:var(--purple)" id="pipeVGV">R$0</div>
+                <div class="meta-lbl">EM NEGOCIAÇÃO</div>
+                <div style="font-size:10px;color:var(--txt3);margin-top:3px" id="pipePotencial"></div>
+              </div>
+              <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center">
+                <div style="font-family:var(--disp);font-size:18px;color:var(--green)" id="pipeComm">R$0</div>
+                <div class="meta-lbl">COMISSÕES</div>
+              </div>
+            </div>
+            <div id="won-list"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="grp" style="margin:0">🔥 LEADS</div>
+          <button onclick="openAddLead()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Novo Lead</button>
+        </div>
+        <div id="leads-list" class="d-grid2"></div>
+        <div class="grp">✅ TAREFAS DE VENDAS</div>
+        <div id="all-vendas"></div>
+      </div>
+
+      <!-- INSTA -->
+      <div class="page" id="page-insta">
+        <div class="d-grid2">
+          <div class="card">
+            <div class="card-title">📱 @<span id="igHandle">flavio.vitacon</span></div>
+            <div id="ig-metrics"></div>
+          </div>
+          <div>
+            <div class="card">
+              <div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">AUTORIDADE (40%)</div>
+              <div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Por que SP é a melhor cidade para investir em imóveis compactos?</div></div>
+              <div class="ci"><div class="ci-tag">📊 CARROSSEL</div><div class="ci-txt">Alugar vs Comprar em 2025 — os números reais</div></div>
+              <div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Quanto rende um studio Vitacon alugado no Airbnb?</div></div>
+            </div>
+            <div class="card">
+              <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">LIFESTYLE (35%)</div>
+              <div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">🎬 REEL</div><div class="ci-txt">Um dia na vida de um corretor de alto padrão em SP</div></div>
+              <div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">📸 FOTO</div><div class="ci-txt">Visita a obra + look profissional no canteiro Vitacon</div></div>
+            </div>
+            <div class="card">
+              <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">ENGAJAMENTO (25%)</div>
+              <div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">📊 ENQUETE</div><div class="ci-txt">Studio vs 2 quartos — você prefere morar sozinho?</div></div>
+              <div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">💬 STORIES</div><div class="ci-txt">Quiz: Quanto vale esse imóvel?</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TREINO -->
+      <div class="page" id="page-treino">
+        <div class="d-grid2" style="margin-bottom:12px">
+          <div class="ring-card">
+            <div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rTreino" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rTreinoVal" style="color:var(--acc)">0</div></div>
+            <div class="ring-lbl">Treinos</div><div class="ring-sub">meta: 34</div>
+          </div>
+          <div class="ring-card">
+            <div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rCorrida" fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rCorridaVal" style="color:var(--blue)">0</div></div>
+            <div class="ring-lbl">Corridas</div><div class="ring-sub">meta: 16</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="grp" style="margin:0">📋 DIVISÃO SEMANAL</div>
+          <button onclick="openAddWorkout()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Dia</button>
+        </div>
+        <div id="workout-list"></div>
+      </div>
+
+      <!-- NUTRI -->
+      <div class="page" id="page-nutri">
+        <div class="macro-bar">
+          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--acc)" id="nutriKcal">2800</div><div class="meta-lbl">kcal/dia</div></div>
+          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--blue)" id="nutriProt">180g</div><div class="meta-lbl">proteína</div></div>
+          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--green)" id="nutriCarbs">300g</div><div class="meta-lbl">carbs</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="grp" style="margin:0">🍽️ REFEIÇÕES</div>
+          <button onclick="openAddMeal()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Refeição</button>
+        </div>
+        <div id="meal-list"></div>
+      </div>
+
+      <!-- CONFIG -->
+      <div class="page" id="page-config">
+        <div class="d-grid2">
+          <div>
+            <div class="card">
+              <div class="card-title">🎯 METAS</div>
+              <div class="field"><label class="inp-lbl">Meta comissão (R$)</label><input class="inp" type="number" id="cfgMetaComm" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Meta vendas (unidades)</label><input class="inp" type="number" id="cfgMetaVendas" oninput="saveCfg()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">📱 INSTAGRAM</div>
+              <div class="field"><label class="inp-lbl">Handle (@)</label><input class="inp" type="text" id="cfgHandle" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Meta seguidores</label><input class="inp" type="number" id="cfgMetaFollowers" oninput="saveCfg()"></div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:10px 0 8px">Progresso atual</div>
+              <div class="field"><label class="inp-lbl">Seguidores</label><input class="inp" type="number" id="cfgFollowers" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Reels publicados</label><input class="inp" type="number" id="cfgReels" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Posts no feed</label><input class="inp" type="number" id="cfgPosts" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Leads via Insta</label><input class="inp" type="number" id="cfgIgLeads" oninput="saveCfg()"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">💪 PROGRESSO FÍSICO</div>
+              <div class="field"><label class="inp-lbl">Treinos feitos</label><input class="inp" type="number" id="cfgTreinos" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Corridas feitas</label><input class="inp" type="number" id="cfgCorridas" oninput="saveCfg()"></div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:10px 0 8px">Metas nutricionais</div>
+              <div class="field"><label class="inp-lbl">Calorias/dia</label><input class="inp" type="number" id="cfgKcal" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Proteína/dia (g)</label><input class="inp" type="number" id="cfgProt" oninput="saveCfg()"></div>
+              <div class="field"><label class="inp-lbl">Carbs/dia (g)</label><input class="inp" type="number" id="cfgCarbs" oninput="saveCfg()"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">✏️ MENSAGENS PRONTAS</div>
+              <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Use [NOME], [PRODUTO] e [DATA] como variáveis.</p>
+              <div id="tpl-editor"></div>
+              <button class="btn-add" onclick="addTemplate()">+ Adicionar mensagem</button>
+            </div>
+            <div class="card">
+              <div class="card-title">✅ TAREFAS</div>
+              <div class="sec-tabs" id="week-tabs"></div>
+              <div class="sec-tabs" id="sec-tabs">
+                <button class="sec-tab active" onclick="selectSec('vendas',this)">💰 Vendas</button>
+                <button class="sec-tab" onclick="selectSec('insta',this)">📱 Insta</button>
+                <button class="sec-tab" onclick="selectSec('treino',this)">💪 Treino</button>
+                <button class="sec-tab" onclick="selectSec('nutri',this)">🥗 Nutri</button>
+              </div>
+              <div id="task-editor"></div>
+              <button class="btn-add" onclick="addTask()">+ Adicionar tarefa</button>
+            </div>
+            <div class="card" style="margin-bottom:30px">
+              <div class="card-title">📦 BACKUP</div>
+              <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Para sincronizar entre dispositivos: exporte no device A, envie o arquivo e importe no device B.</p>
+              <button class="btn btn-ghost" onclick="exportData()" style="margin-bottom:8px">📦 Exportar (.json)</button>
+              <label class="btn btn-ghost" style="cursor:pointer;margin-bottom:12px">📥 Importar<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+              <button class="btn btn-danger" onclick="if(confirm('Zerar progresso das tarefas?'))resetDone()">🗑️ Reiniciar Progresso</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- MODAL LEAD -->
+<div class="overlay" id="modal-lead">
+  <div class="modal">
+    <div class="modal-hdr"><span id="lead-modal-title">➕ NOVO LEAD</span><button class="modal-close" onclick="closeModal('modal-lead')">✕</button></div>
+    <div class="field"><label class="inp-lbl">Nome / Identificação</label><input class="inp" id="lf-name" placeholder="Ex: João Silva — Investidor"></div>
+    <div class="field"><label class="inp-lbl">Produto de Interesse</label><input class="inp" id="lf-product" placeholder="Ex: Vitacon Studio 32m²"></div>
+    <div class="field"><label class="inp-lbl">💰 Valor Negociado (R$)</label><input class="inp" type="number" id="lf-valor" placeholder="Ex: 450000" oninput="updateCommSug()"></div>
+    <div class="field">
+      <label class="inp-lbl">💵 Comissão (%)</label>
+      <input class="inp" type="number" step="0.1" id="lf-commPct" placeholder="Ex: 1.8" oninput="updateCommSug()">
+      <div id="comm-sug" style="font-size:11px;color:var(--green);margin-top:4px;min-height:16px"></div>
+    </div>
+    <div class="field"><label class="inp-lbl">Status Atual</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
+    <div class="field"><label class="inp-lbl">📱 WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-whatsapp" placeholder="11999998888"></div>
+    <div class="field"><label class="inp-lbl">Temperatura</label>
+      <select class="inp" id="lf-stage">
+        <option value="hot">🔥 Quente — muito interessado</option>
+        <option value="warm">🌡️ Morno — demonstrou interesse</option>
+        <option value="cold">❄️ Frio — contato esfriou</option>
+        <option value="won">✅ Fechado — VENDA REALIZADA</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><label class="inp-lbl">Avatar/Emoji</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div>
+      <div><label class="inp-lbl">📅 Follow-up</label><input class="inp" type="date" id="lf-followup"></div>
+    </div>
+    <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-history" placeholder="Cole conversas, objeções, interesses..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-lead')" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button>
+    </div>
+    <button class="btn btn-danger" id="lead-del-btn" onclick="deleteLead()" style="display:none">🗑️ Excluir Lead</button>
+  </div>
+</div>
+
+<!-- MODAL MENSAGEM -->
+<div class="overlay" id="modal-msg">
+  <div class="modal">
+    <div class="modal-hdr"><span>💬 MENSAGEM</span><button class="modal-close" onclick="closeModal('modal-msg')">✕</button></div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:12px" id="msg-lead-info"></div>
+    <div class="grp">ESCOLHA UM MODELO</div>
+    <div id="tpl-list"></div>
+    <div id="msg-preview-wrap" style="display:none">
+      <div class="grp">EDITE ANTES DE ENVIAR</div>
+      <textarea class="inp" id="msg-preview" style="min-height:120px;margin-bottom:12px"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-msg')" style="flex:1">Fechar</button>
+        <button class="btn" id="msg-wa-btn" style="flex:1;background:var(--wa);color:#fff">📲 WhatsApp</button>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <label class="inp-lbl">📅 Agendar Follow-up</label>
+      <input class="inp" type="date" id="msg-fu-date" style="margin-bottom:8px">
+      <button class="btn" onclick="saveMsgFu()" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);width:100%">📅 Salvar Follow-up</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL HISTÓRICO -->
+<div class="overlay" id="modal-hist">
+  <div class="modal">
+    <div class="modal-hdr"><span id="hist-title">📋 HISTÓRICO</span><button class="modal-close" onclick="closeModal('modal-hist')">✕</button></div>
+    <div id="hist-content"></div>
+    <button class="btn btn-primary" onclick="closeModal('modal-hist')">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL WORKOUT DAY -->
+<div class="overlay" id="modal-workout">
+  <div class="modal">
+    <div class="modal-hdr"><span id="workout-modal-title">💪 DIA DE TREINO</span><button class="modal-close" onclick="closeModal('modal-workout')">✕</button></div>
+    <div class="field"><label class="inp-lbl">Nome do dia</label><input class="inp" id="wd-name" placeholder="Ex: SEGUNDA — FULL BODY A"></div>
+    <div class="field"><label class="inp-lbl">Tipo</label>
+      <select class="inp" id="wd-type">
+        <option value="MUSCULAÇÃO">💪 Musculação</option>
+        <option value="CARDIO">🏃 Cardio</option>
+        <option value="DESCANSO">😴 Descanso</option>
+      </select>
+    </div>
+    <div class="grp">EXERCÍCIOS</div>
+    <div id="wd-exercises"></div>
+    <button class="btn-add" onclick="addExercise()">+ Adicionar exercício</button>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-workout')" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveWorkout()" style="flex:1">💾 Salvar</button>
+    </div>
+    <button class="btn btn-danger" id="workout-del-btn" onclick="deleteWorkout()" style="display:none;margin-top:8px">🗑️ Excluir Dia</button>
+  </div>
+</div>
+
+<!-- MODAL MEAL -->
+<div class="overlay" id="modal-meal">
+  <div class="modal">
+    <div class="modal-hdr"><span id="meal-modal-title">🍽️ REFEIÇÃO</span><button class="modal-close" onclick="closeModal('modal-meal')">✕</button></div>
+    <div class="field"><label class="inp-lbl">Nome da refeição</label><input class="inp" id="ml-name" placeholder="Ex: ALMOÇO"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div><label class="inp-lbl">Ícone (emoji)</label><input class="inp" id="ml-icon" placeholder="🍗" maxlength="4"></div>
+      <div><label class="inp-lbl">Kcal estimadas</label><input class="inp" id="ml-kcal" placeholder="Ex: ~780 kcal"></div>
+    </div>
+    <div class="grp">ITENS</div>
+    <div id="ml-items"></div>
+    <button class="btn-add" onclick="addMealItem()">+ Adicionar item</button>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" onclick="closeModal('modal-meal')" style="flex:1">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveMeal()" style="flex:1">💾 Salvar</button>
+    </div>
+    <button class="btn btn-danger" id="meal-del-btn" onclick="deleteMeal()" style="display:none;margin-top:8px">🗑️ Excluir Refeição</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// STORAGE — works on all browsers/iPhone
+// ════════════════════════════════════════
+const KEY = 'fv11_';
+function lsGet(k, def) {
+  try { const v = localStorage.getItem(KEY+k); return v != null ? JSON.parse(v) : def; }
+  catch { return def; }
+}
+function lsSet(k, v) {
+  try { localStorage.setItem(KEY+k, JSON.stringify(v)); } catch(e) { console.warn('Storage error', e); }
+}
+
+// ════════════════════════════════════════
+// DEFAULTS
+// ════════════════════════════════════════
+const DEF_LEADS = [
+  {id:1,name:"Lead A — Investidor",product:"Vitacon Studio",valor:"450000",commPct:"1.8",status:"Apresentação enviada",stage:"hot",avatar:"A",whatsapp:"",followup:"",history:"Interesse em investimento. Perguntou sobre Airbnb."},
+  {id:2,name:"Lead B — Casal",product:"Vitacon Private",valor:"680000",commPct:"1.8",status:"2ª reunião agendada",stage:"hot",avatar:"B",whatsapp:"",followup:"",history:"Querem morar perto do Itaim."},
+  {id:3,name:"Lead C — Empresária",product:"Vitacon One",valor:"380000",commPct:"1.8",status:"Primeiro contato",stage:"warm",avatar:"C",whatsapp:"",followup:"",history:"Contato via Instagram."},
+];
+const DEF_TPLS = [
+  {id:1,name:"Primeiro Contato",text:"Olá, [NOME]! Tudo bem? Sou o Flávio, corretor Vitacon aqui em SP.\n\nVi que você tem interesse em [PRODUTO] — tenho algumas unidades incríveis que combinam muito com o que você busca.\n\nPodemos conversar 10 minutos essa semana?"},
+  {id:2,name:"Follow-up Quente",text:"Oi, [NOME]! Passando para dar um retorno sobre o [PRODUTO] da Vitacon.\n\nAs unidades estão com procura alta — só tenho mais 2 disponíveis nesse valor.\n\nQuer agendar uma visita ainda essa semana?"},
+  {id:3,name:"Reaquecimento Frio",text:"Olá, [NOME]! Há um tempo não nos falamos — tudo bem?\n\nLembrei de você porque saiu um novo projeto Vitacon que pode te interessar muito.\n\nPosso te mandar os detalhes agora?"},
+  {id:4,name:"Proposta Enviada",text:"[NOME], boa tarde! Acabei de enviar a proposta do [PRODUTO] para seu email.\n\nA simulação de rendimento ficou muito boa — acho que vai gostar.\n\nAlguma dúvida ou quer que eu explique algum ponto?"},
+  {id:5,name:"Urgência Final",text:"[NOME], preciso te contar: a unidade do [PRODUTO] que conversamos entrou em lista de espera.\n\nSe quiser garantir, precisamos fechar até [DATA].\n\nPosso ligar agora?"},
+];
+const DEF_WORKOUTS = [
+  {id:1,name:"SEGUNDA — FULL BODY A",type:"MUSCULAÇÃO",exercises:[["Agachamento Livre","4×10"],["Supino com Halteres","3×12"],["Remada Curvada","3×12"],["Desenvolvimento Ombro","3×12"],["Rosca + Tríceps Pulley","3×12"],["Prancha","3×40s"]]},
+  {id:2,name:"TERÇA — CORRIDA",type:"CARDIO",exercises:[["Aquecimento","5 min"],["Corrida contínua","20→40 min"],["Alongamento","10 min"]]},
+  {id:3,name:"QUINTA — FULL BODY B",type:"MUSCULAÇÃO",exercises:[["Leg Press 45°","4×12"],["Puxada Frontal","4×10"],["Crucifixo Inclinado","3×12"],["Elevação Lateral","3×15"],["Rosca + Tríceps Testa","3×12"],["Abdominal Crunch","3×20"]]},
+  {id:4,name:"SEXTA — FULL BODY C",type:"MUSCULAÇÃO",exercises:[["Stiff com Halteres","4×10"],["Supino Inclinado","3×12"],["Remada Unilateral","3×12"],["Arnold Press","3×12"],["Panturrilha em Pé","4×20"],["Abdominal Oblíquo","3×15"]]},
+  {id:5,name:"SÁBADO — CORRIDA LONGA",type:"CARDIO",exercises:[["Corrida progressiva","30→50 min"],["Mobilidade","10 min"]]},
+];
+const DEF_MEALS = [
+  {id:1,icon:"☀️",name:"CAFÉ DA MANHÃ",kcal:"~620 kcal",items:[["Ovos mexidos (3 unid)","21g prot"],["Aveia com banana","45g carbs"],["Café preto s/ açúcar","foco"]]},
+  {id:2,icon:"🥤",name:"PRÉ-TREINO",kcal:"~380 kcal",items:[["Whey protein (30g)","24g prot"],["Batata doce (150g)","30g carbs"],["Creatina (5g)","performance"]]},
+  {id:3,icon:"🍗",name:"ALMOÇO",kcal:"~780 kcal",items:[["Frango grelhado (200g)","46g prot"],["Arroz integral (150g)","40g carbs"],["Feijão (100g)","8g prot"],["Salada verde + azeite","gordura boa"]]},
+  {id:4,icon:"🥛",name:"PÓS-TREINO",kcal:"~420 kcal",items:[["Whey protein (30g)","24g prot"],["Banana + mel","35g carbs"]]},
+  {id:5,icon:"🌙",name:"JANTAR",kcal:"~600 kcal",items:[["Salmão ou Atum (200g)","40g prot"],["Batata doce ou quinoa","30g carbs"],["Brócolis refogado","fibras"]]},
+];
+const DEF_WEEKS = [
+  {label:"SEMANA 1 — DIAS 1-7",vendas:[{t:"Listar leads ativos com status",s:"CRM — mapeamento inicial",tag:"📋 CRM"},{t:"Mensagem personalizada para 5 leads",s:"WhatsApp + email com proposta",tag:"📱 Contato"},{t:"Montar apresentação padrão Vitacon",s:"Studio, One e Private",tag:"📊 Apresentação"},{t:"Agendar 2 reuniões com leads quentes",s:"Presencial ou vídeo",tag:"📅 Reunião"}],insta:[{t:"Otimizar bio com CTA claro",s:"Corretor Vitacon SP | Invista no futuro",tag:"✍️ Perfil"},{t:"Reel: Por que investir em imóveis em SP",s:"30s, CTA + hashtags",tag:"🎬 Reel"},{t:"Foto profissional no feed",s:"Caption: sua missão como corretor",tag:"📸 Feed"},{t:"10 stories: bastidores do dia",s:"Obra, reunião, café",tag:"📲 Stories"}],treino:[{t:"Full Body A — Segunda",s:"Agachamento, Supino, Remada",tag:"💪 Musculação"},{t:"Corrida 20 min — Terça",s:"Ritmo leve",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Leg Press, Puxada",tag:"💪 Musculação"},{t:"Corrida 25 min — Sábado",s:"Progressão semanal",tag:"🏃 Cardio"}],nutri:[{t:"Meal prep da semana",s:"Frango, batata doce, arroz",tag:"🍗 Prep"},{t:"Comprar Whey + Creatina",s:"Suplementação base",tag:"💊 Suplemento"},{t:"3L de água por dia",s:"3 refis diários",tag:"💧 Água"}]},
+  {label:"SEMANA 2 — DIAS 8-14",vendas:[{t:"Follow-up com todos os leads",s:"Ligação + conteúdo útil",tag:"📞 Follow-up"},{t:"Realizar 2 reuniões agendadas",s:"Apresentar proposta",tag:"🤝 Reunião"},{t:"Proposta formal em PDF",s:"Simulação de rendimento",tag:"📄 Proposta"},{t:"Prospectar 3 novos leads",s:"DMs + stories com CTA",tag:"🔍 Prospecção"}],insta:[{t:"Reel: Um dia na vida corretor",s:"Bastidores reais",tag:"🎬 Reel"},{t:"Carrossel: Vitacon vs concorrentes",s:"5 slides + CTA",tag:"📊 Carrossel"},{t:"Reel: Studio no Airbnb rende quanto?",s:"Números reais",tag:"🎬 Reel"},{t:"15 stories com votações",s:"Engajamento ativa algoritmo",tag:"📲 Stories"}],treino:[{t:"Full Body A +5% carga",s:"Overload progressivo",tag:"💪 Progressão"},{t:"Corrida 25 min",s:"+5 min vs semana anterior",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Foco em execução",tag:"💪 Técnica"},{t:"Corrida 30 min — Sábado",s:"Zona aeróbica",tag:"🏃 Cardio"}],nutri:[{t:"Variar: salmão 2x",s:"Substituir frango",tag:"🍗 Variação"},{t:"Registrar peso e medidas",s:"Foto de progresso",tag:"📏 Medição"},{t:"Água 3,5L/dia",s:"+500ml vs semana",tag:"💧 Água"}]},
+  {label:"SEMANAS 3-4 — INTENSIDADE",vendas:[{t:"1ª venda até dia 28",s:"Foco nos leads quentes",tag:"🏆 Meta"},{t:"Script de fechamento",s:"Objeções + respostas",tag:"📝 Script"},{t:"LinkedIn + indicações",s:"5 novos contatos/semana",tag:"🔍 Prospecção"},{t:"Kit digital",s:"Vídeo + proposta link",tag:"📱 Digital"}],insta:[{t:"3 Reels por semana",s:"Produção em lote",tag:"🎬 Volume"},{t:"Live: dúvidas investimento",s:"30 min — gera leads",tag:"📡 Live"},{t:"Responder 100% DMs",s:"Algoritmo ama engajamento",tag:"💬 Engajamento"},{t:"Marcar @vitaconoficial",s:"Chance de repost",tag:"🤝 Collab"}],treino:[{t:"75-80% da carga",s:"Descanso 60 segundos",tag:"💪 Intensidade"},{t:"35 min com tiros",s:"1 min rápido + 2 leve",tag:"🏃 Intervalado"},{t:"4 dias sem faltar",s:"Consistência",tag:"✅ Consistência"}],nutri:[{t:"Ajustar calorias",s:"+200 kcal se ganho lento",tag:"📊 Ajuste"},{t:"Legumes variados",s:"Micronutrientes = recuperação",tag:"🥦 Micro"}]},
+  {label:"SEMANAS 5-6 — FORÇA",vendas:[{t:"3 vendas até dia 42",s:"Comissão ~R$35k",tag:"🏆 Meta"},{t:"Indicações com bônus",s:"Cliente = novo lead",tag:"🎁 Indicação"},{t:"2 apresentações presenciais",s:"Showroom Vitacon",tag:"🏢 Presencial"}],insta:[{t:"Dobrar aposta nos Reels top",s:"Repetir formato viral",tag:"📊 Analytics"},{t:"Depoimento de cliente",s:"Prova social",tag:"⭐ Social"},{t:"Reel storytelling pessoal",s:"Alto engajamento",tag:"🎬 Story"}],treino:[{t:"85-90% da carga",s:"4-6 reps base",tag:"💪 Força"},{t:"Corridas 40-45 min",s:"Aeróbico + anaeróbico",tag:"🏃 Resistência"}],nutri:[{t:"Proteína >175g/dia",s:"Recuperação muscular",tag:"🥩 Proteína"},{t:"Carb up pós treino pesado",s:"Carboidratos extras",tag:"⚡ Carb Up"}]},
+  {label:"SEMANAS 7-8 — SPRINT FINAL",vendas:[{t:"META: 6 vendas + R$70k",s:"Sprint final",tag:"🏆 META"},{t:"Ligar para todos leads",s:"Urgência: últimas unidades",tag:"⚡ Urgência"},{t:"Relatório 60 dias",s:"Base para próximo ciclo",tag:"📊 Relatório"}],insta:[{t:"Meta 2.000-5.000 seguidores",s:"Análise final",tag:"📈 Meta"},{t:"Reel: 60 dias de transformação",s:"Resultado + bastidores",tag:"🎬 Final"},{t:"Criar destaques no perfil",s:"Imóveis, resultados, eu",tag:"📁 Highlights"}],treino:[{t:"Semana 7: carga máxima",s:"Testar limite",tag:"💪 Peak"},{t:"Semana 8: deload 60%",s:"Recuperação",tag:"♻️ Deload"},{t:"Foto de progresso final",s:"Comparar com dia 1",tag:"📸 Progresso"}],nutri:[{t:"Manter padrão",s:"Consistência = resultado",tag:"✅ Manter"},{t:"Refeição livre semana 8",s:"Recompensa merecida",tag:"🎉 Recompensa"}]},
+];
+const DEF_CFG = {metaComm:70000,metaSales:6,igHandle:'flavio.vitacon',igMetaFollowers:5000,igMetaReels:24,igMetaPosts:20,followers:0,reels:0,posts:0,igLeads:0,treinos:0,corridas:0,kcal:2800,prot:180,carbs:300};
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let leads    = lsGet('leads',    DEF_LEADS);
+let weeks    = lsGet('weeks',    DEF_WEEKS);
+let done     = lsGet('done',     {});
+let cfg      = lsGet('cfg',      DEF_CFG);
+let tpls     = lsGet('tpls',     DEF_TPLS);
+let workouts = lsGet('workouts', DEF_WORKOUTS);
+let meals    = lsGet('meals',    DEF_MEALS);
+
+const startDay = lsGet('start', null) || (()=>{ const n=Date.now(); lsSet('start',n); return n; })();
+
+// Persist
+const saveLeads = () => lsSet('leads', leads);
+const saveWeeks = () => lsSet('weeks', weeks);
+const saveDone  = () => lsSet('done', done);
+const saveCfgLS = () => lsSet('cfg', cfg);
+const saveTpls  = () => lsSet('tpls', tpls);
+const saveWorkouts = () => lsSet('workouts', workouts);
+const saveMeals    = () => lsSet('meals', meals);
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+const fmtBRL = n => `R$ ${Number(n||0).toLocaleString('pt-BR')}`;
+const fmtK   = n => { n=Number(n||0); return n>=1e6?`R$${(n/1e6).toFixed(1)}M`:n>=1e3?`R$${(n/1e3).toFixed(0)}k`:`R$${n}`; };
+const fmtN   = n => Number(n||0)>=1000?`${(n/1000).toFixed(1)}k`:String(n||0);
+const fmtDate= d => { if(!d)return''; const[y,m,dd]=d.split('-'); return`${dd}/${m}/${y}`; };
+const today  = () => new Date().toISOString().split('T')[0];
+const getComm= l => (l.commPct&&l.valor) ? Math.round(Number(l.valor)*Number(l.commPct)/100) : 0;
+
+const GRADS = [["#ff6b2b","#f59e0b"],["#3b82f6","#06b6d4"],["#22c55e","#06b6d4"],["#a855f7","#3b82f6"],["#f43f5e","#ff6b2b"],["#f59e0b","#22c55e"],["#06b6d4","#a855f7"],["#22c55e","#f59e0b"]];
+const gradBg = i => `linear-gradient(135deg,${GRADS[i%GRADS.length][0]},${GRADS[i%GRADS.length][1]})`;
+const STAGE_S = {
+  hot:{bg:"rgba(255,107,43,.15)",c:"#ff6b2b",l:"🔥 QUENTE"},
+  warm:{bg:"rgba(245,158,11,.12)",c:"#f59e0b",l:"🌡️ MORNO"},
+  cold:{bg:"rgba(59,130,246,.1)",c:"#3b82f6",l:"❄️ FRIO"},
+  won:{bg:"rgba(34,197,94,.12)",c:"#22c55e",l:"✅ FECHADO"},
+};
+
+function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function showNotif(icon,title,sub){ ['notif-icon','notif-title','notif-sub'].forEach((id,i)=>document.getElementById(id).textContent=[icon,title,sub][i]); const n=document.getElementById('notif'); n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),5000); }
+function closeNotif(){ document.getElementById('notif').classList.remove('show'); }
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+function showTab(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-m').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.snav-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  // sync sidebar/mobile tabs
+  document.querySelectorAll('.snav-btn, .tab-m').forEach(b=>{
+    if(b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('active');
+  });
+}
+
+// ════════════════════════════════════════
+// WEEK NAV
+// ════════════════════════════════════════
+let curWeek=0;
+function changeWeek(d){ curWeek=Math.max(0,Math.min(weeks.length-1,curWeek+d)); renderTasks(); }
+
+// ════════════════════════════════════════
+// TASKS
+// ════════════════════════════════════════
+function renderTasks(){
+  document.getElementById('weekLbl').textContent=weeks[curWeek]?.label||'';
+  ['vendas','insta','treino','nutri'].forEach(s=>{
+    const el=document.getElementById('t-'+s); if(!el) return;
+    const tasks=weeks[curWeek]?.[s]||[];
+    el.innerHTML=tasks.length?tasks.map((t,i)=>taskHTML(curWeek,s,i,t)).join(''):'<div style="font-size:12px;color:var(--txt3);padding:8px">Sem tarefas.</div>';
+  });
+  renderAllVendas(); renderHeader();
+}
+function taskHTML(wi,sec,i,t){
+  const k=`${wi}_${sec}_${i}`,d=!!done[k];
+  return `<div class="task${d?' done':''}" onclick="toggleTask('${wi}','${sec}',${i})">
+    <div class="chk">${d?'✓':''}</div>
+    <div class="task-body"><div class="task-txt">${t.t}</div><div class="task-sub">${t.s}</div><span class="task-tag">${t.tag}</span></div>
+  </div>`;
+}
+function toggleTask(wi,sec,i){
+  const k=`${wi}_${sec}_${i}`; done[k]=!done[k]; saveDone();
+  if(done[k]) showToast('✅ Concluída!');
+  renderTasks();
+}
+function renderAllVendas(){
+  const el=document.getElementById('all-vendas'); if(!el) return;
+  el.innerHTML=weeks.map((w,wi)=>`<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:12px 0 6px">${w.label}</div>`+(w.vendas||[]).map((t,i)=>taskHTML(wi,'vendas',i,t)).join('')).join('');
+}
+
+// ════════════════════════════════════════
+// HEADER
+// ════════════════════════════════════════
+function renderHeader(){
+  const allK=weeks.flatMap((w,wi)=>['vendas','insta','treino','nutri'].flatMap(s=>(w[s]||[]).map((_,i)=>`${wi}_${s}_${i}`)));
+  const pct=allK.length?Math.round(allK.filter(k=>done[k]).length/allK.length*100):0;
+  const day=Math.min(60,Math.max(1,Math.round((Date.now()-startDay)/86400000)+1));
+  const won=leads.filter(l=>l.stage==='won');
+  const tComm=won.reduce((s,l)=>s+getComm(l),0);
+  const nSales=won.length;
+  const meta=cfg.metaSales||6;
+  const metaComm=cfg.metaComm||70000;
+  const pipeVGV=leads.filter(l=>l.stage!=='won').reduce((s,l)=>s+(Number(l.valor)||0),0);
+  const tVGV=leads.reduce((s,l)=>s+(Number(l.valor)||0),0);
+
+  // header
+  document.getElementById('dayBadge').textContent=`DIA ${day}/60`;
+  document.getElementById('sideDay').textContent=`Dia ${day} de 60`;
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+'%';
+  document.getElementById('mTarefas').textContent=pct+'%';
+  document.getElementById('mVendas').textContent=nSales+'/'+meta;
+  document.getElementById('mSeguidores').textContent=fmtN(cfg.followers||0);
+  document.getElementById('mComissao').textContent=fmtK(tComm);
+  document.getElementById('mNegociando').textContent=fmtK(pipeVGV);
+  document.getElementById('mVGV').textContent=fmtK(tVGV);
+
+  // gauge
+  const arc=document.getElementById('gaugeArc');
+  if(arc) arc.style.strokeDashoffset=220*(1-Math.min(1,tComm/metaComm));
+  const gv=document.getElementById('gaugeVal'); if(gv) gv.textContent=fmtK(tComm);
+  const gm=document.getElementById('gaugeMeta'); if(gm) gm.textContent=fmtK(metaComm);
+  const sv=document.getElementById('statVendas'); if(sv) sv.textContent=nSales;
+  const sp=document.getElementById('statPct'); if(sp) sp.textContent=Math.round(nSales/meta*100)+'%';
+  const sf=document.getElementById('statFaltam'); if(sf) sf.textContent=Math.max(0,meta-nSales);
+
+  // pipeline
+  const pv=document.getElementById('pipeVGV'); if(pv) pv.textContent=fmtK(pipeVGV);
+  const pp=document.getElementById('pipePotencial'); if(pp) pp.textContent='potencial: '+fmtK(pipeVGV*0.018);
+  const pc=document.getElementById('pipeComm'); if(pc) pc.textContent=fmtK(tComm);
+
+  // won list
+  const wl=document.getElementById('won-list');
+  if(wl){
+    wl.innerHTML=won.length?won.map(l=>`<div class="pipe-row"><span style="font-weight:600">${l.name}</span><span style="color:var(--green)">${fmtBRL(getComm(l))} <span style="color:var(--txt3)">(${fmtK(l.valor)})</span></span></div>`).join('')+'<div class="pipe-row" style="font-weight:700;padding-top:8px"><span>TOTAL</span><span style="color:var(--green)">${fmtBRL(tComm)}</span></div>':'';
+  }
+
+  // rings
+  const rT=document.getElementById('rTreino'),rTv=document.getElementById('rTreinoVal');
+  if(rT){rT.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.treinos||0)/34));rTv.textContent=cfg.treinos||0;}
+  const rC=document.getElementById('rCorrida'),rCv=document.getElementById('rCorridaVal');
+  if(rC){rC.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.corridas||0)/16));rCv.textContent=cfg.corridas||0;}
+
+  // ig
+  const ih=document.getElementById('igHandle'); if(ih) ih.textContent=cfg.igHandle||'flavio.vitacon';
+  const igEl=document.getElementById('ig-metrics');
+  if(igEl){
+    igEl.innerHTML=[
+      {icon:'👥',l:'Seguidores',sub:`Meta: ${(cfg.igMetaFollowers||5000).toLocaleString('pt-BR')}`,v:fmtN(cfg.followers||0),c:'var(--blue)'},
+      {icon:'🎬',l:'Reels',sub:`Meta: ${cfg.igMetaReels||24}`,v:cfg.reels||0,c:'var(--acc)'},
+      {icon:'📊',l:'Posts Feed',sub:`Meta: ${cfg.igMetaPosts||20}`,v:cfg.posts||0,c:'var(--green)'},
+      {icon:'💬',l:'Leads via Insta',sub:'Meta: 10',v:cfg.igLeads||0,c:'var(--yellow)'},
+    ].map(m=>`<div class="ig-metric"><div style="display:flex;align-items:center;gap:9px"><div style="font-size:18px">${m.icon}</div><div><div style="font-size:12px;font-weight:500">${m.l}</div><div style="font-size:10px;color:var(--txt3)">${m.sub}</div></div></div><div style="font-family:var(--disp);font-size:18px;color:${m.c}">${m.v}</div></div>`).join('');
+  }
+
+  // nutri macros
+  const nk=document.getElementById('nutriKcal'); if(nk) nk.textContent=cfg.kcal||2800;
+  const np=document.getElementById('nutriProt'); if(np) np.textContent=(cfg.prot||180)+'g';
+  const nc=document.getElementById('nutriCarbs'); if(nc) nc.textContent=(cfg.carbs||300)+'g';
+
+  renderFuHoje();
+}
+
+// ════════════════════════════════════════
+// FOLLOW-UP HOJE
+// ════════════════════════════════════════
+function renderFuHoje(){
+  const el=document.getElementById('fu-hoje'); if(!el) return;
+  const t=today();
+  const due=leads.filter(l=>l.followup&&l.followup<=t&&l.stage!=='won');
+  if(!due.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{
+    const i=leads.indexOf(l),ov=l.followup<t;
+    return `<div class="fu-today"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:6px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">💬 Msg</button></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════
+// LEADS
+// ════════════════════════════════════════
+function renderLeads(){
+  const el=document.getElementById('leads-list'); if(!el) return;
+  if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead. Clique em + Novo Lead.</div>';el.style.display='block';return;}
+  el.innerHTML=leads.map((l,i)=>leadCardHTML(l,i)).join('');
+}
+function leadCardHTML(l,i){
+  const ss=STAGE_S[l.stage]||STAGE_S.cold, t=today();
+  const fuOver=l.followup&&l.followup<t&&l.stage!=='won';
+  const fuTod=l.followup&&l.followup===t&&l.stage!=='won';
+  const comm=getComm(l);
+  return `<div class="lead-card">
+    <div class="lead-top">
+      <div class="lead-av" style="background:${gradBg(i)}">${l.avatar||l.name[0]||'?'}</div>
+      <div class="lead-info">
+        <div class="lead-name">${l.name}</div>
+        <div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>
+        ${l.valor?`<div class="lead-comm">💰 ${fmtBRL(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.commPct}% = ${fmtBRL(comm)}</span>`:''}</div>`:''}
+      </div>
+      <div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div>
+    </div>
+    ${l.followup&&l.stage!=='won'?`<div class="fu-bar" style="background:${fuOver?'rgba(239,68,68,.08)':fuTod?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fuOver?'rgba(239,68,68,.2)':fuTod?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fuOver?'var(--red)':fuTod?'var(--acc)':'var(--yellow)'}"><span>${fuOver?'🔴':fuTod?'🟡':'📅'}</span><span>${fuOver?'Atrasado!':fuTod?'Hoje!':'Follow-up:'} ${fmtDate(l.followup)}</span></div>`:''}
+    <div class="lead-btns">
+      ${l.whatsapp?`<a class="btn-wa" href="https://wa.me/55${l.whatsapp}" target="_blank">📲 WhatsApp</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WhatsApp</button>`}
+      <button class="btn-msg" onclick="openMsg(${i})">💬 Mensagem</button>
+      <button class="btn-icon" onclick="openEditLead(${i})">✏️</button>
+      <button class="btn-icon" onclick="openHist(${i})">📋</button>
+    </div>
+  </div>`;
+}
+
+let editLeadIdx=-1;
+function openAddLead(){
+  editLeadIdx=-1;
+  document.getElementById('lead-modal-title').textContent='➕ NOVO LEAD';
+  document.getElementById('lead-del-btn').style.display='none';
+  ['name','product','valor','commPct','status','whatsapp','avatar','followup','history'].forEach(f=>{ const el=document.getElementById('lf-'+f); if(el) el.value=''; });
+  document.getElementById('lf-stage').value='hot';
+  document.getElementById('comm-sug').textContent='';
+  openModal('modal-lead');
+}
+function openEditLead(i){
+  editLeadIdx=i; const l=leads[i];
+  document.getElementById('lead-modal-title').textContent='✏️ EDITAR LEAD';
+  document.getElementById('lead-del-btn').style.display='block';
+  ['name','product','valor','commPct','status','whatsapp','avatar','followup','history'].forEach(f=>{ const el=document.getElementById('lf-'+f); if(el) el.value=l[f]||''; });
+  document.getElementById('lf-stage').value=l.stage||'hot';
+  updateCommSug(); openModal('modal-lead');
+}
+function updateCommSug(){
+  const v=Number(document.getElementById('lf-valor').value)||0;
+  const p=Number(document.getElementById('lf-commPct').value)||0;
+  const el=document.getElementById('comm-sug');
+  if(v>0&&p>0) el.textContent=`= ${fmtBRL(Math.round(v*p/100))}`;
+  else if(v>0) el.textContent=`Sugestão 1,8%: ${fmtBRL(Math.round(v*0.018))}`;
+  else el.textContent='';
+}
+function saveLead(){
+  const l={
+    id:editLeadIdx===-1?Date.now():(leads[editLeadIdx]?.id||Date.now()),
+    name:document.getElementById('lf-name').value||'Lead',
+    product:document.getElementById('lf-product').value||'',
+    valor:document.getElementById('lf-valor').value||'',
+    commPct:document.getElementById('lf-commPct').value||'',
+    status:document.getElementById('lf-status').value||'',
+    whatsapp:(document.getElementById('lf-whatsapp').value||'').replace(/\D/g,''),
+    stage:document.getElementById('lf-stage').value,
+    avatar:document.getElementById('lf-avatar').value||document.getElementById('lf-name').value?.[0]?.toUpperCase()||'?',
+    followup:document.getElementById('lf-followup').value||'',
+    history:document.getElementById('lf-history').value||'',
+  };
+  if(editLeadIdx===-1) leads.push(l); else leads[editLeadIdx]=l;
+  saveLeads(); closeModal('modal-lead'); renderLeads(); renderHeader();
+  showToast(editLeadIdx===-1?'✅ Lead adicionado!':'✅ Lead atualizado!');
+}
+function deleteLead(){
+  if(!confirm('Excluir este lead?')) return;
+  leads.splice(editLeadIdx,1); saveLeads(); closeModal('modal-lead'); renderLeads(); renderHeader();
+  showToast('🗑️ Lead removido!');
+}
+
+// ════════════════════════════════════════
+// HISTÓRICO
+// ════════════════════════════════════════
+function openHist(i){
+  const l=leads[i]; const comm=getComm(l);
+  document.getElementById('hist-title').textContent='📋 '+l.name.split(' ')[0].toUpperCase();
+  document.getElementById('hist-content').innerHTML=`
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">${l.product} · ${l.status}</div>
+    ${l.valor?`<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:12px">💰 ${fmtBRL(l.valor)}${comm?' → '+l.commPct+'% = '+fmtBRL(comm):''}</div>`:''}
+    <div style="background:var(--s2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:12px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">📝 HISTÓRICO</div>
+      <div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${l.history||'Sem histórico registrado.'}</div>
+    </div>
+    ${l.followup?`<div style="font-size:11px;color:var(--txt3);margin-bottom:14px">📅 Follow-up: <strong style="color:var(--yellow)">${fmtDate(l.followup)}</strong></div>`:''}`;
+  openModal('modal-hist');
+}
+
+// ════════════════════════════════════════
+// MENSAGENS
+// ════════════════════════════════════════
+let msgLeadIdx=null, selTplId=null;
+function openMsg(i){
+  msgLeadIdx=i; selTplId=null;
+  const l=leads[i];
+  document.getElementById('msg-lead-info').textContent=l.name+' · '+l.product;
+  document.getElementById('msg-fu-date').value=l.followup||'';
+  document.getElementById('msg-preview-wrap').style.display='none';
+  renderTplList(); openModal('modal-msg');
+}
+function renderTplList(){
+  const el=document.getElementById('tpl-list'); if(!el) return;
+  el.innerHTML=tpls.map(t=>`<div class="tpl-item${selTplId===t.id?' sel':''}" onclick="selectTpl(${t.id})"><div class="tpl-name">${t.name}</div><div class="tpl-preview">${t.text.substring(0,80)}${t.text.length>80?'...':''}</div></div>`).join('');
+}
+function selectTpl(id){
+  selTplId=id;
+  const t=tpls.find(t=>t.id===id), l=leads[msgLeadIdx];
+  if(!t||!l) return;
+  const msg=t.text.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fmtDate(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));
+  document.getElementById('msg-preview').value=msg;
+  document.getElementById('msg-preview-wrap').style.display='block';
+  const waBtn=document.getElementById('msg-wa-btn');
+  if(l.whatsapp){ waBtn.onclick=()=>window.open(`https://wa.me/55${l.whatsapp}?text=${encodeURIComponent(document.getElementById('msg-preview').value)}`,'_blank'); waBtn.style.opacity='1'; }
+  else { waBtn.onclick=()=>showToast('⚠️ Adicione o WhatsApp primeiro!'); waBtn.style.opacity='.6'; }
+  renderTplList();
+}
+function saveMsgFu(){
+  const d=document.getElementById('msg-fu-date').value;
+  if(!d){showToast('⚠️ Selecione uma data!');return;}
+  leads[msgLeadIdx].followup=d; saveLeads(); renderLeads(); renderHeader();
+  closeModal('modal-msg');
+  showNotif('📅','Follow-up agendado!',leads[msgLeadIdx].name+' — '+fmtDate(d));
+  showToast('📅 Follow-up salvo!');
+}
+
+// ════════════════════════════════════════
+// TEMPLATE EDITOR
+// ════════════════════════════════════════
+function renderTplEditor(){
+  const el=document.getElementById('tpl-editor'); if(!el) return;
+  el.innerHTML=tpls.map((t,i)=>`
+    <div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px">
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;saveTpls()">
+        <button onclick="deleteTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button>
+      </div>
+      <textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].text=this.value;saveTpls()">${t.text}</textarea>
+      <div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div>
+    </div>`).join('');
+}
+function addTemplate(){ tpls.push({id:Date.now(),name:'Nova Mensagem',text:'Olá, [NOME]! ...'}); saveTpls(); renderTplEditor(); showToast('✅ Adicionada!'); }
+function deleteTpl(i){ if(!confirm('Excluir modelo?'))return; tpls.splice(i,1); saveTpls(); renderTplEditor(); showToast('🗑️ Removido!'); }
+
+// ════════════════════════════════════════
+// WORKOUT
+// ════════════════════════════════════════
+function renderWorkouts(){
+  const el=document.getElementById('workout-list'); if(!el) return;
+  if(!workouts.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum dia de treino.</div>';return;}
+  el.innerHTML=workouts.map((w,i)=>{
+    const typeColor=w.type==='MUSCULAÇÃO'?'var(--acc)':w.type==='CARDIO'?'var(--blue)':'var(--txt3)';
+    const typeBg=w.type==='MUSCULAÇÃO'?'rgba(255,107,43,.12)':w.type==='CARDIO'?'rgba(59,130,246,.12)':'rgba(255,255,255,.05)';
+    return `<div class="workout-day">
+      <div class="wd-hdr">
+        <div class="wd-name">${w.name}</div>
+        <div class="wd-type" style="background:${typeBg};color:${typeColor}">${w.type}</div>
+        <div class="wd-actions">
+          <button onclick="openEditWorkout(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button>
+        </div>
+      </div>
+      ${(w.exercises||[]).map(([n,s])=>`<div class="ex-row"><span>${n}</span><span class="ex-sets">${s}</span></div>`).join('')}
+    </div>`;
+  }).join('');
+}
+let editWorkoutIdx=-1, tempExercises=[];
+function openAddWorkout(){ editWorkoutIdx=-1; tempExercises=[]; document.getElementById('workout-modal-title').textContent='💪 NOVO DIA DE TREINO'; document.getElementById('workout-del-btn').style.display='none'; document.getElementById('wd-name').value=''; document.getElementById('wd-type').value='MUSCULAÇÃO'; renderExercises(); openModal('modal-workout'); }
+function openEditWorkout(i){ editWorkoutIdx=i; const w=workouts[i]; tempExercises=[...(w.exercises||[]).map(e=>[...e])]; document.getElementById('workout-modal-title').textContent='✏️ EDITAR DIA'; document.getElementById('workout-del-btn').style.display='block'; document.getElementById('wd-name').value=w.name; document.getElementById('wd-type').value=w.type||'MUSCULAÇÃO'; renderExercises(); openModal('modal-workout'); }
+function renderExercises(){
+  const el=document.getElementById('wd-exercises'); if(!el) return;
+  el.innerHTML=tempExercises.map((e,i)=>`
+    <div style="display:flex;gap:8px;margin-bottom:7px;align-items:center">
+      <input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Exercício" value="${e[0].replace(/"/g,'&quot;')}" oninput="tempExercises[${i}][0]=this.value">
+      <input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Séries" value="${e[1].replace(/"/g,'&quot;')}" oninput="tempExercises[${i}][1]=this.value">
+      <button onclick="removeExercise(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
+    </div>`).join('');
+}
+function addExercise(){ tempExercises.push(['','']); renderExercises(); }
+function removeExercise(i){ tempExercises.splice(i,1); renderExercises(); }
+function saveWorkout(){
+  const w={id:editWorkoutIdx===-1?Date.now():(workouts[editWorkoutIdx]?.id||Date.now()),name:document.getElementById('wd-name').value||'Treino',type:document.getElementById('wd-type').value,exercises:tempExercises.filter(e=>e[0].trim())};
+  if(editWorkoutIdx===-1) workouts.push(w); else workouts[editWorkoutIdx]=w;
+  saveWorkouts(); closeModal('modal-workout'); renderWorkouts(); showToast(editWorkoutIdx===-1?'✅ Dia adicionado!':'✅ Atualizado!');
+}
+function deleteWorkout(){ if(!confirm('Excluir este dia de treino?'))return; workouts.splice(editWorkoutIdx,1); saveWorkouts(); closeModal('modal-workout'); renderWorkouts(); showToast('🗑️ Removido!'); }
+
+// ════════════════════════════════════════
+// MEALS
+// ════════════════════════════════════════
+function renderMeals(){
+  const el=document.getElementById('meal-list'); if(!el) return;
+  if(!meals.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhuma refeição.</div>';return;}
+  el.innerHTML=meals.map((m,i)=>`
+    <div class="meal">
+      <div class="meal-hdr">
+        <div style="font-size:17px">${m.icon||'🍽️'}</div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-kcal">${m.kcal}</div>
+        <button onclick="openEditMeal(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px;margin-left:6px">✏️</button>
+      </div>
+      ${(m.items||[]).map(([n,v])=>`<div class="meal-item"><span>${n}</span><span class="macro">${v}</span></div>`).join('')}
+    </div>`).join('');
+}
+let editMealIdx=-1, tempMealItems=[];
+function openAddMeal(){ editMealIdx=-1; tempMealItems=[]; document.getElementById('meal-modal-title').textContent='🍽️ NOVA REFEIÇÃO'; document.getElementById('meal-del-btn').style.display='none'; document.getElementById('ml-name').value=''; document.getElementById('ml-icon').value=''; document.getElementById('ml-kcal').value=''; renderMealItems(); openModal('modal-meal'); }
+function openEditMeal(i){ editMealIdx=i; const m=meals[i]; tempMealItems=[...(m.items||[]).map(e=>[...e])]; document.getElementById('meal-modal-title').textContent='✏️ EDITAR REFEIÇÃO'; document.getElementById('meal-del-btn').style.display='block'; document.getElementById('ml-name').value=m.name; document.getElementById('ml-icon').value=m.icon||''; document.getElementById('ml-kcal').value=m.kcal||''; renderMealItems(); openModal('modal-meal'); }
+function renderMealItems(){
+  const el=document.getElementById('ml-items'); if(!el) return;
+  el.innerHTML=tempMealItems.map((e,i)=>`
+    <div style="display:flex;gap:8px;margin-bottom:7px;align-items:center">
+      <input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Alimento" value="${e[0].replace(/"/g,'&quot;')}" oninput="tempMealItems[${i}][0]=this.value">
+      <input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Macro" value="${e[1].replace(/"/g,'&quot;')}" oninput="tempMealItems[${i}][1]=this.value">
+      <button onclick="removeMealItem(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
+    </div>`).join('');
+}
+function addMealItem(){ tempMealItems.push(['','']); renderMealItems(); }
+function removeMealItem(i){ tempMealItems.splice(i,1); renderMealItems(); }
+function saveMeal(){
+  const m={id:editMealIdx===-1?Date.now():(meals[editMealIdx]?.id||Date.now()),name:document.getElementById('ml-name').value||'Refeição',icon:document.getElementById('ml-icon').value||'🍽️',kcal:document.getElementById('ml-kcal').value||'',items:tempMealItems.filter(e=>e[0].trim())};
+  if(editMealIdx===-1) meals.push(m); else meals[editMealIdx]=m;
+  saveMeals(); closeModal('modal-meal'); renderMeals(); showToast(editMealIdx===-1?'✅ Refeição adicionada!':'✅ Atualizada!');
+}
+function deleteMeal(){ if(!confirm('Excluir esta refeição?'))return; meals.splice(editMealIdx,1); saveMeals(); closeModal('modal-meal'); renderMeals(); showToast('🗑️ Removida!'); }
+
+// ════════════════════════════════════════
+// TASK EDITOR
+// ════════════════════════════════════════
+let edWeek=0, edSec='vendas';
+function renderWeekTabs(){
+  const el=document.getElementById('week-tabs'); if(!el) return;
+  el.innerHTML=weeks.map((_,i)=>`<button class="sec-tab${i===edWeek?' active':''}" onclick="selectEdWeek(${i},this)">Sem ${i+1}</button>`).join('');
+}
+function selectEdWeek(i,el){ edWeek=i; document.querySelectorAll('#week-tabs .sec-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTaskEditor(); }
+function selectSec(s,el){ edSec=s; document.querySelectorAll('#sec-tabs .sec-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTaskEditor(); }
+function renderTaskEditor(){
+  const el=document.getElementById('task-editor'); if(!el) return;
+  const tasks=weeks[edWeek]?.[edSec]||[];
+  el.innerHTML=tasks.map((t,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--br)">
+      <div style="flex:1;min-width:0"><div style="font-size:12px">${t.t}</div><div style="font-size:10px;color:var(--txt3)">${t.s}</div></div>
+      <button onclick="editTask(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button>
+      <button onclick="deleteTask(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">🗑️</button>
+    </div>`).join('');
+}
+function editTask(i){ const t=weeks[edWeek][edSec][i]; const name=prompt('Tarefa:',t.t); if(name===null)return; const sub=prompt('Detalhe:',t.s); if(sub===null)return; const tag=prompt('Etiqueta:',t.tag); if(tag===null)return; weeks[edWeek][edSec][i]={t:name,s:sub,tag:tag||t.tag}; saveWeeks(); renderTaskEditor(); renderTasks(); showToast('✅ Atualizada!'); }
+function addTask(){ const name=prompt('Nova tarefa:'); if(!name)return; const sub=prompt('Detalhe (opcional):',''); const tag=prompt('Etiqueta:','📌 Tarefa'); if(!weeks[edWeek][edSec]) weeks[edWeek][edSec]=[]; weeks[edWeek][edSec].push({t:name,s:sub||'',tag:tag||'📌 Tarefa'}); saveWeeks(); renderTaskEditor(); renderTasks(); showToast('✅ Adicionada!'); }
+function deleteTask(i){ if(!confirm('Excluir?'))return; weeks[edWeek][edSec].splice(i,1); saveWeeks(); renderTaskEditor(); renderTasks(); showToast('🗑️ Removida!'); }
+
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+function saveCfg(){
+  cfg.metaComm=Number(document.getElementById('cfgMetaComm').value)||70000;
+  cfg.metaSales=Number(document.getElementById('cfgMetaVendas').value)||6;
+  cfg.igHandle=document.getElementById('cfgHandle').value||'flavio.vitacon';
+  cfg.igMetaFollowers=Number(document.getElementById('cfgMetaFollowers').value)||5000;
+  cfg.followers=Number(document.getElementById('cfgFollowers').value)||0;
+  cfg.reels=Number(document.getElementById('cfgReels').value)||0;
+  cfg.posts=Number(document.getElementById('cfgPosts').value)||0;
+  cfg.igLeads=Number(document.getElementById('cfgIgLeads').value)||0;
+  cfg.treinos=Number(document.getElementById('cfgTreinos').value)||0;
+  cfg.corridas=Number(document.getElementById('cfgCorridas').value)||0;
+  cfg.kcal=Number(document.getElementById('cfgKcal').value)||2800;
+  cfg.prot=Number(document.getElementById('cfgProt').value)||180;
+  cfg.carbs=Number(document.getElementById('cfgCarbs').value)||300;
+  saveCfgLS(); renderHeader();
+}
+function loadCfg(){
+  const m={cfgMetaComm:'metaComm',cfgMetaVendas:'metaSales',cfgHandle:'igHandle',cfgMetaFollowers:'igMetaFollowers',cfgFollowers:'followers',cfgReels:'reels',cfgPosts:'posts',cfgIgLeads:'igLeads',cfgTreinos:'treinos',cfgCorridas:'corridas',cfgKcal:'kcal',cfgProt:'prot',cfgCarbs:'carbs'};
+  Object.entries(m).forEach(([id,k])=>{ const el=document.getElementById(id); if(el) el.value=cfg[k]||''; });
+}
+
+// ════════════════════════════════════════
+// EXPORT / IMPORT
+// ════════════════════════════════════════
+function exportData(){
+  const d={leads,weeks,done,cfg,tpls,workouts,meals,start:startDay};
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='plano60dias_flavio.json'; a.click(); URL.revokeObjectURL(u);
+  showToast('📦 Exportado!');
+}
+function importData(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.leads){leads=d.leads;saveLeads();}
+      if(d.weeks){weeks=d.weeks;saveWeeks();}
+      if(d.done){done=d.done;saveDone();}
+      if(d.cfg){cfg=d.cfg;saveCfgLS();}
+      if(d.tpls){tpls=d.tpls;saveTpls();}
+      if(d.workouts){workouts=d.workouts;saveWorkouts();}
+      if(d.meals){meals=d.meals;saveMeals();}
+      renderAll(); showToast('✅ Dados importados!');
+    }catch{showToast('❌ Arquivo inválido!');}
+  };
+  r.readAsText(f);
+}
+function resetDone(){ done={}; saveDone(); renderTasks(); showToast('🔄 Reiniciado!'); }
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+function renderAll(){
+  renderTasks(); renderLeads(); renderHeader();
+  renderWorkouts(); renderMeals();
+  loadCfg(); renderWeekTabs(); renderTaskEditor(); renderTplEditor();
+}
+renderAll();
+setTimeout(()=>{
+  const t=today(), due=leads.filter(l=>l.followup&&l.followup<=t&&l.stage!=='won');
+  if(due.length) showNotif('📱',`Follow-up ${due[0].followup<t?'ATRASADO!':'hoje!'}`,due[0].name);
+},800);
+</script>
+</body>
+</html>
