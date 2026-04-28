@@ -638,6 +638,32 @@ const fmtDate= d => { if(!d)return''; const[y,m,dd]=d.split('-'); return`${dd}/$
 const today  = () => new Date().toISOString().split('T')[0];
 const getComm= l => (l.commPct&&l.valor) ? Math.round(Number(l.valor)*Number(l.commPct)/100) : 0;
 
+function leadScore(l) {
+  let s = 0;
+  if (l.stage==='won') return 100;
+  if (l.stage==='hot') s+=40; else if (l.stage==='warm') s+=20; else s+=5;
+  if (l.valor&&Number(l.valor)>0) s+=15;
+  if (l.whatsapp) s+=10;
+  if (l.history&&l.history.length>30) s+=15;
+  if (l.followup) { const t=today(); if(l.followup>=t) s+=20; else s-=10; }
+  if (l.status&&l.status.length>5) s+=10;
+  return Math.min(99,Math.max(5,s));
+}
+function scoreColor(s) { return s>=70?'var(--green)':s>=40?'var(--yellow)':'var(--acc)'; }
+function nextStep(l) {
+  if (l.stage==='won') return '🏆 Venda fechada! Peça indicação.';
+  if (l.stage==='hot') {
+    if (!l.followup) return '📅 Agende follow-up para hoje ou amanhã';
+    const t=today();
+    if (l.followup<t) return '🔴 Follow-up atrasado! Ligue agora.';
+    if (l.followup===t) return '🟡 Follow-up hoje — entre em contato!';
+    return '✅ Follow-up agendado. Prepare proposta personalizada.';
+  }
+  if (l.stage==='warm') return '📄 Envie proposta formal com simulação de rendimento';
+  if (l.stage==='cold') return '💬 Use mensagem de reaquecimento — mencione novidade';
+  return '📞 Entre em contato para qualificar o lead';
+}
+
 const GRADS = [["#ff6b2b","#f59e0b"],["#3b82f6","#06b6d4"],["#22c55e","#06b6d4"],["#a855f7","#3b82f6"],["#f43f5e","#ff6b2b"],["#f59e0b","#22c55e"],["#06b6d4","#a855f7"],["#22c55e","#f59e0b"]];
 const gradBg = i => `linear-gradient(135deg,${GRADS[i%GRADS.length][0]},${GRADS[i%GRADS.length][1]})`;
 const STAGE_S = {
@@ -813,12 +839,18 @@ function leadCardHTML(l,i){
       </div>
       <div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div>
     </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div>
+      <div style="font-size:10px;font-weight:700;color:${scoreColor(leadScore(l))}">Score: ${leadScore(l)}/100</div>
+    </div>
+    <div style="background:var(--s3);border-radius:8px;padding:7px 10px;font-size:11px;color:${scoreColor(leadScore(l))};font-weight:600;margin-bottom:8px">${nextStep(l)}</div>
     ${l.followup&&l.stage!=='won'?`<div class="fu-bar" style="background:${fuOver?'rgba(239,68,68,.08)':fuTod?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fuOver?'rgba(239,68,68,.2)':fuTod?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fuOver?'var(--red)':fuTod?'var(--acc)':'var(--yellow)'}"><span>${fuOver?'🔴':fuTod?'🟡':'📅'}</span><span>${fuOver?'Atrasado!':fuTod?'Hoje!':'Follow-up:'} ${fmtDate(l.followup)}</span></div>`:''}
     <div class="lead-btns">
       ${l.whatsapp?`<a class="btn-wa" href="https://wa.me/55${l.whatsapp}" target="_blank">📲 WhatsApp</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WhatsApp</button>`}
       <button class="btn-msg" onclick="openMsg(${i})">💬 Mensagem</button>
       <button class="btn-icon" onclick="openEditLead(${i})">✏️</button>
       <button class="btn-icon" onclick="openHist(${i})">📋</button>
+      <button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff" title="Analisar com IA">🤖</button>
     </div>
   </div>`;
 }
@@ -1116,5 +1148,109 @@ setTimeout(()=>{
   if(due.length) showNotif('📱',`Follow-up ${due[0].followup<t?'ATRASADO!':'hoje!'}`,due[0].name);
 },800);
 </script>
+<!-- MODAL IA -->
+<div class="overlay" id="modal-ai">
+  <div class="modal">
+    <div class="modal-hdr"><span>🤖 ANALISAR COM IA</span><button class="modal-close" onclick="closeModal('modal-ai')">✕</button></div>
+    <div id="ai-lead-info" style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;line-height:1.6"></div>
+    <div class="field">
+      <label class="inp-lbl">📝 Histórico + conversa do WhatsApp</label>
+      <textarea class="inp" id="ai-convo" placeholder="Histórico do lead aparece aqui automaticamente. Adicione conversas recentes do WhatsApp abaixo..." style="min-height:120px"></textarea>
+    </div>
+    <div class="field">
+      <label class="inp-lbl">❓ Sua pergunta para a IA</label>
+      <select class="inp" id="ai-question-select" onchange="updateAIQuestion()">
+        <option value="proximo">Qual o melhor próximo passo para fechar essa venda?</option>
+        <option value="objecao">Como superar a objeção desse lead?</option>
+        <option value="mensagem">Crie uma mensagem personalizada para reativar esse lead</option>
+        <option value="analise">Faça uma análise completa desse lead e dê recomendações</option>
+        <option value="urgencia">Como criar urgência real para esse lead fechar agora?</option>
+        <option value="custom">Pergunta personalizada...</option>
+      </select>
+    </div>
+    <div class="field" id="ai-custom-wrap" style="display:none">
+      <label class="inp-lbl">Sua pergunta</label>
+      <input class="inp" id="ai-custom-q" placeholder="Digite sua pergunta...">
+    </div>
+    <button class="btn btn-primary" onclick="openClaude()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);margin-bottom:8px">🤖 Abrir no Claude.ai</button>
+    <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com o contexto completo do lead já preenchido. Gratuito.</p>
+  </div>
+</div>
+
+<script>
+// ── AI ANALYSIS ──
+let aiLeadIdx = null;
+
+function openAI(i) {
+  aiLeadIdx = i;
+  const l = leads[i];
+  const score = leadScore(l);
+  const step = nextStep(l);
+  const comm = getComm(l);
+
+  document.getElementById('ai-lead-info').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700">${l.name}</div>
+      <div style="font-family:var(--disp);font-size:20px;color:${scoreColor(score)}">${score}<span style="font-size:10px;color:var(--txt3)"> /100</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">${l.product}${l.valor ? ' · ' + fmtBRL(l.valor) : ''}${comm ? ' · comissão: ' + fmtBRL(comm) : ''}</div>
+    <div style="background:var(--s3);border-radius:8px;padding:8px 10px;font-size:11px;color:${scoreColor(score)};font-weight:700">${step}</div>`;
+
+  document.getElementById('ai-convo').value = l.history || '';
+  document.getElementById('ai-question-select').value = 'proximo';
+  document.getElementById('ai-custom-wrap').style.display = 'none';
+  openModal('modal-ai');
+}
+
+function updateAIQuestion() {
+  const v = document.getElementById('ai-question-select').value;
+  document.getElementById('ai-custom-wrap').style.display = v === 'custom' ? 'block' : 'none';
+}
+
+function openClaude() {
+  const l = leads[aiLeadIdx];
+  if (!l) return;
+
+  const qMap = {
+    proximo: 'Qual o melhor próximo passo para fechar essa venda?',
+    objecao: 'Como superar a objeção desse lead e avançar no processo?',
+    mensagem: 'Crie uma mensagem personalizada de WhatsApp para reativar esse lead.',
+    analise: 'Faça uma análise completa desse lead e dê recomendações estratégicas.',
+    urgencia: 'Como criar urgência real e ética para esse lead fechar agora?',
+    custom: document.getElementById('ai-custom-q').value || 'Qual o próximo passo?',
+  };
+  const sel = document.getElementById('ai-question-select').value;
+  const question = qMap[sel];
+  const convo = document.getElementById('ai-convo').value;
+  const score = leadScore(l);
+  const comm = getComm(l);
+
+  const prompt = `Você é um especialista em vendas de imóveis de alto padrão em São Paulo. Vou te apresentar um lead do Flávio Garcia, corretor da Vitacon, e preciso de orientação estratégica.
+
+═══ DADOS DO LEAD ═══
+Nome: ${l.name}
+Produto: ${l.product}
+Valor: ${l.valor ? fmtBRL(l.valor) : 'não informado'}
+Comissão potencial: ${comm ? fmtBRL(comm) + ' (' + l.commPct + '%)' : 'não calculada'}
+Status atual: ${l.status || 'não informado'}
+Temperatura: ${l.stage === 'hot' ? '🔥 QUENTE' : l.stage === 'warm' ? '🌡️ MORNO' : l.stage === 'cold' ? '❄️ FRIO' : '✅ FECHADO'}
+Score do lead: ${score}/100
+Follow-up: ${l.followup ? fmtDate(l.followup) : 'não agendado'}
+
+═══ HISTÓRICO / NOTAS ═══
+${l.history || 'Sem histórico registrado.'}
+${convo ? '\n═══ CONVERSA RECENTE ═══\n' + convo : ''}
+
+═══ PERGUNTA ═══
+${question}
+
+Por favor, responda de forma direta e prática. Flávio é um corretor focado em resultados, então dê orientações concretas e acionáveis.`;
+
+  const url = 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
+  window.open(url, '_blank');
+  closeModal('modal-ai');
+}
+</script>
+
 </body>
 </html>
