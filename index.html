@@ -12,7 +12,23 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg:#090910;--s1:#101018;--s2:#181825;--s3:#1e1e2e;--br:#2a2a3d;--br2:#353550;--acc:#ff6b2b;--blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--purple:#a855f7;--red:#ef4444;--wa:#25D366;--txt:#f1f1f8;--txt2:#a0a0c0;--txt3:#606080;--f:'DM Sans',sans-serif;--d:'Bebas Neue',sans-serif}
 html{height:100%;background:#05050d}
-body{min-height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);display:flex;flex-direction:column;overflow-x:hidden;max-width:480px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,.9)}
+body{min-height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);display:flex;flex-direction:column;overflow-x:hidden;max-width:900px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,.9)}
+@media(min-width:600px){
+  .content .page{padding:20px 24px 40px}
+  .g2{grid-template-columns:1fr 1fr}
+  .leads-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .meta{grid-template-columns:repeat(4,1fr)}
+  .hdr{padding:16px 24px 14px}
+  .tabs .tab{font-size:10px;padding:10px 8px}
+  .tabs .tab span{font-size:17px}
+  .card-title{font-size:18px}
+  .task-txt{font-size:14px}
+  .lead-name{font-size:14px}
+  .inp{font-size:15px}
+  .btn{font-size:14px}
+  .meta-val{font-size:20px}
+  .meta-lbl{font-size:9px}
+}
 .hdr{background:linear-gradient(135deg,#0d0d1e,#15102a);padding:14px 16px 12px;border-bottom:1px solid var(--br);position:sticky;top:0;z-index:50}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .logo{font-family:var(--d);font-size:17px;letter-spacing:2px;color:var(--acc)}
@@ -558,7 +574,7 @@ function openDetail(i){
   openM('m-detail');
 }
 
-function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=leads.map((l,i)=>lCard(l,i)).join('')}
+function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=`<div class="leads-grid">${leads.map((l,i)=>lCard(l,i)).join('')}</div>`}
 function lCard(l,i){
   const ss=SS[l.stage]||SS.cold,t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won',comm=gc(l),s=scr(l);
   return`<div class="lead-card"><div class="lead-top"><div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div><div class="lead-info"><div class="lead-name">${l.name}</div><div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}</div><div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div><div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}<div class="lead-btns">${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}<button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button><button class="btn-icon" onclick="openDetail(${i})">👁️</button><button class="btn-icon" onclick="openEditLead(${i})">✏️</button><button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button></div></div>`;
