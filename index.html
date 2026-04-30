@@ -92,6 +92,12 @@ select.inp option{background:var(--s1)}
 .btn-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;border:1px dashed var(--br);background:transparent;color:var(--txt3);cursor:pointer;font-size:12px;font-family:var(--f);margin-top:4px}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .overlay.open{display:flex}
+#m-day{z-index:300}
+#m-detail{z-index:300}
+#m-appt{z-index:400}
+#m-lead{z-index:400}
+#m-msg{z-index:400}
+#m-ai{z-index:400}
 .modal{background:var(--s1);border:1px solid var(--br);border-radius:18px 18px 0 0;padding:18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
 .modal-hdr{font-family:var(--d);font-size:19px;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .modal-close{background:var(--s2);border:1px solid var(--br);color:var(--txt3);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
@@ -188,6 +194,7 @@ select.inp option{background:var(--s1)}
   <button class="tab" data-id="insta" onclick="goTab('insta',this)"><span>📱</span>Insta</button>
   <button class="tab" data-id="treino" onclick="goTab('treino',this)"><span>💪</span>Treino</button>
   <button class="tab" data-id="nutri" onclick="goTab('nutri',this)"><span>🥗</span>Nutri</button>
+  <button class="tab" data-id="projetos" onclick="goTab('projetos',this)"><span>🏢</span>Projetos</button>
   <button class="tab" data-id="favs" onclick="goTab('favs',this)"><span>🔗</span>Links</button>
   <button class="tab" data-id="config" onclick="goTab('config',this)"><span>⚙️</span>Config</button>
 </div>
@@ -255,6 +262,15 @@ select.inp option{background:var(--s1)}
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="grp" style="margin:0">🍽️ REFEIÇÕES</div><button onclick="openAddMeal()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Refeição</button></div>
   <div id="meal-list"></div>
 </div>
+<!-- PROJETOS -->
+<div class="page" id="page-projetos">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div class="grp" style="margin:0">🏢 PROJETOS VITACON</div>
+    <button onclick="openAddProjeto()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo Projeto</button>
+  </div>
+  <div id="projetos-list"></div>
+</div>
+
 <!-- LINKS -->
 <div class="page" id="page-favs">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="grp" style="margin:0">🔗 LINKS FAVORITOS</div><button onclick="openAddFav()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Adicionar</button></div>
@@ -393,6 +409,69 @@ select.inp option{background:var(--s1)}
 <div class="overlay" id="m-day" style="z-index:250"><div class="modal">
   <div class="modal-hdr"><span id="day-modal-title">🗓️ DIA</span><button class="modal-close" onclick="closeM('m-day')">✕</button></div>
   <div id="day-modal-content"></div>
+</div></div>
+
+<!-- PROJETO FORM -->
+<div class="overlay" id="m-proj" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span id="proj-title">🏢 NOVO PROJETO</span><button class="modal-close" onclick="closeM('m-proj')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Nome do Empreendimento</label><input class="inp" id="pj-name" placeholder="Ex: Vitacon Jardins"></div>
+  <div class="field"><label class="inp-lbl">Endereço / Bairro</label><input class="inp" id="pj-end" placeholder="Ex: Rua Oscar Freire, 1000 — Jardins"></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px">
+    <div><label class="inp-lbl">Status</label>
+      <select class="inp" id="pj-status">
+        <option value="prelancamento">🔥 Pré-lançamento</option>
+        <option value="lancamento">🚀 Lançamento</option>
+        <option value="obras">🏗️ Em Obras</option>
+        <option value="pronto">✅ Pronto</option>
+      </select>
+    </div>
+    <div><label class="inp-lbl">Entrega prevista</label><input class="inp" id="pj-entrega" placeholder="Ex: 12/2026"></div>
+  </div>
+  <div class="g2" style="gap:10px;margin-bottom:12px">
+    <div><label class="inp-lbl">Valor mín (R$)</label><input class="inp" type="number" id="pj-vmin" placeholder="370000"></div>
+    <div><label class="inp-lbl">Valor máx (R$)</label><input class="inp" type="number" id="pj-vmax" placeholder="2000000"></div>
+  </div>
+  <div class="g2" style="gap:10px;margin-bottom:12px">
+    <div><label class="inp-lbl">Metragem (m²)</label><input class="inp" id="pj-metro" placeholder="Ex: 20 a 45m²"></div>
+    <div><label class="inp-lbl">Comissão (%)</label><input class="inp" type="number" step="0.1" id="pj-comm" placeholder="1.8"></div>
+  </div>
+  <div class="field"><label class="inp-lbl">🎯 Diferenciais (um por linha)</label><textarea class="inp" id="pj-dif" placeholder="Parceiro Airbnb&#10;Gestão Housi&#10;Metro a 50m&#10;Vista 360 graus" style="min-height:80px"></textarea></div>
+  <div class="field"><label class="inp-lbl">💰 Fluxo de Pagamento</label><textarea class="inp" id="pj-fluxo" placeholder="Ex: 30% ato + 70% financiamento na entrega" style="min-height:60px"></textarea></div>
+  <div class="field"><label class="inp-lbl">📊 Rentabilidade estimada</label><input class="inp" id="pj-rentab" placeholder="Ex: 12% ao ano com ocupação 75%"></div>
+  <div class="field"><label class="inp-lbl">🏙️ Localização / Geradores de demanda</label><textarea class="inp" id="pj-local" placeholder="Ex: Próximo ao Allianz Parque, Estação Metro, Av. Paulista" style="min-height:60px"></textarea></div>
+  <div class="field"><label class="inp-lbl">📝 Notas extras</label><textarea class="inp" id="pj-notas" placeholder="Informações adicionais, restrições, plantão..." style="min-height:60px"></textarea></div>
+  <div class="field"><label class="inp-lbl">🔗 Link Book/Tabela</label><input class="inp" type="url" id="pj-link" placeholder="https://..."></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button class="btn btn-ghost" onclick="closeM('m-proj')" style="flex:1">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveProjeto()" style="flex:1">💾 Salvar</button>
+  </div>
+  <button class="btn btn-danger" id="proj-del" onclick="delProjeto()" style="display:none">🗑️ Excluir Projeto</button>
+</div></div>
+
+<!-- PROJETO DETALHE -->
+<div class="overlay" id="m-proj-detail" style="z-index:350"><div class="modal">
+  <div class="modal-hdr"><span id="proj-detail-title">🏢 PROJETO</span><button class="modal-close" onclick="closeM('m-proj-detail')">✕</button></div>
+  <div id="proj-detail-content"></div>
+</div></div>
+
+<!-- PROJETO IA -->
+<div class="overlay" id="m-proj-ai" style="z-index:400"><div class="modal">
+  <div class="modal-hdr"><span>🤖 IA — PROJETO</span><button class="modal-close" onclick="closeM('m-proj-ai')">✕</button></div>
+  <div id="proj-ai-info" style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;line-height:1.6"></div>
+  <div class="field"><label class="inp-lbl">O que você quer?</label>
+    <select class="inp" id="proj-ai-q" onchange="document.getElementById('proj-ai-cw').style.display=this.value==='custom'?'block':'none'">
+      <option value="resumo">📋 Resumo executivo para o cliente</option>
+      <option value="whatsapp">💬 Mensagem de apresentação WhatsApp</option>
+      <option value="objecoes">🛡️ Como responder objeções</option>
+      <option value="investidor">💰 Análise de retorno para investidor</option>
+      <option value="post">📱 Legenda para post no Instagram</option>
+      <option value="comparar">⚖️ Argumentos vs imóveis tradicionais</option>
+      <option value="custom">✏️ Pergunta personalizada...</option>
+    </select>
+  </div>
+  <div class="field" id="proj-ai-cw" style="display:none"><input class="inp" id="proj-ai-custom" placeholder="Digite sua pergunta..."></div>
+  <button class="btn" onclick="openClaudeProjeto()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;width:100%;margin-bottom:8px">🤖 Abrir no Claude.ai</button>
+  <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com todos os dados do projeto. Gratuito.</p>
 </div></div>
 
 <script>
@@ -769,11 +848,173 @@ function openAI(i){aiI=i;const l=leads[i],s=scr(l),comm=gc(l);document.getElemen
 function updAIQ(){document.getElementById('ai-cw').style.display=document.getElementById('ai-q').value==='custom'?'block':'none'}
 function openClaude(){const l=leads[aiI];if(!l)return;const qm={proximo:'Qual o melhor próximo passo para fechar essa venda?',objecao:'Como superar a objeção desse lead?',mensagem:'Crie uma mensagem de WhatsApp para reativar esse lead.',analise:'Análise completa do lead com recomendações estratégicas.',urgencia:'Como criar urgência real e ética para fechar agora?',custom:document.getElementById('ai-custom').value||'Qual o próximo passo?'};const q=qm[document.getElementById('ai-q').value],convo=document.getElementById('ai-convo').value,s=scr(l),comm=gc(l);const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Lead do Flávio Garcia, corretor Vitacon:\n\nNome: ${l.name}\nProduto: ${l.product}\nValor: ${l.valor?brl(l.valor):'não informado'}\nComissão potencial: ${comm?brl(comm)+' ('+l.pct+'%)':'não calculada'}\nStatus: ${l.status||'não informado'}\nTemperatura: ${l.stage==='hot'?'🔥 QUENTE':l.stage==='warm'?'🌡️ MORNO':l.stage==='cold'?'❄️ FRIO':'✅ FECHADO'}\nScore: ${s}/100\nFollow-up: ${l.fu?fd(l.fu):'não agendado'}\n\nHISTÓRICO:\n${convo||'Sem histórico.'}\n\nPERGUNTA: ${q}\n\nResponda de forma direta e prática.`;window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');closeM('m-ai')}
 
-function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
-function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
-function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
 
-function renderAll(){renderTasks();setView('list');renderHdr();renderWorkouts();renderMeals();renderFavs();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
+// ════ PROJETOS ════
+const PROJ_STATUS={prelancamento:{l:'🔥 Pré-lançamento',c:'var(--acc)'},lancamento:{l:'🚀 Lançamento',c:'var(--purple)'},obras:{l:'🏗️ Em Obras',c:'var(--yellow)'},pronto:{l:'✅ Pronto',c:'var(--green)'}};
+let projetos=lg('projetos',[]);
+let eiProj=-1,aiProj=null;
+
+function renderProjetos(){
+  const el=document.getElementById('projetos-list');if(!el)return;
+  if(!projetos.length){
+    el.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--txt3)">
+      <div style="font-size:40px;margin-bottom:12px">🏢</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px">Nenhum projeto cadastrado</div>
+      <div style="font-size:12px">Clique em + Novo Projeto para começar</div>
+    </div>`;return;
+  }
+  el.innerHTML=projetos.map((p,i)=>{
+    const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
+    const vmin=Number(p.vmin||0),vmax=Number(p.vmax||0);
+    const faixaValor=vmin&&vmax?`${fk(vmin)} — ${fk(vmax)}`:vmin?`a partir de ${fk(vmin)}`:'';
+    return`<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--d);font-size:18px;letter-spacing:1px;margin-bottom:4px">${p.name}</div>
+          ${p.end?`<div style="font-size:11px;color:var(--txt3);margin-bottom:4px">📍 ${p.end}</div>`:''}
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            <span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.07);color:${st.c}">${st.l}</span>
+            ${p.entrega?`<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.07);color:var(--txt2)">📅 ${p.entrega}</span>`:''}
+            ${p.metro?`<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.07);color:var(--txt2)">📐 ${p.metro}</span>`:''}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:10px">
+          ${faixaValor?`<div style="font-family:var(--d);font-size:15px;color:var(--green)">${faixaValor}</div>`:''}
+          ${p.comm?`<div style="font-size:10px;color:var(--yellow)">Comissão: ${p.comm}%</div>`:''}
+        </div>
+      </div>
+      ${p.rentab?`<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:7px 10px;font-size:11px;color:var(--green);font-weight:600;margin-bottom:8px">📊 ${p.rentab}</div>`:''}
+      ${p.dif?`<div style="margin-bottom:8px">${p.dif.split('\n').filter(d=>d.trim()).slice(0,3).map(d=>`<span style="display:inline-block;font-size:10px;background:rgba(255,107,43,.1);color:var(--acc);padding:2px 7px;border-radius:5px;margin:2px 3px 2px 0">✓ ${d.trim()}</span>`).join('')}</div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button onclick="openDetailProjeto(${i})" class="btn" style="flex:1;background:var(--s3);border:1px solid var(--br);color:var(--txt);font-size:11px">👁️ Ver tudo</button>
+        <button onclick="openEditProjeto(${i})" class="btn-icon">✏️</button>
+        <button onclick="openAIProjeto(${i})" class="btn-icon" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button>
+        ${p.link?`<a href="${p.link}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center">🔗</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAddProjeto(){
+  eiProj=-1;
+  document.getElementById('proj-title').textContent='🏢 NOVO PROJETO';
+  document.getElementById('proj-del').style.display='none';
+  ['pj-name','pj-end','pj-entrega','pj-vmin','pj-vmax','pj-metro','pj-comm','pj-dif','pj-fluxo','pj-rentab','pj-local','pj-notas','pj-link'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  document.getElementById('pj-status').value='prelancamento';
+  openM('m-proj');
+}
+
+function openEditProjeto(i){
+  eiProj=i;const p=projetos[i];
+  document.getElementById('proj-title').textContent='✏️ EDITAR PROJETO';
+  document.getElementById('proj-del').style.display='block';
+  document.getElementById('pj-name').value=p.name||'';
+  document.getElementById('pj-end').value=p.end||'';
+  document.getElementById('pj-status').value=p.status||'pronto';
+  document.getElementById('pj-entrega').value=p.entrega||'';
+  document.getElementById('pj-vmin').value=p.vmin||'';
+  document.getElementById('pj-vmax').value=p.vmax||'';
+  document.getElementById('pj-metro').value=p.metro||'';
+  document.getElementById('pj-comm').value=p.comm||'';
+  document.getElementById('pj-dif').value=p.dif||'';
+  document.getElementById('pj-fluxo').value=p.fluxo||'';
+  document.getElementById('pj-rentab').value=p.rentab||'';
+  document.getElementById('pj-local').value=p.local||'';
+  document.getElementById('pj-notas').value=p.notas||'';
+  document.getElementById('pj-link').value=p.link||'';
+  openM('m-proj');
+}
+
+function saveProjeto(){
+  const p={
+    id:eiProj===-1?Date.now():(projetos[eiProj]?.id||Date.now()),
+    name:document.getElementById('pj-name').value||'Projeto',
+    end:document.getElementById('pj-end').value||'',
+    status:document.getElementById('pj-status').value,
+    entrega:document.getElementById('pj-entrega').value||'',
+    vmin:document.getElementById('pj-vmin').value||'',
+    vmax:document.getElementById('pj-vmax').value||'',
+    metro:document.getElementById('pj-metro').value||'',
+    comm:document.getElementById('pj-comm').value||'',
+    dif:document.getElementById('pj-dif').value||'',
+    fluxo:document.getElementById('pj-fluxo').value||'',
+    rentab:document.getElementById('pj-rentab').value||'',
+    local:document.getElementById('pj-local').value||'',
+    notas:document.getElementById('pj-notas').value||'',
+    link:document.getElementById('pj-link').value||'',
+  };
+  if(eiProj===-1)projetos.push(p);else projetos[eiProj]=p;
+  ls('projetos',projetos);closeM('m-proj');renderProjetos();
+  toast(eiProj===-1?'✅ Projeto adicionado!':'✅ Projeto atualizado!');
+}
+
+function delProjeto(){
+  if(!confirm('Excluir este projeto?'))return;
+  projetos.splice(eiProj,1);ls('projetos',projetos);closeM('m-proj');renderProjetos();toast('🗑️ Removido!');
+}
+
+function openDetailProjeto(i){
+  const p=projetos[i];
+  const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
+  const vmin=Number(p.vmin||0),vmax=Number(p.vmax||0);
+  document.getElementById('proj-detail-title').textContent='🏢 '+p.name;
+  const row=(icon,label,val)=>val?`<div style="display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--br)"><span style="font-size:14px;flex-shrink:0">${icon}</span><div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px">${label}</div><div style="font-size:13px;margin-top:2px">${val}</div></div></div>`:'';
+  document.getElementById('proj-detail-content').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:7px;background:rgba(255,255,255,.07);color:${st.c}">${st.l}</span>
+      ${p.entrega?`<span style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:7px;background:rgba(255,255,255,.07);color:var(--txt2)">📅 ${p.entrega}</span>`:''}
+    </div>
+    ${row('📍','Endereço',p.end)}
+    ${row('📐','Metragem',p.metro)}
+    ${vmin||vmax?row('💰','Valores',`${vmin?fk(vmin):''}${vmin&&vmax?' — ':''}${vmax?fk(vmax):''}${p.comm?' · Comissão '+p.comm+'%':''}`):''}
+    ${row('📊','Rentabilidade',p.rentab)}
+    ${row('💳','Fluxo de Pagamento',p.fluxo)}
+    ${p.local?row('🏙️','Localização / Demanda',p.local):''}
+    ${p.dif?`<div style="padding:8px 0;border-bottom:1px solid var(--br)"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🎯 Diferenciais</div>${p.dif.split('\n').filter(d=>d.trim()).map(d=>`<div style="font-size:12px;padding:3px 0">✓ ${d.trim()}</div>`).join('')}</div>`:''}
+    ${row('📝','Notas',p.notas)}
+    ${p.link?`<div style="padding:8px 0"><a href="${p.link}" target="_blank" style="color:var(--blue);font-size:12px">🔗 Ver Book/Tabela completa</a></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="closeM('m-proj-detail');openEditProjeto(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button>
+      <button onclick="closeM('m-proj-detail');openAIProjeto(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 Usar IA</button>
+    </div>`;
+  openM('m-proj-detail');
+}
+
+function openAIProjeto(i){
+  aiProj=i;const p=projetos[i];
+  const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
+  document.getElementById('proj-ai-info').innerHTML=`
+    <div style="font-family:var(--d);font-size:16px;margin-bottom:6px">${p.name}</div>
+    <div style="font-size:11px;color:var(--txt3)">${st.l}${p.end?' · '+p.end:''}</div>
+    ${p.rentab?`<div style="font-size:11px;color:var(--green);margin-top:4px">📊 ${p.rentab}</div>`:''}`;
+  document.getElementById('proj-ai-q').value='resumo';
+  document.getElementById('proj-ai-cw').style.display='none';
+  openM('m-proj-ai');
+}
+
+function openClaudeProjeto(){
+  const p=projetos[aiProj];if(!p)return;
+  const qm={
+    resumo:'Crie um resumo executivo profissional deste empreendimento para apresentar a um cliente investidor. Destaque os principais atrativos, rentabilidade e diferenciais. Seja objetivo e convincente.',
+    whatsapp:'Crie uma mensagem de apresentação para WhatsApp sobre este empreendimento. Deve ser direta, atrativa e com CTA claro para agendar uma conversa. Máximo 5 parágrafos curtos.',
+    objecoes:'Liste as principais objeções que um cliente pode ter sobre este empreendimento e como respondê-las de forma convincente. Foque em preço, localização, rentabilidade e risco.',
+    investidor:'Faça uma análise detalhada do retorno sobre investimento neste empreendimento. Calcule rentabilidade estimada, payback, comparativo com renda fixa e valorização esperada.',
+    post:'Crie uma legenda engajante para post no Instagram sobre este empreendimento. Use emojis, seja informativo mas descontraído, inclua CTA e sugestões de hashtags.',
+    comparar:'Crie argumentos sólidos para mostrar por que investir neste empreendimento Vitacon é melhor do que comprar um imóvel tradicional para alugar.',
+    custom:document.getElementById('proj-ai-custom').value||'Analise este empreendimento e dê recomendações.',
+  };
+  const q=qm[document.getElementById('proj-ai-q').value];
+  const vmin=Number(p.vmin||0),vmax=Number(p.vmax||0);
+  const prompt=`Você é especialista em mercado imobiliário de alto padrão em São Paulo, com foco em studios para investimento. Aqui estão os dados completos do empreendimento:\n\n═══ EMPREENDIMENTO ═══\nNome: ${p.name}\nEndereço: ${p.end||'não informado'}\nStatus: ${(PROJ_STATUS[p.status]||PROJ_STATUS.pronto).l}\nEntrega: ${p.entrega||'não informado'}\nMetragem: ${p.metro||'não informado'}\nFaixa de valores: ${vmin?fk(vmin):''}${vmin&&vmax?' — ':''}${vmax?fk(vmax):''}\nComissão: ${p.comm?p.comm+'%':'não informado'}\nRentabilidade estimada: ${p.rentab||'não informado'}\nFluxo de pagamento: ${p.fluxo||'não informado'}\n\n═══ LOCALIZAÇÃO ═══\n${p.local||'não informado'}\n\n═══ DIFERENCIAIS ═══\n${p.dif||'não informado'}\n\n═══ NOTAS EXTRAS ═══\n${p.notas||'nenhuma'}\n\n═══ TAREFA ═══\n${q}\n\nResponda em português, de forma profissional e prática.`;
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  closeM('m-proj-ai');
+}
+
+// Include projetos in export/import
+function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
+function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
+function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
+function renderAll(){renderTasks();setView('list');renderHdr();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
 setTimeout(()=>{const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won');if(due.length)showNotif('📱',`Follow-up ${due[0].fu<t?'ATRASADO!':'hoje!'}`,due[0].name)},800);
 </script>
