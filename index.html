@@ -385,9 +385,14 @@ select.inp option{background:var(--s1)}
   <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com a busca configurada. Gratuito.</p>
 </div></div>
 
-<div class="overlay" id="m-cal"><div class="modal">
+<div class="overlay" id="m-cal" style="z-index:200"><div class="modal">
   <div class="modal-hdr"><span>🗓️ AGENDA</span><button class="modal-close" onclick="closeM('m-cal')">✕</button></div>
   <div id="cal-content"></div>
+</div></div>
+
+<div class="overlay" id="m-day" style="z-index:250"><div class="modal">
+  <div class="modal-hdr"><span id="day-modal-title">🗓️ DIA</span><button class="modal-close" onclick="closeM('m-day')">✕</button></div>
+  <div id="day-modal-content"></div>
 </div></div>
 
 <script>
@@ -529,7 +534,14 @@ function saveAppt(){const a={id:eiAppt===-1?Date.now():(appts[eiAppt]?.id||Date.
 function delAppt(){if(!confirm('Excluir compromisso?'))return;appts.splice(eiAppt,1);ls('appts',appts);closeM('m-appt');renderHdr();toast('🗑️ Removido!')}
 
 let calMon=0;
-function openCalFull(){calMon=0;renderCal();openM('m-cal')}
+function openCalFull(){
+  // Render calendar inside the modal
+  renderCal();
+  // Increase z-index of m-cal so m-detail can open on top of it
+  const calEl=document.getElementById('m-cal');
+  if(calEl)calEl.style.zIndex='200';
+  openM('m-cal');
+}
 function renderCal(){
   const el=document.getElementById('cal-content');if(!el)return;
   const now=new Date(),yr=now.getFullYear(),mn=now.getMonth()+calMon;
@@ -545,8 +557,7 @@ function renderCal(){
     <button onclick="calMon--;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">‹</button>
     <div class="cal-month">${MN[month]} ${year}</div>
     <button onclick="calMon++;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">›</button>
-  </div>
-  <div class="cal-grid">`;
+  </div><div class="cal-grid">`;
   ['D','S','T','Q','Q','S','S'].forEach(x=>h+=`<div class="cal-hdr">${x}</div>`);
   for(let i=0;i<first;i++)h+=`<div class="cal-day empty"></div>`;
   for(let dd=1;dd<=days;dd++){
@@ -557,18 +568,19 @@ function renderCal(){
   }
   h+='</div>';
 
-  // Show today's events immediately below calendar
+  // Today's events
   const todayEvs=[
     ...leads.filter(l=>l.fu===t&&l.stage!=='won').map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),
-    ...appts.filter(a=>a.date===t).map((a,_)=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))
-  ].sort((a,b)=>(a.sub||'').localeCompare(b.sub||''));
+    ...appts.filter(a=>a.date===t).map(a=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))
+  ];
 
   h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px">
     <div class="grp" style="margin:0">📅 HOJE — ${fd(t)}</div>
     <button onclick="openAddAppt()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Agendar</button>
   </div>`;
+
   if(todayEvs.length){
-    h+=todayEvs.map(ev=>`<div style="display:flex;align-items:center;gap:8px;padding:10px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:7px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':'rgba(59,130,246,.2)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-cal');openDetail(${ev.li})`}">
+    h+=todayEvs.map(ev=>`<div style="display:flex;align-items:center;gap:8px;padding:10px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:7px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':'rgba(59,130,246,.2)'};cursor:pointer" onclick="calDayOpen('${t}')">
       <div style="font-size:20px">${ev.type==='appt'?'📆':'🟡'}</div>
       <div style="flex:1"><div style="font-size:13px;font-weight:700">${ev.label}</div><div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div></div>
       <div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':'var(--yellow)'}">${ev.type==='appt'?'COMPROMISSO':'FOLLOW-UP'}</div>
@@ -576,8 +588,43 @@ function renderCal(){
   } else {
     h+=`<div style="font-size:12px;color:var(--txt3);padding:10px;background:var(--s2);border-radius:10px;text-align:center">Nenhum evento hoje 🎉</div>`;
   }
-
   el.innerHTML=h;
+}
+
+function calDayOpen(ds){
+  const t=td();
+  const fuL=leads.filter(l=>l.fu===ds&&l.stage!=='won');
+  const dayA=appts.filter(a=>a.date===ds);
+  const allEvs=[
+    ...fuL.map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),
+    ...dayA.map(a=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))
+  ];
+  const ov=ds<t,tod=ds===t;
+  const dayLabel=tod?`HOJE — ${fd(ds)}`:fd(ds);
+
+  // Build day modal content
+  let content=`<div style="font-size:11px;color:var(--txt3);margin-bottom:12px">${allEvs.length} evento${allEvs.length!==1?'s':''} · ${dayLabel}</div>`;
+  if(allEvs.length){
+    content+=allEvs.map(ev=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:8px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.25)':'rgba(59,130,246,.25)'};cursor:pointer"
+        onclick="${ev.type==='appt'?`closeM('m-day');openEditAppt(${ev.ai})`:`closeM('m-day');openDetail(${ev.li})`}">
+        <div style="font-size:22px">${ev.type==='appt'?'📆':'📅'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${ev.label}</div>
+          <div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div>
+        </div>
+        <div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':ov?'var(--red)':tod?'var(--yellow)':'var(--blue)'}">
+          ${ev.type==='appt'?'COMPROMISSO':ov?'ATRASADO':tod?'HOJE':'FOLLOW-UP'}
+        </div>
+      </div>`).join('');
+  } else {
+    content+=`<div style="font-size:12px;color:var(--txt3);padding:14px;background:var(--s2);border-radius:10px;text-align:center;margin-bottom:12px">Nenhum evento neste dia</div>`;
+  }
+  content+=`<button onclick="closeM('m-day');eiAppt=-1;document.getElementById('appt-title').textContent='📅 AGENDAR';document.getElementById('appt-del').style.display='none';document.getElementById('ap-title').value='';document.getElementById('ap-date').value='${ds}';document.getElementById('ap-time').value='';document.getElementById('ap-local').value='';document.getElementById('ap-notes').value='';openM('m-appt')" class="btn btn-ghost" style="width:100%;margin-top:4px">📅 Agendar neste dia</button>`;
+
+  document.getElementById('day-modal-title').textContent='🗓️ '+dayLabel;
+  document.getElementById('day-modal-content').innerHTML=content;
+  openM('m-day');
 }
 
 function calDayOpen(ds){
