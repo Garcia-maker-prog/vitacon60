@@ -15,8 +15,6 @@ html{height:100%;background:#05050d}
 body{min-height:100%;background:var(--bg);color:var(--txt);font-family:var(--f);display:flex;flex-direction:column;overflow-x:hidden;max-width:900px;margin:0 auto;box-shadow:0 0 80px rgba(0,0,0,.9)}
 @media(min-width:600px){
   .content .page{padding:20px 24px 40px}
-  .g2{grid-template-columns:1fr 1fr}
-  .leads-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .meta{grid-template-columns:repeat(4,1fr)}
   .hdr{padding:16px 24px 14px}
   .tabs .tab{font-size:10px;padding:10px 8px}
@@ -555,9 +553,7 @@ function renderCal(){
     const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
     const evs=evMap[ds]||[],isT=ds===t,isO=ds<t&&evs.some(e=>e.type==='fu');
     let cls='cal-day';if(isT)cls+=' today';if(evs.length&&!isO)cls+=' has-ev';if(isO)cls+=' overdue';
-    const clickable=evs.length||isT;
-    const oc=clickable?`onclick="calDayOpen('${ds}')" style="cursor:pointer"`:'';
-    h+=`<div class="${cls}" ${oc}><span>${dd}</span>${evs.length?`<div class="cal-dots">${evs.slice(0,3).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('')}</div>`:''}</div>`;
+    h+=`<div class="${cls}" onclick="calDayOpen('${ds}')" style="cursor:pointer"><span>${dd}</span>${evs.length?`<div class="cal-dots">${evs.slice(0,3).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('')}</div>`:''}</div>`;
   }
   h+='</div>';
 
@@ -588,41 +584,33 @@ function calDayOpen(ds){
   const t=td();
   const fuL=leads.filter(l=>l.fu===ds&&l.stage!=='won');
   const dayA=appts.filter(a=>a.date===ds);
-  const allEvs=[...fuL.map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),...dayA.map(a=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))];
-
-  if(!allEvs.length){
-    // No events — offer to schedule
-    if(confirm(`Nenhum evento em ${fd(ds)}.\n\nAgendar um compromisso neste dia?`)){
-      closeM('m-cal');
-      eiAppt=-1;
-      document.getElementById('appt-title').textContent='📅 AGENDAR';
-      document.getElementById('appt-del').style.display='none';
-      document.getElementById('ap-title').value='';
-      document.getElementById('ap-date').value=ds;
-      document.getElementById('ap-time').value='';
-      document.getElementById('ap-local').value='';
-      document.getElementById('ap-notes').value='';
-      openM('m-appt');
-    }
-    return;
-  }
-  if(allEvs.length===1){
-    // Single event — open directly
-    const ev=allEvs[0];
-    if(ev.type==='appt'){closeM('m-cal');openEditAppt(ev.ai)}
-    else{closeM('m-cal');openDetail(ev.li)}
-    return;
-  }
-  // Multiple events — show day detail modal
+  const allEvs=[
+    ...fuL.map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),
+    ...dayA.map(a=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))
+  ];
   const ov=ds<t,tod=ds===t;
-  const dayLabel=tod?'HOJE':ov?'ATRASADO':fd(ds);
-  let content=`<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">${fd(ds)} · ${allEvs.length} eventos</div>`;
-  content+=allEvs.map(ev=>`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:8px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':'rgba(59,130,246,.2)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-detail');closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-detail');closeM('m-cal');openDetail(${ev.li})`}">
-    <div style="font-size:22px">${ev.type==='appt'?'📆':'📅'}</div>
-    <div style="flex:1"><div style="font-size:13px;font-weight:700">${ev.label}</div><div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div></div>
-    <div style="font-size:10px">›</div>
-  </div>`).join('');
-  document.getElementById('detail-title').textContent='📅 '+dayLabel;
+  const dayLabel=tod?`HOJE — ${fd(ds)}`:fd(ds);
+
+  let content=`<div style="font-size:11px;color:var(--txt3);margin-bottom:12px">${allEvs.length} evento${allEvs.length!==1?'s':''} neste dia</div>`;
+
+  if(allEvs.length){
+    content+=allEvs.map(ev=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:8px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.25)':'rgba(59,130,246,.25)'};cursor:pointer"
+        onclick="closeM('m-detail');${ev.type==='appt'?`openEditAppt(${ev.ai})`:`openDetail(${ev.li})`}">
+        <div style="font-size:22px">${ev.type==='appt'?'📆':'📅'}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${ev.label}</div>
+          <div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div>
+        </div>
+        <div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':ov?'var(--red)':tod?'var(--yellow)':'var(--blue)'};white-space:nowrap">${ev.type==='appt'?'COMPROMISSO':ov?'ATRASADO':tod?'HOJE':'FOLLOW-UP'}</div>
+      </div>`).join('');
+  } else {
+    content+=`<div style="font-size:12px;color:var(--txt3);padding:14px;background:var(--s2);border-radius:10px;text-align:center;margin-bottom:12px">Nenhum evento neste dia</div>`;
+  }
+
+  content+=`<button onclick="closeM('m-detail');eiAppt=-1;document.getElementById('appt-title').textContent='📅 AGENDAR';document.getElementById('appt-del').style.display='none';document.getElementById('ap-title').value='';document.getElementById('ap-date').value='${ds}';document.getElementById('ap-time').value='';document.getElementById('ap-local').value='';document.getElementById('ap-notes').value='';openM('m-appt')" class="btn btn-ghost" style="width:100%;margin-top:4px">📅 Agendar neste dia</button>`;
+
+  document.getElementById('detail-title').textContent='🗓️ '+dayLabel;
   document.getElementById('detail-content').innerHTML=content;
   openM('m-detail');
 }
@@ -634,7 +622,7 @@ function openDetail(i){
   openM('m-detail');
 }
 
-function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=`<div class="leads-grid">${leads.map((l,i)=>lCard(l,i)).join('')}</div>`}
+function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=leads.map((l,i)=>lCard(l,i)).join('')}
 function lCard(l,i){
   const ss=SS[l.stage]||SS.cold,t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won',comm=gc(l),s=scr(l);
   return`<div class="lead-card"><div class="lead-top"><div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div><div class="lead-info"><div class="lead-name">${l.name}</div><div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}</div><div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div><div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}<div class="lead-btns">${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}<button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button><button class="btn-icon" onclick="openDetail(${i})">👁️</button><button class="btn-icon" onclick="openEditLead(${i})">✏️</button><button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button></div></div>`;
