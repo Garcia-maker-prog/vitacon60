@@ -531,7 +531,7 @@ function saveAppt(){const a={id:eiAppt===-1?Date.now():(appts[eiAppt]?.id||Date.
 function delAppt(){if(!confirm('Excluir compromisso?'))return;appts.splice(eiAppt,1);ls('appts',appts);closeM('m-appt');renderHdr();toast('🗑️ Removido!')}
 
 let calMon=0;
-function openCalFull(){renderCal();openM('m-cal')}
+function openCalFull(){calMon=0;renderCal();openM('m-cal')}
 function renderCal(){
   const el=document.getElementById('cal-content');if(!el)return;
   const now=new Date(),yr=now.getFullYear(),mn=now.getMonth()+calMon;
@@ -540,31 +540,91 @@ function renderCal(){
   const t=td();
   const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const evMap={};
-  leads.filter(l=>l.fu&&l.stage!=='won').forEach(l=>{if(!evMap[l.fu])evMap[l.fu]=[];evMap[l.fu].push({color:'var(--blue)',type:'fu',li:leads.indexOf(l)})});
-  appts.forEach((a,i)=>{if(!evMap[a.date])evMap[a.date]=[];evMap[a.date].push({color:'var(--green)',type:'appt',ai:i})});
-  let h=`<div class="cal-nav"><button onclick="calMon--;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">‹</button><div class="cal-month">${MN[month]} ${year}</div><button onclick="calMon++;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">›</button></div><div class="cal-grid">`;
+  leads.filter(l=>l.fu&&l.stage!=='won').forEach(l=>{if(!evMap[l.fu])evMap[l.fu]=[];evMap[l.fu].push({color:'var(--blue)',type:'fu',li:leads.indexOf(l),label:l.name,sub:l.product})});
+  appts.forEach((a,i)=>{if(!evMap[a.date])evMap[a.date]=[];evMap[a.date].push({color:'var(--green)',type:'appt',ai:i,label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:'')})});
+
+  let h=`<div class="cal-nav">
+    <button onclick="calMon--;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">‹</button>
+    <div class="cal-month">${MN[month]} ${year}</div>
+    <button onclick="calMon++;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">›</button>
+  </div>
+  <div class="cal-grid">`;
   ['D','S','T','Q','Q','S','S'].forEach(x=>h+=`<div class="cal-hdr">${x}</div>`);
   for(let i=0;i<first;i++)h+=`<div class="cal-day empty"></div>`;
   for(let dd=1;dd<=days;dd++){
     const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
     const evs=evMap[ds]||[],isT=ds===t,isO=ds<t&&evs.some(e=>e.type==='fu');
     let cls='cal-day';if(isT)cls+=' today';if(evs.length&&!isO)cls+=' has-ev';if(isO)cls+=' overdue';
-    const oc=evs.length?`onclick="calClick('${ds}')" style="cursor:pointer"`:'';
+    const clickable=evs.length||isT;
+    const oc=clickable?`onclick="calDayOpen('${ds}')" style="cursor:pointer"`:'';
     h+=`<div class="${cls}" ${oc}><span>${dd}</span>${evs.length?`<div class="cal-dots">${evs.slice(0,3).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('')}</div>`:''}</div>`;
   }
   h+='</div>';
-  const all=[...leads.filter(l=>l.fu&&l.stage!=='won').map(l=>({date:l.fu,time:'',label:l.name,sub:l.product,type:'fu',li:leads.indexOf(l)})),...appts.map((a,i)=>({date:a.date,time:a.time,label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),type:'appt',ai:i}))].sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
-  if(all.length){
-    h+=`<div class="grp" style="margin-top:16px">📋 TODOS OS EVENTOS</div>`;
-    h+=all.map(ev=>{const ov=ev.date<t,tod=ev.date===t;return`<div style="display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':ov?'rgba(239,68,68,.2)':tod?'rgba(255,107,43,.2)':'var(--br)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-cal');openDetail(${ev.li})`}"><div style="font-size:18px">${ev.type==='appt'?'📆':'📅'}</div><div style="flex:1"><div style="font-size:12px;font-weight:700">${ev.label}</div><div style="font-size:10px;color:var(--txt3)">${fd(ev.date)}${ev.time?' '+ev.time:''} ${ev.sub?'· '+ev.sub:''}</div></div><div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':ov?'var(--red)':tod?'var(--acc)':'var(--blue)'}">${ev.type==='appt'?'COMPROMISSO':ov?'ATRASADO':tod?'HOJE':'FOLLOW-UP'}</div></div>`}).join('');
+
+  // Show today's events immediately below calendar
+  const todayEvs=[
+    ...leads.filter(l=>l.fu===t&&l.stage!=='won').map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),
+    ...appts.filter(a=>a.date===t).map((a,_)=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))
+  ].sort((a,b)=>(a.sub||'').localeCompare(b.sub||''));
+
+  h+=`<div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px">
+    <div class="grp" style="margin:0">📅 HOJE — ${fd(t)}</div>
+    <button onclick="openAddAppt()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Agendar</button>
+  </div>`;
+  if(todayEvs.length){
+    h+=todayEvs.map(ev=>`<div style="display:flex;align-items:center;gap:8px;padding:10px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:7px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':'rgba(59,130,246,.2)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-cal');openDetail(${ev.li})`}">
+      <div style="font-size:20px">${ev.type==='appt'?'📆':'🟡'}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:700">${ev.label}</div><div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div></div>
+      <div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':'var(--yellow)'}">${ev.type==='appt'?'COMPROMISSO':'FOLLOW-UP'}</div>
+    </div>`).join('');
+  } else {
+    h+=`<div style="font-size:12px;color:var(--txt3);padding:10px;background:var(--s2);border-radius:10px;text-align:center">Nenhum evento hoje 🎉</div>`;
   }
+
   el.innerHTML=h;
 }
-function calClick(ds){
-  const t=td(),fuL=leads.filter(l=>l.fu===ds&&l.stage!=='won'),dayA=appts.filter(a=>a.date===ds);
-  if(fuL.length===1&&!dayA.length){openDetail(leads.indexOf(fuL[0]));return}
-  if(dayA.length===1&&!fuL.length){openEditAppt(appts.indexOf(dayA[0]));return}
-  toast([...fuL.map(l=>l.name),...dayA.map(a=>a.title)].join(' · '));
+
+function calDayOpen(ds){
+  const t=td();
+  const fuL=leads.filter(l=>l.fu===ds&&l.stage!=='won');
+  const dayA=appts.filter(a=>a.date===ds);
+  const allEvs=[...fuL.map(l=>({type:'fu',label:l.name,sub:l.product,li:leads.indexOf(l)})),...dayA.map(a=>({type:'appt',label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),ai:appts.indexOf(a)}))];
+
+  if(!allEvs.length){
+    // No events — offer to schedule
+    if(confirm(`Nenhum evento em ${fd(ds)}.\n\nAgendar um compromisso neste dia?`)){
+      closeM('m-cal');
+      eiAppt=-1;
+      document.getElementById('appt-title').textContent='📅 AGENDAR';
+      document.getElementById('appt-del').style.display='none';
+      document.getElementById('ap-title').value='';
+      document.getElementById('ap-date').value=ds;
+      document.getElementById('ap-time').value='';
+      document.getElementById('ap-local').value='';
+      document.getElementById('ap-notes').value='';
+      openM('m-appt');
+    }
+    return;
+  }
+  if(allEvs.length===1){
+    // Single event — open directly
+    const ev=allEvs[0];
+    if(ev.type==='appt'){closeM('m-cal');openEditAppt(ev.ai)}
+    else{closeM('m-cal');openDetail(ev.li)}
+    return;
+  }
+  // Multiple events — show day detail modal
+  const ov=ds<t,tod=ds===t;
+  const dayLabel=tod?'HOJE':ov?'ATRASADO':fd(ds);
+  let content=`<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">${fd(ds)} · ${allEvs.length} eventos</div>`;
+  content+=allEvs.map(ev=>`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:${ev.type==='appt'?'rgba(34,197,94,.08)':'rgba(59,130,246,.08)'};border-radius:10px;margin-bottom:8px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':'rgba(59,130,246,.2)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-detail');closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-detail');closeM('m-cal');openDetail(${ev.li})`}">
+    <div style="font-size:22px">${ev.type==='appt'?'📆':'📅'}</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:700">${ev.label}</div><div style="font-size:11px;color:var(--txt3)">${ev.sub||''}</div></div>
+    <div style="font-size:10px">›</div>
+  </div>`).join('');
+  document.getElementById('detail-title').textContent='📅 '+dayLabel;
+  document.getElementById('detail-content').innerHTML=content;
+  openM('m-detail');
 }
 
 function openDetail(i){
