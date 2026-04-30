@@ -3,170 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flávio Vitacon — Plano 60 Dias</title>
+<title>Vitacon 60</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Vitacon 60">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#090910;--s1:#101018;--s2:#181825;--s3:#1e1e2e;
-  --br:#2a2a3d;--br2:#353550;
-  --acc:#ff6b2b;--blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--purple:#a855f7;--red:#ef4444;
-  --wa:#25D366;--txt:#f1f1f8;--txt2:#a0a0c0;--txt3:#606080;
-  --font:'DM Sans',sans-serif;--disp:'Bebas Neue',sans-serif;
-}
-html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--font)}
-body{display:flex;flex-direction:column}
-
-/* ── LAYOUT ── */
-.app{display:flex;flex:1;overflow:hidden}
-.sidebar{width:200px;background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
-.sidebar-logo{padding:18px 14px 12px;border-bottom:1px solid var(--br)}
-.sidebar-logo .logo{font-family:var(--disp);font-size:17px;letter-spacing:2px;color:var(--acc)}
-.sidebar-logo .day{font-size:10px;color:var(--txt3);margin-top:4px}
-.sidebar-nav{padding:10px 8px;flex:1}
-.snav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:9px;border:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;background:transparent;color:var(--txt3);text-align:left;border-left:3px solid transparent;transition:all .15s}
-.snav-btn span{font-size:17px}
-.snav-btn.active{background:rgba(255,107,43,.12);color:var(--acc);border-left-color:var(--acc)}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-
-/* ── HEADER ── */
-.hdr{background:linear-gradient(135deg,#0d0d1e,#15102a);padding:14px 18px 12px;border-bottom:1px solid var(--br);flex-shrink:0}
+:root{--bg:#090910;--s1:#101018;--s2:#181825;--s3:#1e1e2e;--br:#2a2a3d;--br2:#353550;--acc:#ff6b2b;--blue:#3b82f6;--green:#22c55e;--yellow:#f59e0b;--purple:#a855f7;--red:#ef4444;--wa:#25D366;--txt:#f1f1f8;--txt2:#a0a0c0;--txt3:#606080;--f:'DM Sans',sans-serif;--d:'Bebas Neue',sans-serif}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--f)}
+body{display:flex;flex-direction:column;overflow-x:hidden}
+.hdr{background:linear-gradient(135deg,#0d0d1e,#15102a);padding:14px 16px 12px;border-bottom:1px solid var(--br);position:sticky;top:0;z-index:50}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.logo{font-family:var(--disp);font-size:17px;letter-spacing:2px;color:var(--acc)}
+.logo{font-family:var(--d);font-size:17px;letter-spacing:2px;color:var(--acc)}
 .day-badge{background:var(--acc);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 .prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .prog-bar{flex:1;height:6px;background:var(--br);border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--yellow));border-radius:3px;transition:width .5s}
 .prog-pct{font-size:11px;font-weight:700;color:var(--yellow);min-width:32px;text-align:right}
-.meta{display:grid;gap:4px}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
 .meta-cell{text-align:center}
-.meta-val{font-family:var(--disp);font-size:18px;letter-spacing:.5px}
+.meta-val{font-family:var(--d);font-size:18px}
 .meta-lbl{font-size:8px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
-
-/* ── MOBILE TABS ── */
-.tabs-mobile{display:none;background:var(--s1);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
-.tabs-mobile::-webkit-scrollbar{display:none}
-.tab-m{flex:1;min-width:50px;padding:9px 4px;text-align:center;font-size:8px;font-weight:700;color:var(--txt3);cursor:pointer;border:none;border-bottom:2px solid transparent;transition:all .2s;text-transform:uppercase;background:none;font-family:var(--font)}
-.tab-m span{display:block;font-size:15px;margin-bottom:2px}
-.tab-m.active{color:var(--txt);border-bottom-color:var(--acc)}
-
-/* ── CONTENT ── */
-.content{flex:1;overflow-y:auto}
-.page{display:none;padding:18px;padding-bottom:30px}
+.hdr-btns{display:flex;gap:6px;margin-top:8px}
+.hdr-btn{flex:1;padding:7px 4px;border-radius:8px;border:1px solid var(--br);background:var(--s2);color:var(--txt);font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:4px}
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--br);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:46px;padding:9px 2px;text-align:center;font-size:8px;font-weight:700;color:var(--txt3);cursor:pointer;border:none;border-bottom:2px solid transparent;background:none;font-family:var(--f);text-transform:uppercase}
+.tab span{display:block;font-size:14px;margin-bottom:2px}
+.tab.active{color:var(--txt);border-bottom-color:var(--acc)}
+.content{flex:1;overflow-y:auto;overflow-x:hidden}
+.page{display:none;padding:14px;padding-bottom:30px}
 .page.active{display:block}
-
-/* Desktop grid */
-.d-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.d-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-
-/* ── CARDS ── */
-.card{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:15px;margin-bottom:12px}
-.card-title{font-family:var(--disp);font-size:16px;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px}
+.card{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:14px;margin-bottom:12px}
+.card-title{font-family:var(--d);font-size:16px;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .grp{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin:14px 0 8px 2px}
-
-/* ── TASKS ── */
-.task{display:flex;align-items:flex-start;gap:10px;padding:11px;background:var(--s2);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:opacity .2s}
+.task{display:flex;align-items:flex-start;gap:10px;padding:11px;background:var(--s2);border-radius:10px;margin-bottom:7px}
 .task.done{opacity:.4}
 .task.done .task-txt{text-decoration:line-through;color:var(--txt3)}
-.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--br2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;transition:all .2s;margin-top:1px}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--br2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;margin-top:1px;cursor:pointer}
 .task.done .chk{background:var(--green);border-color:var(--green);color:#000}
-.task-body{flex:1}
+.task-body{flex:1;cursor:pointer}
 .task-txt{font-size:13px;line-height:1.4;margin-bottom:3px}
 .task-sub{font-size:11px;color:var(--txt2)}
 .task-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:5px;margin-top:4px;background:rgba(255,107,43,.12);color:var(--acc)}
-
-/* ── WEEK NAV ── */
 .week-nav{display:flex;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid var(--br);border-radius:10px;padding:9px 12px;margin-bottom:12px}
 .week-nav button{background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px}
-.week-lbl{font-family:var(--disp);font-size:13px;color:var(--yellow);letter-spacing:1px}
-
-/* ── LEAD CARD ── */
+.week-lbl{font-family:var(--d);font-size:13px;color:var(--yellow);letter-spacing:1px}
 .lead-card{background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:13px;margin-bottom:10px}
-.lead-top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
-.lead-av{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:18px;flex-shrink:0}
+.lead-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.lead-av{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-size:18px;flex-shrink:0}
 .lead-info{flex:1;min-width:0}
-.lead-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.lead-name{font-size:13px;font-weight:700;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lead-sub{font-size:11px;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lead-comm{font-size:11px;font-weight:700;color:var(--green);margin-top:3px}
 .stage-badge{font-size:9px;font-weight:700;padding:3px 7px;border-radius:7px;white-space:nowrap;flex-shrink:0}
+.lead-comm{font-size:11px;font-weight:700;color:var(--green);margin-top:3px}
 .fu-bar{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:8px;font-size:11px;margin-bottom:8px}
-.lead-btns{display:flex;gap:6px;flex-wrap:wrap}
-.btn-wa{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--wa);color:#fff;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;text-decoration:none;border:none;font-family:var(--font)}
-.btn-msg{display:flex;align-items:center;justify-content:center;gap:5px;background:var(--blue);color:#fff;padding:8px 11px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;border:none;font-family:var(--font)}
-.btn-icon{background:var(--s3);border:1px solid var(--br);color:var(--txt);padding:8px 10px;border-radius:9px;cursor:pointer;font-size:13px}
-
-/* ── INPUTS ── */
-.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:10px 12px;color:var(--txt);font-size:14px;outline:none;font-family:var(--font);transition:border .2s}
+.lead-btns{display:flex;gap:6px}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:4px;background:var(--wa);color:#fff;padding:8px 10px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;text-decoration:none;border:none;font-family:var(--f)}
+.btn-msg{display:flex;align-items:center;justify-content:center;gap:4px;background:var(--blue);color:#fff;padding:8px 10px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;flex:1;border:none;font-family:var(--f)}
+.btn-icon{background:var(--s3);border:1px solid var(--br);color:var(--txt);padding:8px 9px;border-radius:9px;cursor:pointer;font-size:13px;flex-shrink:0}
+.step-box{background:var(--s3);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:600;margin-bottom:8px}
+.inp{width:100%;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:10px 12px;color:var(--txt);font-size:14px;outline:none;font-family:var(--f);box-sizing:border-box}
 .inp:focus{border-color:var(--acc)}
 textarea.inp{resize:vertical;min-height:80px;line-height:1.5}
-select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23606080' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+select.inp{appearance:none}
 select.inp option{background:var(--s1)}
 .inp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:6px;display:block}
 .field{margin-bottom:12px}
-
-/* ── BUTTONS ── */
-.btn{border:none;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn{border:none;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f);display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn-primary{background:var(--acc);color:#fff;width:100%}
 .btn-ghost{background:var(--s2);color:var(--txt);border:1px solid var(--br);width:100%}
 .btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2);width:100%}
-.btn-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;border:1px dashed var(--br);background:transparent;color:var(--txt3);cursor:pointer;font-size:12px;font-family:var(--font);margin-top:4px}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.btn-add{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border-radius:9px;border:1px dashed var(--br);background:transparent;color:var(--txt3);cursor:pointer;font-size:12px;font-family:var(--f);margin-top:4px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .overlay.open{display:flex}
 .modal{background:var(--s1);border:1px solid var(--br);border-radius:18px 18px 0 0;padding:18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto}
-.modal-hdr{font-family:var(--disp);font-size:19px;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.modal-hdr{font-family:var(--d);font-size:19px;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .modal-close{background:var(--s2);border:1px solid var(--br);color:var(--txt3);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
-
-/* ── TEMPLATES ── */
-.tpl-item{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border .2s}
+.fu-today{background:rgba(255,107,43,.07);border:1px solid rgba(255,107,43,.2);border-radius:10px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.appt-today{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.kanban-wrap{overflow-x:auto;padding-bottom:8px}
+.kanban{display:flex;gap:10px;min-width:max-content}
+.kanban-col{width:200px;background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:10px;transition:all .2s}
+.kanban-col.drag-over{background:rgba(255,107,43,.1);border-color:var(--acc)}
+.kanban-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.k-card{background:var(--s1);border:1px solid var(--br);border-radius:9px;padding:10px;margin-bottom:7px;cursor:grab}
+.k-card.dragging{opacity:.4;cursor:grabbing}
+.k-name{font-size:12px;font-weight:700;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.k-prod{font-size:10px;color:var(--txt3);margin-bottom:4px}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-month{font-family:var(--d);font-size:16px;letter-spacing:1px;color:var(--yellow)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-hdr{text-align:center;font-size:9px;font-weight:700;color:var(--txt3);padding:4px 0;text-transform:uppercase}
+.cal-day{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;background:var(--s2);border:1px solid transparent;position:relative}
+.cal-day.today{border-color:var(--acc);color:var(--acc);font-weight:700}
+.cal-day.has-ev{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.3);cursor:pointer}
+.cal-day.overdue{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3);cursor:pointer}
+.cal-day.empty{background:transparent;border:none}
+.cal-dots{display:flex;gap:2px;margin-top:2px}
+.cal-dot{width:4px;height:4px;border-radius:50%}
+.vt{padding:5px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--br);color:var(--txt3);background:var(--s2);font-family:var(--f)}
+.vt.active{background:var(--acc);border-color:var(--acc);color:#fff}
+.tpl-item{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
 .tpl-item.sel{border-color:var(--acc);background:rgba(255,107,43,.06)}
 .tpl-name{font-size:10px;font-weight:700;color:var(--acc);text-transform:uppercase;margin-bottom:4px}
-.tpl-preview{font-size:12px;line-height:1.4;color:var(--txt2)}
-
-/* ── GAUGES ── */
+.tpl-prev{font-size:12px;line-height:1.4;color:var(--txt2)}
 .gauge-wrap{position:relative;width:160px;height:88px;overflow:hidden;margin:8px auto 4px}
 .gauge-wrap svg{width:160px;height:160px;margin-top:-72px}
 .gauge-center{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap}
-.gauge-val{font-family:var(--disp);font-size:22px;color:var(--green)}
-.gauge-lbl{font-size:9px;color:var(--txt3)}
-
+.gauge-val{font-family:var(--d);font-size:22px;color:var(--green)}
 .ring-card{background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:12px;text-align:center}
 .ring-wrap{position:relative;width:64px;height:64px;margin:0 auto 7px}
 .ring-wrap svg{transform:rotate(-90deg);width:64px;height:64px}
-.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--disp);font-size:15px}
-.ring-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase}
-.ring-sub{font-size:9px;color:var(--green);font-weight:700;margin-top:2px}
-
-/* ── WORKOUT ── */
+.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--d);font-size:15px}
 .workout-day{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:11px;margin-bottom:8px}
-.wd-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-.wd-name{font-family:var(--disp);font-size:13px;letter-spacing:1px;flex:1}
-.wd-type{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0}
-.wd-actions{display:flex;gap:4px}
+.wd-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.wd-name{font-family:var(--d);font-size:13px;letter-spacing:1px;flex:1}
+.wd-type{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px}
 .ex-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--br)}
 .ex-row:last-child{border:none}
 .ex-sets{color:var(--yellow);font-weight:700;font-size:11px}
-.ex-actions{display:flex;gap:4px}
-
-/* ── MEAL ── */
 .meal{background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:11px;margin-bottom:8px}
 .meal-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.meal-name{font-family:var(--disp);font-size:13px;letter-spacing:1px;flex:1}
+.meal-name{font-family:var(--d);font-size:13px;letter-spacing:1px;flex:1}
 .meal-kcal{font-size:9px;color:var(--yellow);font-weight:700}
 .meal-item{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .meal-item:last-child{border:none}
 .macro{color:var(--txt3);font-size:11px}
-
-/* ── MISC ── */
 .sec-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.sec-tab{padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--br);color:var(--txt3);background:var(--s2);font-family:var(--font);transition:all .15s}
+.sec-tab{padding:5px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--br);color:var(--txt3);background:var(--s2);font-family:var(--f)}
 .sec-tab.active{background:var(--acc);border-color:var(--acc);color:#fff}
 .macro-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px}
 .macro-cell{background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:9px;text-align:center}
@@ -176,1081 +142,529 @@ select.inp option{background:var(--s1)}
 .ci-txt{font-size:12px;line-height:1.4}
 .pipe-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--br)}
 .pipe-row:last-child{border:none}
-.fu-today{background:rgba(255,107,43,.07);border:1px solid rgba(255,107,43,.2);border-radius:10px;padding:11px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 .toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:18px;font-weight:700;font-size:12px;z-index:999;transition:bottom .3s;white-space:nowrap;pointer-events:none}
 .toast.show{bottom:24px}
 .notif{position:fixed;top:-100px;left:50%;transform:translateX(-50%);max-width:500px;width:calc(100% - 20px);background:#1a1a2e;border:1px solid var(--acc);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:top .4s cubic-bezier(.34,1.56,.64,1)}
 .notif.show{top:10px}
-
-/* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .tabs-mobile{display:flex}
-  .meta{grid-template-columns:repeat(4,1fr)}
-  .page{padding:14px;padding-bottom:80px}
-  .d-grid2{grid-template-columns:1fr}
-  .d-grid3{grid-template-columns:1fr}
-}
-@media(min-width:769px){
-  .meta{grid-template-columns:repeat(6,1fr)}
-  .tabs-mobile{display:none}
-}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 </style>
 </head>
 <body>
-
-<div class="notif" id="notif">
-  <div id="notif-icon" style="font-size:22px"></div>
-  <div style="flex:1"><div id="notif-title" style="font-size:12px;font-weight:700"></div><div id="notif-sub" style="font-size:10px;color:var(--txt3)"></div></div>
-  <button onclick="closeNotif()" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">✕</button>
-</div>
+<div class="notif" id="notif"><div id="ni" style="font-size:22px">📱</div><div style="flex:1"><div id="nt" style="font-size:12px;font-weight:700"></div><div id="ns" style="font-size:10px;color:var(--txt3)"></div></div><button onclick="closeNotif()" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">✕</button></div>
 <div class="toast" id="toast"></div>
-
-<!-- HEADER -->
 <div class="hdr">
-  <div class="hdr-top">
-    <div class="logo">⚡ PLANO 60 DIAS</div>
-    <div class="day-badge" id="dayBadge">DIA 1/60</div>
+  <div class="hdr-top"><div class="logo">⚡ VITACON 60</div><div class="day-badge" id="dayBadge">DIA 1/60</div></div>
+  <div class="prog-row"><div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div><div class="prog-pct" id="progPct">0%</div></div>
+  <div class="meta">
+    <div class="meta-cell"><div class="meta-val" id="mT" style="color:var(--acc)">0%</div><div class="meta-lbl">Tarefas</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mV" style="color:var(--green)">0/6</div><div class="meta-lbl">Vendas</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mS" style="color:var(--blue)">0</div><div class="meta-lbl">Seguidores</div></div>
+    <div class="meta-cell"><div class="meta-val" id="mC" style="color:var(--yellow)">R$0</div><div class="meta-lbl">Comissão</div></div>
   </div>
-  <div class="prog-row">
-    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-    <div class="prog-pct" id="progPct">0%</div>
-  </div>
-  <div class="meta" id="metaStrip">
-    <div class="meta-cell"><div class="meta-val" id="mTarefas" style="color:var(--acc)">0%</div><div class="meta-lbl">Tarefas</div></div>
-    <div class="meta-cell"><div class="meta-val" id="mVendas" style="color:var(--green)">0/6</div><div class="meta-lbl">Vendas</div></div>
-    <div class="meta-cell"><div class="meta-val" id="mSeguidores" style="color:var(--blue)">0</div><div class="meta-lbl">Seguidores</div></div>
-    <div class="meta-cell"><div class="meta-val" id="mComissao" style="color:var(--yellow)">R$0</div><div class="meta-lbl">Comissão</div></div>
-    <div class="meta-cell" id="mNegCell"><div class="meta-val" id="mNegociando" style="color:var(--purple)">R$0</div><div class="meta-lbl">Negociando</div></div>
-    <div class="meta-cell" id="mVGVCell"><div class="meta-val" id="mVGV" style="color:#f43f5e">R$0</div><div class="meta-lbl">VGV Total</div></div>
+  <div class="hdr-btns">
+    <button class="hdr-btn" onclick="openM('m-news')">📰 Notícias</button>
+    <button class="hdr-btn" onclick="openAddAppt()">📅 Agendar</button>
+    <button class="hdr-btn" onclick="openCalFull()">🗓️ Agenda</button>
+    <button class="hdr-btn" onclick="goTab('favs',document.querySelector('[data-id=favs]'))">🔗 Links</button>
   </div>
 </div>
-
-<!-- MOBILE TABS -->
-<div class="tabs-mobile">
-  <button class="tab-m active" onclick="showTab('hoje',this)"><span>🎯</span>Hoje</button>
-  <button class="tab-m" onclick="showTab('vendas',this)"><span>💰</span>Vendas</button>
-  <button class="tab-m" onclick="showTab('insta',this)"><span>📱</span>Insta</button>
-  <button class="tab-m" onclick="showTab('treino',this)"><span>💪</span>Treino</button>
-  <button class="tab-m" onclick="showTab('nutri',this)"><span>🥗</span>Nutri</button>
-  <button class="tab-m" onclick="showTab('config',this)"><span>⚙️</span>Config</button>
+<div class="tabs">
+  <button class="tab active" data-id="hoje" onclick="goTab('hoje',this)"><span>🎯</span>Hoje</button>
+  <button class="tab" data-id="vendas" onclick="goTab('vendas',this)"><span>💰</span>Vendas</button>
+  <button class="tab" data-id="insta" onclick="goTab('insta',this)"><span>📱</span>Insta</button>
+  <button class="tab" data-id="treino" onclick="goTab('treino',this)"><span>💪</span>Treino</button>
+  <button class="tab" data-id="nutri" onclick="goTab('nutri',this)"><span>🥗</span>Nutri</button>
+  <button class="tab" data-id="favs" onclick="goTab('favs',this)"><span>🔗</span>Links</button>
+  <button class="tab" data-id="config" onclick="goTab('config',this)"><span>⚙️</span>Config</button>
 </div>
-
-<!-- APP BODY -->
-<div class="app">
-  <!-- SIDEBAR (desktop) -->
-  <div class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo">⚡ VITACON</div>
-      <div class="day" id="sideDay">Dia 1 de 60</div>
-    </div>
-    <div class="sidebar-nav">
-      <button class="snav-btn active" onclick="showTab('hoje',this)"><span>🎯</span>Hoje</button>
-      <button class="snav-btn" onclick="showTab('vendas',this)"><span>💰</span>Vendas</button>
-      <button class="snav-btn" onclick="showTab('insta',this)"><span>📱</span>Instagram</button>
-      <button class="snav-btn" onclick="showTab('treino',this)"><span>💪</span>Treino</button>
-      <button class="snav-btn" onclick="showTab('nutri',this)"><span>🥗</span>Nutrição</button>
-      <button class="snav-btn" onclick="showTab('config',this)"><span>⚙️</span>Config</button>
+<div class="content">
+<!-- HOJE -->
+<div class="page active" id="page-hoje">
+  <div id="appts-hoje"></div>
+  <div id="fu-hoje"></div>
+  <div class="week-nav"><button onclick="chgW(-1)">‹</button><div class="week-lbl" id="weekLbl">SEMANA 1</div><button onclick="chgW(1)">›</button></div>
+  <div class="grp">💰 VENDAS & LEADS</div><div id="t-vendas"></div>
+  <div class="grp">📱 INSTAGRAM</div><div id="t-insta"></div>
+  <div class="grp">💪 TREINO</div><div id="t-treino"></div>
+  <div class="grp">🥗 ALIMENTAÇÃO</div><div id="t-nutri"></div>
+</div>
+<!-- VENDAS -->
+<div class="page" id="page-vendas">
+  <div class="card">
+    <div class="card-title">💰 COMISSÕES</div>
+    <div class="gauge-wrap"><svg viewBox="0 0 160 160"><path d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--br2)" stroke-width="14" stroke-linecap="round"/><path id="gaugeArc" d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--green)" stroke-width="14" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .8s"/></svg><div class="gauge-center"><div class="gauge-val" id="gaugeVal">R$0</div><div style="font-size:9px;color:var(--txt3)">meta: <span id="gaugeMeta">R$70k</span></div></div></div>
+    <div class="g2" style="gap:8px;margin-top:10px">
+      <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:var(--green)" id="stV">0</div><div class="meta-lbl">VENDAS</div></div>
+      <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:var(--acc)" id="stF">6</div><div class="meta-lbl">FALTAM</div></div>
     </div>
   </div>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="content">
-
-      <!-- HOJE -->
-      <div class="page active" id="page-hoje">
-        <div id="fu-hoje"></div>
-        <div class="week-nav">
-          <button onclick="changeWeek(-1)">‹</button>
-          <div class="week-lbl" id="weekLbl">SEMANA 1</div>
-          <button onclick="changeWeek(1)">›</button>
-        </div>
-        <div class="d-grid2">
-          <div>
-            <div class="grp">💰 VENDAS & LEADS</div><div id="t-vendas"></div>
-            <div class="grp">📱 INSTAGRAM</div><div id="t-insta"></div>
-          </div>
-          <div>
-            <div class="grp">💪 TREINO</div><div id="t-treino"></div>
-            <div class="grp">🥗 ALIMENTAÇÃO</div><div id="t-nutri"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VENDAS -->
-      <div class="page" id="page-vendas">
-        <div class="d-grid2">
-          <div class="card">
-            <div class="card-title">💰 COMISSÕES</div>
-            <div class="gauge-wrap">
-              <svg viewBox="0 0 160 160">
-                <path d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--br2)" stroke-width="14" stroke-linecap="round"/>
-                <path id="gaugeArc" d="M20,140 A70,70 0 1,1 140,140" fill="none" stroke="var(--green)" stroke-width="14" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset .8s"/>
-              </svg>
-              <div class="gauge-center"><div class="gauge-val" id="gaugeVal">R$0</div><div class="gauge-lbl">meta: <span id="gaugeMeta">R$70k</span></div></div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
-              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--green)" id="statVendas">0</div><div class="meta-lbl">VENDAS</div></div>
-              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--yellow)" id="statPct">0%</div><div class="meta-lbl">DA META</div></div>
-              <div style="background:var(--s2);border-radius:9px;padding:9px;text-align:center"><div style="font-family:var(--disp);font-size:22px;color:var(--acc)" id="statFaltam">6</div><div class="meta-lbl">FALTAM</div></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">📊 PIPELINE VGV</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-              <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center">
-                <div style="font-family:var(--disp);font-size:18px;color:var(--purple)" id="pipeVGV">R$0</div>
-                <div class="meta-lbl">EM NEGOCIAÇÃO</div>
-                <div style="font-size:10px;color:var(--txt3);margin-top:3px" id="pipePotencial"></div>
-              </div>
-              <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center">
-                <div style="font-family:var(--disp);font-size:18px;color:var(--green)" id="pipeComm">R$0</div>
-                <div class="meta-lbl">COMISSÕES</div>
-              </div>
-            </div>
-            <div id="won-list"></div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div class="grp" style="margin:0">🔥 LEADS</div>
-          <button onclick="openAddLead()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Novo Lead</button>
-        </div>
-        <div id="leads-list" class="d-grid2"></div>
-        <div class="grp">✅ TAREFAS DE VENDAS</div>
-        <div id="all-vendas"></div>
-      </div>
-
-      <!-- INSTA -->
-      <div class="page" id="page-insta">
-        <div class="d-grid2">
-          <div class="card">
-            <div class="card-title">📱 @<span id="igHandle">flavio.vitacon</span></div>
-            <div id="ig-metrics"></div>
-          </div>
-          <div>
-            <div class="card">
-              <div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">AUTORIDADE (40%)</div>
-              <div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Por que SP é a melhor cidade para investir em imóveis compactos?</div></div>
-              <div class="ci"><div class="ci-tag">📊 CARROSSEL</div><div class="ci-txt">Alugar vs Comprar em 2025 — os números reais</div></div>
-              <div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Quanto rende um studio Vitacon alugado no Airbnb?</div></div>
-            </div>
-            <div class="card">
-              <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">LIFESTYLE (35%)</div>
-              <div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">🎬 REEL</div><div class="ci-txt">Um dia na vida de um corretor de alto padrão em SP</div></div>
-              <div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">📸 FOTO</div><div class="ci-txt">Visita a obra + look profissional no canteiro Vitacon</div></div>
-            </div>
-            <div class="card">
-              <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">ENGAJAMENTO (25%)</div>
-              <div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">📊 ENQUETE</div><div class="ci-txt">Studio vs 2 quartos — você prefere morar sozinho?</div></div>
-              <div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">💬 STORIES</div><div class="ci-txt">Quiz: Quanto vale esse imóvel?</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TREINO -->
-      <div class="page" id="page-treino">
-        <div class="d-grid2" style="margin-bottom:12px">
-          <div class="ring-card">
-            <div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rTreino" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rTreinoVal" style="color:var(--acc)">0</div></div>
-            <div class="ring-lbl">Treinos</div><div class="ring-sub">meta: 34</div>
-          </div>
-          <div class="ring-card">
-            <div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rCorrida" fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rCorridaVal" style="color:var(--blue)">0</div></div>
-            <div class="ring-lbl">Corridas</div><div class="ring-sub">meta: 16</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div class="grp" style="margin:0">📋 DIVISÃO SEMANAL</div>
-          <button onclick="openAddWorkout()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Dia</button>
-        </div>
-        <div id="workout-list"></div>
-      </div>
-
-      <!-- NUTRI -->
-      <div class="page" id="page-nutri">
-        <div class="macro-bar">
-          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--acc)" id="nutriKcal">2800</div><div class="meta-lbl">kcal/dia</div></div>
-          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--blue)" id="nutriProt">180g</div><div class="meta-lbl">proteína</div></div>
-          <div class="macro-cell"><div style="font-family:var(--disp);font-size:19px;color:var(--green)" id="nutriCarbs">300g</div><div class="meta-lbl">carbs</div></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div class="grp" style="margin:0">🍽️ REFEIÇÕES</div>
-          <button onclick="openAddMeal()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">+ Refeição</button>
-        </div>
-        <div id="meal-list"></div>
-      </div>
-
-      <!-- CONFIG -->
-      <div class="page" id="page-config">
-        <div class="d-grid2">
-          <div>
-            <div class="card">
-              <div class="card-title">🎯 METAS</div>
-              <div class="field"><label class="inp-lbl">Meta comissão (R$)</label><input class="inp" type="number" id="cfgMetaComm" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Meta vendas (unidades)</label><input class="inp" type="number" id="cfgMetaVendas" oninput="saveCfg()"></div>
-            </div>
-            <div class="card">
-              <div class="card-title">📱 INSTAGRAM</div>
-              <div class="field"><label class="inp-lbl">Handle (@)</label><input class="inp" type="text" id="cfgHandle" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Meta seguidores</label><input class="inp" type="number" id="cfgMetaFollowers" oninput="saveCfg()"></div>
-              <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:10px 0 8px">Progresso atual</div>
-              <div class="field"><label class="inp-lbl">Seguidores</label><input class="inp" type="number" id="cfgFollowers" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Reels publicados</label><input class="inp" type="number" id="cfgReels" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Posts no feed</label><input class="inp" type="number" id="cfgPosts" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Leads via Insta</label><input class="inp" type="number" id="cfgIgLeads" oninput="saveCfg()"></div>
-            </div>
-            <div class="card">
-              <div class="card-title">💪 PROGRESSO FÍSICO</div>
-              <div class="field"><label class="inp-lbl">Treinos feitos</label><input class="inp" type="number" id="cfgTreinos" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Corridas feitas</label><input class="inp" type="number" id="cfgCorridas" oninput="saveCfg()"></div>
-              <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:10px 0 8px">Metas nutricionais</div>
-              <div class="field"><label class="inp-lbl">Calorias/dia</label><input class="inp" type="number" id="cfgKcal" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Proteína/dia (g)</label><input class="inp" type="number" id="cfgProt" oninput="saveCfg()"></div>
-              <div class="field"><label class="inp-lbl">Carbs/dia (g)</label><input class="inp" type="number" id="cfgCarbs" oninput="saveCfg()"></div>
-            </div>
-          </div>
-          <div>
-            <div class="card">
-              <div class="card-title">✏️ MENSAGENS PRONTAS</div>
-              <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Use [NOME], [PRODUTO] e [DATA] como variáveis.</p>
-              <div id="tpl-editor"></div>
-              <button class="btn-add" onclick="addTemplate()">+ Adicionar mensagem</button>
-            </div>
-            <div class="card">
-              <div class="card-title">✅ TAREFAS</div>
-              <div class="sec-tabs" id="week-tabs"></div>
-              <div class="sec-tabs" id="sec-tabs">
-                <button class="sec-tab active" onclick="selectSec('vendas',this)">💰 Vendas</button>
-                <button class="sec-tab" onclick="selectSec('insta',this)">📱 Insta</button>
-                <button class="sec-tab" onclick="selectSec('treino',this)">💪 Treino</button>
-                <button class="sec-tab" onclick="selectSec('nutri',this)">🥗 Nutri</button>
-              </div>
-              <div id="task-editor"></div>
-              <button class="btn-add" onclick="addTask()">+ Adicionar tarefa</button>
-            </div>
-            <div class="card" style="margin-bottom:30px">
-              <div class="card-title">📦 BACKUP</div>
-              <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Para sincronizar entre dispositivos: exporte no device A, envie o arquivo e importe no device B.</p>
-              <button class="btn btn-ghost" onclick="exportData()" style="margin-bottom:8px">📦 Exportar (.json)</button>
-              <label class="btn btn-ghost" style="cursor:pointer;margin-bottom:12px">📥 Importar<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
-              <button class="btn btn-danger" onclick="if(confirm('Zerar progresso das tarefas?'))resetDone()">🗑️ Reiniciar Progresso</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- end content -->
-  </div><!-- end main -->
-</div><!-- end app -->
-
-<!-- MODAL LEAD -->
-<div class="overlay" id="modal-lead">
-  <div class="modal">
-    <div class="modal-hdr"><span id="lead-modal-title">➕ NOVO LEAD</span><button class="modal-close" onclick="closeModal('modal-lead')">✕</button></div>
-    <div class="field"><label class="inp-lbl">Nome / Identificação</label><input class="inp" id="lf-name" placeholder="Ex: João Silva — Investidor"></div>
-    <div class="field"><label class="inp-lbl">Produto de Interesse</label><input class="inp" id="lf-product" placeholder="Ex: Vitacon Studio 32m²"></div>
-    <div class="field"><label class="inp-lbl">💰 Valor Negociado (R$)</label><input class="inp" type="number" id="lf-valor" placeholder="Ex: 450000" oninput="updateCommSug()"></div>
-    <div class="field">
-      <label class="inp-lbl">💵 Comissão (%)</label>
-      <input class="inp" type="number" step="0.1" id="lf-commPct" placeholder="Ex: 1.8" oninput="updateCommSug()">
-      <div id="comm-sug" style="font-size:11px;color:var(--green);margin-top:4px;min-height:16px"></div>
+  <div class="card">
+    <div class="card-title">📊 PIPELINE VGV</div>
+    <div class="g2" style="gap:8px;margin-bottom:12px">
+      <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:18px;color:var(--purple)" id="pipeVGV">R$0</div><div class="meta-lbl">EM NEGOCIAÇÃO</div><div style="font-size:10px;color:var(--txt3);margin-top:3px" id="pipePot"></div></div>
+      <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:18px;color:var(--green)" id="pipeComm">R$0</div><div class="meta-lbl">COMISSÕES</div></div>
     </div>
-    <div class="field"><label class="inp-lbl">Status Atual</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
-    <div class="field"><label class="inp-lbl">📱 WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-whatsapp" placeholder="11999998888"></div>
-    <div class="field"><label class="inp-lbl">Temperatura</label>
-      <select class="inp" id="lf-stage">
-        <option value="hot">🔥 Quente — muito interessado</option>
-        <option value="warm">🌡️ Morno — demonstrou interesse</option>
-        <option value="cold">❄️ Frio — contato esfriou</option>
-        <option value="won">✅ Fechado — VENDA REALIZADA</option>
-      </select>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      <div><label class="inp-lbl">Avatar/Emoji</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div>
-      <div><label class="inp-lbl">📅 Follow-up</label><input class="inp" type="date" id="lf-followup"></div>
-    </div>
-    <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-history" placeholder="Cole conversas, objeções, interesses..."></textarea></div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-lead')" style="flex:1">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button>
-    </div>
-    <button class="btn btn-danger" id="lead-del-btn" onclick="deleteLead()" style="display:none">🗑️ Excluir Lead</button>
+    <div id="won-list"></div>
   </div>
-</div>
-
-<!-- MODAL MENSAGEM -->
-<div class="overlay" id="modal-msg">
-  <div class="modal">
-    <div class="modal-hdr"><span>💬 MENSAGEM</span><button class="modal-close" onclick="closeModal('modal-msg')">✕</button></div>
-    <div style="font-size:11px;color:var(--txt3);margin-bottom:12px" id="msg-lead-info"></div>
-    <div class="grp">ESCOLHA UM MODELO</div>
-    <div id="tpl-list"></div>
-    <div id="msg-preview-wrap" style="display:none">
-      <div class="grp">EDITE ANTES DE ENVIAR</div>
-      <textarea class="inp" id="msg-preview" style="min-height:120px;margin-bottom:12px"></textarea>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost" onclick="closeModal('modal-msg')" style="flex:1">Fechar</button>
-        <button class="btn" id="msg-wa-btn" style="flex:1;background:var(--wa);color:#fff">📲 WhatsApp</button>
-      </div>
-    </div>
-    <div style="margin-top:12px">
-      <label class="inp-lbl">📅 Agendar Follow-up</label>
-      <input class="inp" type="date" id="msg-fu-date" style="margin-bottom:8px">
-      <button class="btn" onclick="saveMsgFu()" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);width:100%">📅 Salvar Follow-up</button>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div class="grp" style="margin:0">🔥 LEADS</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div style="display:flex;gap:5px"><button class="vt active" id="vt-list" onclick="setView('list')">☰</button><button class="vt" id="vt-kanban" onclick="setView('kanban')">⬛</button><button class="vt" id="vt-cal" onclick="setView('cal')">📅</button></div>
+      <button onclick="openAddLead()" style="background:var(--acc);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo</button>
     </div>
   </div>
+  <div id="leads-list"></div>
+  <div id="leads-kanban" style="display:none"></div>
+  <div id="leads-cal" style="display:none"></div>
+  <div class="grp">✅ TAREFAS DE VENDAS</div><div id="all-vendas"></div>
+</div>
+<!-- INSTA -->
+<div class="page" id="page-insta">
+  <div class="card"><div class="card-title">📱 @<span id="igHandle">flavio.vitacon</span></div><div id="ig-metrics"></div></div>
+  <div class="grp">🎯 PILARES DE CONTEÚDO</div>
+  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">AUTORIDADE (40%)</div><div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Por que SP é a melhor cidade para investir em imóveis compactos?</div></div><div class="ci"><div class="ci-tag">📊 CARROSSEL</div><div class="ci-txt">Alugar vs Comprar em 2025 — os números reais</div></div><div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Quanto rende um studio Vitacon alugado no Airbnb?</div></div></div>
+  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">LIFESTYLE (35%)</div><div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">🎬 REEL</div><div class="ci-txt">Um dia na vida de um corretor de alto padrão em SP</div></div><div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">📸 FOTO</div><div class="ci-txt">Visita a obra + look profissional no canteiro Vitacon</div></div></div>
+  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">ENGAJAMENTO (25%)</div><div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">📊 ENQUETE</div><div class="ci-txt">Studio vs 2 quartos — você prefere morar sozinho?</div></div><div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">💬 STORIES</div><div class="ci-txt">Quiz: Quanto vale esse imóvel?</div></div></div>
+</div>
+<!-- TREINO -->
+<div class="page" id="page-treino">
+  <div class="g2" style="margin-bottom:12px">
+    <div class="ring-card"><div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rT" fill="none" stroke="var(--acc)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rTv" style="color:var(--acc)">0</div></div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Treinos</div><div style="font-size:9px;color:var(--green);font-weight:700;margin-top:2px">meta: 34</div></div>
+    <div class="ring-card"><div class="ring-wrap"><svg viewBox="0 0 64 64"><circle fill="none" stroke="var(--br2)" stroke-width="5" cx="32" cy="32" r="26"/><circle id="rC" fill="none" stroke="var(--blue)" stroke-width="5" stroke-linecap="round" cx="32" cy="32" r="26" stroke-dasharray="163.4" stroke-dashoffset="163.4" style="transition:stroke-dashoffset .6s"/></svg><div class="ring-center" id="rCv" style="color:var(--blue)">0</div></div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Corridas</div><div style="font-size:9px;color:var(--green);font-weight:700;margin-top:2px">meta: 16</div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="grp" style="margin:0">📋 DIVISÃO SEMANAL</div><button onclick="openAddWO()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Dia</button></div>
+  <div id="workout-list"></div>
+</div>
+<!-- NUTRI -->
+<div class="page" id="page-nutri">
+  <div class="macro-bar"><div class="macro-cell"><div style="font-family:var(--d);font-size:19px;color:var(--acc)" id="nKcal">2800</div><div class="meta-lbl">kcal/dia</div></div><div class="macro-cell"><div style="font-family:var(--d);font-size:19px;color:var(--blue)" id="nProt">180g</div><div class="meta-lbl">proteína</div></div><div class="macro-cell"><div style="font-family:var(--d);font-size:19px;color:var(--green)" id="nCarbs">300g</div><div class="meta-lbl">carbs</div></div></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="grp" style="margin:0">🍽️ REFEIÇÕES</div><button onclick="openAddMeal()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Refeição</button></div>
+  <div id="meal-list"></div>
+</div>
+<!-- LINKS -->
+<div class="page" id="page-favs">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="grp" style="margin:0">🔗 LINKS FAVORITOS</div><button onclick="openAddFav()" style="background:var(--acc);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Adicionar</button></div>
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Toque para abrir · ✏️ para editar</p>
+  <div id="favs-list"></div>
+</div>
+<!-- CONFIG -->
+<div class="page" id="page-config">
+  <div class="card"><div class="card-title">🎯 METAS</div><div class="field"><label class="inp-lbl">Meta comissão (R$)</label><input class="inp" type="number" id="cMetaComm" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta vendas (unidades)</label><input class="inp" type="number" id="cMetaV" oninput="saveCfg()"></div></div>
+  <div class="card"><div class="card-title">📱 INSTAGRAM</div><div class="field"><label class="inp-lbl">Handle (@)</label><input class="inp" type="text" id="cHandle" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Seguidores atuais</label><input class="inp" type="number" id="cFollowers" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Reels publicados</label><input class="inp" type="number" id="cReels" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Posts no feed</label><input class="inp" type="number" id="cPosts" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Leads via Instagram</label><input class="inp" type="number" id="cIgLeads" oninput="saveCfg()"></div></div>
+  <div class="card"><div class="card-title">💪 FÍSICO & NUTRIÇÃO</div><div class="field"><label class="inp-lbl">Treinos feitos</label><input class="inp" type="number" id="cTreinos" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Corridas feitas</label><input class="inp" type="number" id="cCorridas" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta kcal/dia</label><input class="inp" type="number" id="cKcal" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta proteína/dia (g)</label><input class="inp" type="number" id="cProt" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta carbs/dia (g)</label><input class="inp" type="number" id="cCarbs" oninput="saveCfg()"></div></div>
+  <div class="card"><div class="card-title">✏️ MENSAGENS PRONTAS</div><div id="tpl-editor"></div><button class="btn-add" onclick="addTpl()">+ Adicionar mensagem</button></div>
+  <div class="card">
+    <div class="card-title">✅ TAREFAS DIÁRIAS</div>
+    <div class="sec-tabs" id="week-tabs"></div>
+    <div class="sec-tabs" id="sec-tabs-cfg"><button class="sec-tab active" onclick="selSec('vendas',this)">💰 Vendas</button><button class="sec-tab" onclick="selSec('insta',this)">📱 Insta</button><button class="sec-tab" onclick="selSec('treino',this)">💪 Treino</button><button class="sec-tab" onclick="selSec('nutri',this)">🥗 Nutri</button></div>
+    <div id="task-editor"></div>
+    <button class="btn-add" onclick="addTaskCfg()">+ Adicionar tarefa</button>
+  </div>
+  <div class="card" style="margin-bottom:20px"><div class="card-title">📦 BACKUP</div><p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Exporte no iPhone, envie por WhatsApp/email e importe no desktop para sincronizar.</p><button class="btn btn-ghost" onclick="doExport()" style="margin-bottom:8px">📦 Exportar (.json)</button><label class="btn btn-ghost" style="cursor:pointer;margin-bottom:12px">📥 Importar<input type="file" accept=".json" onchange="doImport(event)" style="display:none"></label><button class="btn btn-danger" onclick="if(confirm('Zerar progresso?'))resetDone()">🗑️ Reiniciar Progresso</button></div>
+</div>
 </div>
 
-<!-- MODAL HISTÓRICO -->
-<div class="overlay" id="modal-hist">
-  <div class="modal">
-    <div class="modal-hdr"><span id="hist-title">📋 HISTÓRICO</span><button class="modal-close" onclick="closeModal('modal-hist')">✕</button></div>
-    <div id="hist-content"></div>
-    <button class="btn btn-primary" onclick="closeModal('modal-hist')">Fechar</button>
-  </div>
-</div>
+<!-- MODAIS -->
+<div class="overlay" id="m-lead"><div class="modal">
+  <div class="modal-hdr"><span id="lead-title">➕ NOVO LEAD</span><button class="modal-close" onclick="closeM('m-lead')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Nome</label><input class="inp" id="lf-name" placeholder="Ex: João Silva — Investidor"></div>
+  <div class="field"><label class="inp-lbl">Produto</label><input class="inp" id="lf-product" placeholder="Ex: Vitacon Studio 32m²"></div>
+  <div class="field"><label class="inp-lbl">Valor (R$)</label><input class="inp" type="number" id="lf-valor" placeholder="450000" oninput="updComm()"></div>
+  <div class="field"><label class="inp-lbl">Comissão (%)</label><input class="inp" type="number" step="0.1" id="lf-pct" placeholder="1.8" oninput="updComm()"><div id="comm-hint" style="font-size:11px;color:var(--green);margin-top:4px;min-height:16px"></div></div>
+  <div class="field"><label class="inp-lbl">Status</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
+  <div class="field"><label class="inp-lbl">WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-wa" placeholder="11999998888"></div>
+  <div class="field"><label class="inp-lbl">Temperatura</label><select class="inp" id="lf-stage"><option value="hot">🔥 Quente</option><option value="warm">🌡️ Morno</option><option value="cold">❄️ Frio</option><option value="won">✅ Fechado — VENDA REALIZADA</option></select></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl">📅 Follow-up</label><input class="inp" type="date" id="lf-fu"></div></div>
+  <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-hist" placeholder="Cole conversas, objeções, interesses..."></textarea></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
+  <button class="btn btn-danger" id="lead-del" onclick="delLead()" style="display:none">🗑️ Excluir Lead</button>
+</div></div>
 
-<!-- MODAL WORKOUT DAY -->
-<div class="overlay" id="modal-workout">
-  <div class="modal">
-    <div class="modal-hdr"><span id="workout-modal-title">💪 DIA DE TREINO</span><button class="modal-close" onclick="closeModal('modal-workout')">✕</button></div>
-    <div class="field"><label class="inp-lbl">Nome do dia</label><input class="inp" id="wd-name" placeholder="Ex: SEGUNDA — FULL BODY A"></div>
-    <div class="field"><label class="inp-lbl">Tipo</label>
-      <select class="inp" id="wd-type">
-        <option value="MUSCULAÇÃO">💪 Musculação</option>
-        <option value="CARDIO">🏃 Cardio</option>
-        <option value="DESCANSO">😴 Descanso</option>
-      </select>
-    </div>
-    <div class="grp">EXERCÍCIOS</div>
-    <div id="wd-exercises"></div>
-    <button class="btn-add" onclick="addExercise()">+ Adicionar exercício</button>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-workout')" style="flex:1">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveWorkout()" style="flex:1">💾 Salvar</button>
-    </div>
-    <button class="btn btn-danger" id="workout-del-btn" onclick="deleteWorkout()" style="display:none;margin-top:8px">🗑️ Excluir Dia</button>
+<div class="overlay" id="m-msg"><div class="modal">
+  <div class="modal-hdr"><span>💬 MENSAGEM</span><button class="modal-close" onclick="closeM('m-msg')">✕</button></div>
+  <div style="font-size:11px;color:var(--txt3);margin-bottom:12px" id="msg-info"></div>
+  <div class="grp">ESCOLHA UM MODELO</div><div id="tpl-list"></div>
+  <div id="msg-prev-wrap" style="display:none">
+    <div class="grp">EDITE ANTES DE ENVIAR</div>
+    <textarea class="inp" id="msg-prev" style="min-height:120px;margin-bottom:12px"></textarea>
+    <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="closeM('m-msg')" style="flex:1">Fechar</button><button class="btn" id="msg-wa-btn" style="flex:1;background:var(--wa);color:#fff">📲 WhatsApp</button></div>
   </div>
-</div>
+  <div style="margin-top:12px"><label class="inp-lbl">📅 Agendar Follow-up</label><input class="inp" type="date" id="msg-fu" style="margin-bottom:8px"><button class="btn" onclick="saveMsgFu()" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);width:100%">📅 Salvar Follow-up</button></div>
+</div></div>
 
-<!-- MODAL MEAL -->
-<div class="overlay" id="modal-meal">
-  <div class="modal">
-    <div class="modal-hdr"><span id="meal-modal-title">🍽️ REFEIÇÃO</span><button class="modal-close" onclick="closeModal('modal-meal')">✕</button></div>
-    <div class="field"><label class="inp-lbl">Nome da refeição</label><input class="inp" id="ml-name" placeholder="Ex: ALMOÇO"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-      <div><label class="inp-lbl">Ícone (emoji)</label><input class="inp" id="ml-icon" placeholder="🍗" maxlength="4"></div>
-      <div><label class="inp-lbl">Kcal estimadas</label><input class="inp" id="ml-kcal" placeholder="Ex: ~780 kcal"></div>
-    </div>
-    <div class="grp">ITENS</div>
-    <div id="ml-items"></div>
-    <button class="btn-add" onclick="addMealItem()">+ Adicionar item</button>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-ghost" onclick="closeModal('modal-meal')" style="flex:1">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveMeal()" style="flex:1">💾 Salvar</button>
-    </div>
-    <button class="btn btn-danger" id="meal-del-btn" onclick="deleteMeal()" style="display:none;margin-top:8px">🗑️ Excluir Refeição</button>
+<div class="overlay" id="m-detail"><div class="modal">
+  <div class="modal-hdr"><span id="detail-title">📋 LEAD</span><button class="modal-close" onclick="closeM('m-detail')">✕</button></div>
+  <div id="detail-content"></div>
+</div></div>
+
+<div class="overlay" id="m-ai"><div class="modal">
+  <div class="modal-hdr"><span>🤖 ANALISAR COM IA</span><button class="modal-close" onclick="closeM('m-ai')">✕</button></div>
+  <div id="ai-info" style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;line-height:1.6"></div>
+  <div class="field"><label class="inp-lbl">📝 Histórico + conversa WhatsApp</label><textarea class="inp" id="ai-convo" style="min-height:120px"></textarea></div>
+  <div class="field"><label class="inp-lbl">❓ Pergunta para a IA</label><select class="inp" id="ai-q" onchange="updAIQ()"><option value="proximo">Qual o melhor próximo passo para fechar?</option><option value="objecao">Como superar a objeção desse lead?</option><option value="mensagem">Crie uma mensagem para reativar esse lead</option><option value="analise">Análise completa + recomendações</option><option value="urgencia">Como criar urgência para fechar agora?</option><option value="custom">Pergunta personalizada...</option></select></div>
+  <div class="field" id="ai-cw" style="display:none"><input class="inp" id="ai-custom" placeholder="Digite sua pergunta..."></div>
+  <button class="btn" onclick="openClaude()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;width:100%;margin-bottom:8px">🤖 Abrir no Claude.ai</button>
+  <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com contexto completo. Gratuito.</p>
+</div></div>
+
+<div class="overlay" id="m-task"><div class="modal">
+  <div class="modal-hdr"><span id="task-modal-title">✏️ TAREFA</span><button class="modal-close" onclick="closeM('m-task')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Tarefa</label><input class="inp" id="tf-t" placeholder="Ex: Ligar para 5 leads"></div>
+  <div class="field"><label class="inp-lbl">Detalhe</label><input class="inp" id="tf-s" placeholder="Ex: WhatsApp + email"></div>
+  <div class="field"><label class="inp-lbl">Etiqueta</label><input class="inp" id="tf-tag" placeholder="Ex: 📞 Follow-up"></div>
+  <div style="display:flex;gap:8px;margin-top:4px"><button class="btn btn-ghost" onclick="closeM('m-task')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveTaskModal()" style="flex:1">💾 Salvar</button></div>
+</div></div>
+
+<div class="overlay" id="m-wo"><div class="modal">
+  <div class="modal-hdr"><span id="wo-title">💪 TREINO</span><button class="modal-close" onclick="closeM('m-wo')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Nome do dia</label><input class="inp" id="wo-name" placeholder="Ex: SEGUNDA — FULL BODY A"></div>
+  <div class="field"><label class="inp-lbl">Tipo</label><select class="inp" id="wo-type"><option value="MUSCULAÇÃO">💪 Musculação</option><option value="CARDIO">🏃 Cardio</option><option value="DESCANSO">😴 Descanso</option></select></div>
+  <div class="grp">EXERCÍCIOS</div><div id="wo-exs"></div>
+  <button class="btn-add" onclick="addEx()">+ Exercício</button>
+  <div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-ghost" onclick="closeM('m-wo')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveWO()" style="flex:1">💾 Salvar</button></div>
+  <button class="btn btn-danger" id="wo-del" onclick="delWO()" style="display:none;margin-top:8px">🗑️ Excluir</button>
+</div></div>
+
+<div class="overlay" id="m-meal"><div class="modal">
+  <div class="modal-hdr"><span id="meal-title">🍽️ REFEIÇÃO</span><button class="modal-close" onclick="closeM('m-meal')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Nome</label><input class="inp" id="ml-name" placeholder="Ex: ALMOÇO"></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Ícone</label><input class="inp" id="ml-icon" placeholder="🍗" maxlength="4"></div><div><label class="inp-lbl">Kcal</label><input class="inp" id="ml-kcal" placeholder="~780 kcal"></div></div>
+  <div class="grp">ITENS</div><div id="ml-items"></div>
+  <button class="btn-add" onclick="addMealItem()">+ Item</button>
+  <div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-ghost" onclick="closeM('m-meal')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveMeal()" style="flex:1">💾 Salvar</button></div>
+  <button class="btn btn-danger" id="meal-del" onclick="delMeal()" style="display:none;margin-top:8px">🗑️ Excluir</button>
+</div></div>
+
+<div class="overlay" id="m-appt"><div class="modal">
+  <div class="modal-hdr"><span id="appt-title">📅 AGENDAR</span><button class="modal-close" onclick="closeM('m-appt')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Título</label><input class="inp" id="ap-title" placeholder="Ex: Reunião com cliente"></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Data</label><input class="inp" type="date" id="ap-date"></div><div><label class="inp-lbl">Hora</label><input class="inp" type="time" id="ap-time"></div></div>
+  <div class="field"><label class="inp-lbl">Local / Link</label><input class="inp" id="ap-local" placeholder="Ex: Showroom Vitacon ou link Zoom"></div>
+  <div class="field"><label class="inp-lbl">Notas</label><textarea class="inp" id="ap-notes" style="min-height:60px" placeholder="Detalhes..."></textarea></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-appt')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveAppt()" style="flex:1">💾 Salvar</button></div>
+  <button class="btn btn-danger" id="appt-del" onclick="delAppt()" style="display:none">🗑️ Excluir</button>
+</div></div>
+
+<div class="overlay" id="m-fav"><div class="modal">
+  <div class="modal-hdr"><span id="fav-title">🔗 NOVO LINK</span><button class="modal-close" onclick="closeM('m-fav')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Nome</label><input class="inp" id="fav-name" placeholder="Ex: Vitacon Site"></div>
+  <div class="field"><label class="inp-lbl">URL</label><input class="inp" type="url" id="fav-url" placeholder="https://vitacon.com.br"></div>
+  <div class="field"><label class="inp-lbl">Ícone (emoji)</label><input class="inp" id="fav-icon" placeholder="🏢" maxlength="4"></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-fav')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveFav()" style="flex:1">💾 Salvar</button></div>
+  <button class="btn btn-danger" id="fav-del" onclick="delFav()" style="display:none">🗑️ Excluir</button>
+</div></div>
+
+<div class="overlay" id="m-news"><div class="modal">
+  <div class="modal-hdr"><span>📰 NOTÍCIAS DO MERCADO</span><button class="modal-close" onclick="closeM('m-news')">✕</button></div>
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">A IA buscará as últimas notícias relevantes para você corretor Vitacon.</p>
+  <div class="field"><label class="inp-lbl">Foco da busca</label>
+    <select class="inp" id="news-topic">
+      <option value="imob">🏢 Mercado Imobiliário SP</option>
+      <option value="invest">📈 Investimentos no Brasil</option>
+      <option value="selic">💰 Selic & Financiamento Imobiliário</option>
+      <option value="lanc">🏗️ Lançamentos em São Paulo</option>
+      <option value="airbnb">🛎️ Mercado Airbnb & Temporada</option>
+      <option value="fii">📊 Fundos Imobiliários (FIIs)</option>
+    </select>
   </div>
-</div>
+  <button class="btn" onclick="openClaudeNews()" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;width:100%;margin-bottom:8px">🔍 Buscar no Claude.ai</button>
+  <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com a busca configurada. Gratuito.</p>
+</div></div>
+
+<div class="overlay" id="m-cal"><div class="modal">
+  <div class="modal-hdr"><span>🗓️ AGENDA</span><button class="modal-close" onclick="closeM('m-cal')">✕</button></div>
+  <div id="cal-content"></div>
+</div></div>
 
 <script>
-// ════════════════════════════════════════
-// STORAGE — works on all browsers/iPhone
-// ════════════════════════════════════════
-const KEY = 'fv11_';
-function lsGet(k, def) {
-  try { const v = localStorage.getItem(KEY+k); return v != null ? JSON.parse(v) : def; }
-  catch { return def; }
-}
-function lsSet(k, v) {
-  try { localStorage.setItem(KEY+k, JSON.stringify(v)); } catch(e) { console.warn('Storage error', e); }
-}
+const K='fv14_';
+const lg=(k,d)=>{try{const v=localStorage.getItem(K+k);return v!=null?JSON.parse(v):d}catch{return d}};
+const ls=(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v))}catch{}};
 
-// ════════════════════════════════════════
-// DEFAULTS
-// ════════════════════════════════════════
-const DEF_LEADS = [
-  {id:1,name:"Lead A — Investidor",product:"Vitacon Studio",valor:"450000",commPct:"1.8",status:"Apresentação enviada",stage:"hot",avatar:"A",whatsapp:"",followup:"",history:"Interesse em investimento. Perguntou sobre Airbnb."},
-  {id:2,name:"Lead B — Casal",product:"Vitacon Private",valor:"680000",commPct:"1.8",status:"2ª reunião agendada",stage:"hot",avatar:"B",whatsapp:"",followup:"",history:"Querem morar perto do Itaim."},
-  {id:3,name:"Lead C — Empresária",product:"Vitacon One",valor:"380000",commPct:"1.8",status:"Primeiro contato",stage:"warm",avatar:"C",whatsapp:"",followup:"",history:"Contato via Instagram."},
-];
-const DEF_TPLS = [
-  {id:1,name:"Primeiro Contato",text:"Olá, [NOME]! Tudo bem? Sou o Flávio, corretor Vitacon aqui em SP.\n\nVi que você tem interesse em [PRODUTO] — tenho algumas unidades incríveis que combinam muito com o que você busca.\n\nPodemos conversar 10 minutos essa semana?"},
-  {id:2,name:"Follow-up Quente",text:"Oi, [NOME]! Passando para dar um retorno sobre o [PRODUTO] da Vitacon.\n\nAs unidades estão com procura alta — só tenho mais 2 disponíveis nesse valor.\n\nQuer agendar uma visita ainda essa semana?"},
-  {id:3,name:"Reaquecimento Frio",text:"Olá, [NOME]! Há um tempo não nos falamos — tudo bem?\n\nLembrei de você porque saiu um novo projeto Vitacon que pode te interessar muito.\n\nPosso te mandar os detalhes agora?"},
-  {id:4,name:"Proposta Enviada",text:"[NOME], boa tarde! Acabei de enviar a proposta do [PRODUTO] para seu email.\n\nA simulação de rendimento ficou muito boa — acho que vai gostar.\n\nAlguma dúvida ou quer que eu explique algum ponto?"},
-  {id:5,name:"Urgência Final",text:"[NOME], preciso te contar: a unidade do [PRODUTO] que conversamos entrou em lista de espera.\n\nSe quiser garantir, precisamos fechar até [DATA].\n\nPosso ligar agora?"},
-];
-const DEF_WORKOUTS = [
-  {id:1,name:"SEGUNDA — FULL BODY A",type:"MUSCULAÇÃO",exercises:[["Agachamento Livre","4×10"],["Supino com Halteres","3×12"],["Remada Curvada","3×12"],["Desenvolvimento Ombro","3×12"],["Rosca + Tríceps Pulley","3×12"],["Prancha","3×40s"]]},
-  {id:2,name:"TERÇA — CORRIDA",type:"CARDIO",exercises:[["Aquecimento","5 min"],["Corrida contínua","20→40 min"],["Alongamento","10 min"]]},
-  {id:3,name:"QUINTA — FULL BODY B",type:"MUSCULAÇÃO",exercises:[["Leg Press 45°","4×12"],["Puxada Frontal","4×10"],["Crucifixo Inclinado","3×12"],["Elevação Lateral","3×15"],["Rosca + Tríceps Testa","3×12"],["Abdominal Crunch","3×20"]]},
-  {id:4,name:"SEXTA — FULL BODY C",type:"MUSCULAÇÃO",exercises:[["Stiff com Halteres","4×10"],["Supino Inclinado","3×12"],["Remada Unilateral","3×12"],["Arnold Press","3×12"],["Panturrilha em Pé","4×20"],["Abdominal Oblíquo","3×15"]]},
-  {id:5,name:"SÁBADO — CORRIDA LONGA",type:"CARDIO",exercises:[["Corrida progressiva","30→50 min"],["Mobilidade","10 min"]]},
-];
-const DEF_MEALS = [
-  {id:1,icon:"☀️",name:"CAFÉ DA MANHÃ",kcal:"~620 kcal",items:[["Ovos mexidos (3 unid)","21g prot"],["Aveia com banana","45g carbs"],["Café preto s/ açúcar","foco"]]},
-  {id:2,icon:"🥤",name:"PRÉ-TREINO",kcal:"~380 kcal",items:[["Whey protein (30g)","24g prot"],["Batata doce (150g)","30g carbs"],["Creatina (5g)","performance"]]},
-  {id:3,icon:"🍗",name:"ALMOÇO",kcal:"~780 kcal",items:[["Frango grelhado (200g)","46g prot"],["Arroz integral (150g)","40g carbs"],["Feijão (100g)","8g prot"],["Salada verde + azeite","gordura boa"]]},
-  {id:4,icon:"🥛",name:"PÓS-TREINO",kcal:"~420 kcal",items:[["Whey protein (30g)","24g prot"],["Banana + mel","35g carbs"]]},
-  {id:5,icon:"🌙",name:"JANTAR",kcal:"~600 kcal",items:[["Salmão ou Atum (200g)","40g prot"],["Batata doce ou quinoa","30g carbs"],["Brócolis refogado","fibras"]]},
-];
-const DEF_WEEKS = [
-  {label:"SEMANA 1 — DIAS 1-7",vendas:[{t:"Listar leads ativos com status",s:"CRM — mapeamento inicial",tag:"📋 CRM"},{t:"Mensagem personalizada para 5 leads",s:"WhatsApp + email com proposta",tag:"📱 Contato"},{t:"Montar apresentação padrão Vitacon",s:"Studio, One e Private",tag:"📊 Apresentação"},{t:"Agendar 2 reuniões com leads quentes",s:"Presencial ou vídeo",tag:"📅 Reunião"}],insta:[{t:"Otimizar bio com CTA claro",s:"Corretor Vitacon SP | Invista no futuro",tag:"✍️ Perfil"},{t:"Reel: Por que investir em imóveis em SP",s:"30s, CTA + hashtags",tag:"🎬 Reel"},{t:"Foto profissional no feed",s:"Caption: sua missão como corretor",tag:"📸 Feed"},{t:"10 stories: bastidores do dia",s:"Obra, reunião, café",tag:"📲 Stories"}],treino:[{t:"Full Body A — Segunda",s:"Agachamento, Supino, Remada",tag:"💪 Musculação"},{t:"Corrida 20 min — Terça",s:"Ritmo leve",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Leg Press, Puxada",tag:"💪 Musculação"},{t:"Corrida 25 min — Sábado",s:"Progressão semanal",tag:"🏃 Cardio"}],nutri:[{t:"Meal prep da semana",s:"Frango, batata doce, arroz",tag:"🍗 Prep"},{t:"Comprar Whey + Creatina",s:"Suplementação base",tag:"💊 Suplemento"},{t:"3L de água por dia",s:"3 refis diários",tag:"💧 Água"}]},
+const DL=[{id:1,name:"Lead A — Investidor",product:"Vitacon Studio",valor:"450000",pct:"1.8",status:"Apresentação enviada",stage:"hot",avatar:"A",wa:"",fu:"",hist:"Interesse em investimento. Perguntou sobre Airbnb."},{id:2,name:"Lead B — Casal",product:"Vitacon Private",valor:"680000",pct:"1.8",status:"2ª reunião agendada",stage:"hot",avatar:"B",wa:"",fu:"",hist:"Querem morar perto do Itaim."},{id:3,name:"Lead C — Empresária",product:"Vitacon One",valor:"380000",pct:"1.8",status:"Primeiro contato",stage:"warm",avatar:"C",wa:"",fu:"",hist:"Contato via Instagram."}];
+const DTPL=[{id:1,name:"Primeiro Contato",txt:"Olá, [NOME]! Sou o Flávio, corretor Vitacon em SP.\n\nVi que você tem interesse em [PRODUTO] — tenho unidades incríveis que combinam com o que você busca.\n\nPodemos conversar 10 minutos essa semana?"},{id:2,name:"Follow-up Quente",txt:"Oi, [NOME]! Passando para dar um retorno sobre o [PRODUTO].\n\nAs unidades estão com procura alta — só tenho mais 2 disponíveis nesse valor.\n\nQuer agendar uma visita essa semana?"},{id:3,name:"Reaquecimento Frio",txt:"Olá, [NOME]! Há um tempo não nos falamos.\n\nLembrei de você porque saiu um novo projeto Vitacon que pode te interessar.\n\nPosso te mandar os detalhes agora?"},{id:4,name:"Proposta Enviada",txt:"[NOME], boa tarde! Acabei de enviar a proposta do [PRODUTO].\n\nA simulação de rendimento ficou muito boa.\n\nAlguma dúvida?"},{id:5,name:"Urgência Final",txt:"[NOME], a unidade do [PRODUTO] entrou em lista de espera.\n\nPrecisamos fechar até [DATA].\n\nPosso ligar agora?"}];
+const DWO=[{id:1,name:"SEGUNDA — FULL BODY A",type:"MUSCULAÇÃO",exs:[["Agachamento Livre","4×10"],["Supino com Halteres","3×12"],["Remada Curvada","3×12"],["Desenvolvimento Ombro","3×12"],["Rosca + Tríceps Pulley","3×12"],["Prancha","3×40s"]]},{id:2,name:"TERÇA — CORRIDA",type:"CARDIO",exs:[["Aquecimento","5 min"],["Corrida contínua","20→40 min"],["Alongamento","10 min"]]},{id:3,name:"QUINTA — FULL BODY B",type:"MUSCULAÇÃO",exs:[["Leg Press 45°","4×12"],["Puxada Frontal","4×10"],["Crucifixo Inclinado","3×12"],["Elevação Lateral","3×15"],["Rosca + Tríceps Testa","3×12"],["Abdominal Crunch","3×20"]]},{id:4,name:"SEXTA — FULL BODY C",type:"MUSCULAÇÃO",exs:[["Stiff com Halteres","4×10"],["Supino Inclinado","3×12"],["Remada Unilateral","3×12"],["Arnold Press","3×12"],["Panturrilha em Pé","4×20"],["Abdominal Oblíquo","3×15"]]},{id:5,name:"SÁBADO — CORRIDA LONGA",type:"CARDIO",exs:[["Corrida progressiva","30→50 min"],["Mobilidade","10 min"]]}];
+const DML=[{id:1,icon:"☀️",name:"CAFÉ DA MANHÃ",kcal:"~620 kcal",items:[["Ovos mexidos (3)","21g prot"],["Aveia com banana","45g carbs"],["Café preto","foco"]]},{id:2,icon:"🥤",name:"PRÉ-TREINO",kcal:"~380 kcal",items:[["Whey (30g)","24g prot"],["Batata doce (150g)","30g carbs"],["Creatina (5g)","performance"]]},{id:3,icon:"🍗",name:"ALMOÇO",kcal:"~780 kcal",items:[["Frango grelhado (200g)","46g prot"],["Arroz integral (150g)","40g carbs"],["Feijão (100g)","8g prot"],["Salada + azeite","gordura boa"]]},{id:4,icon:"🥛",name:"PÓS-TREINO",kcal:"~420 kcal",items:[["Whey (30g)","24g prot"],["Banana + mel","35g carbs"]]},{id:5,icon:"🌙",name:"JANTAR",kcal:"~600 kcal",items:[["Salmão/Atum (200g)","40g prot"],["Batata doce/quinoa","30g carbs"],["Brócolis refogado","fibras"]]}];
+const DFAVS=[{id:1,name:"Vitacon",url:"https://vitacon.com.br",icon:"🏢"},{id:2,name:"Instagram",url:"https://instagram.com",icon:"📱"},{id:3,name:"WhatsApp Web",url:"https://web.whatsapp.com",icon:"💬"},{id:4,name:"ZAP Imóveis",url:"https://zapimoveis.com.br",icon:"🔍"},{id:5,name:"Claude IA",url:"https://claude.ai",icon:"🤖"}];
+const DWKS=[
+  {label:"SEMANA 1 — DIAS 1-7",vendas:[{t:"Listar leads ativos com status",s:"CRM — mapeamento inicial",tag:"📋 CRM"},{t:"Mensagem personalizada para 5 leads",s:"WhatsApp + email com proposta",tag:"📱 Contato"},{t:"Montar apresentação padrão Vitacon",s:"Studio, One e Private",tag:"📊 Apresentação"},{t:"Agendar 2 reuniões com leads quentes",s:"Presencial ou vídeo",tag:"📅 Reunião"}],insta:[{t:"Otimizar bio com CTA claro",s:"Corretor Vitacon SP | Invista no futuro",tag:"✍️ Perfil"},{t:"Reel: Por que investir em imóveis em SP",s:"30s, CTA + hashtags",tag:"🎬 Reel"},{t:"Foto profissional no feed",s:"Sua missão como corretor",tag:"📸 Feed"},{t:"10 stories: bastidores do dia",s:"Obra, reunião, café",tag:"📲 Stories"}],treino:[{t:"Full Body A — Segunda",s:"Agachamento, Supino, Remada",tag:"💪 Musculação"},{t:"Corrida 20 min — Terça",s:"Ritmo leve",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Leg Press, Puxada",tag:"💪 Musculação"},{t:"Corrida 25 min — Sábado",s:"Progressão semanal",tag:"🏃 Cardio"}],nutri:[{t:"Meal prep da semana",s:"Frango, batata doce, arroz",tag:"🍗 Prep"},{t:"Comprar Whey + Creatina",s:"Suplementação base",tag:"💊 Suplemento"},{t:"3L de água por dia",s:"3 refis diários",tag:"💧 Água"}]},
   {label:"SEMANA 2 — DIAS 8-14",vendas:[{t:"Follow-up com todos os leads",s:"Ligação + conteúdo útil",tag:"📞 Follow-up"},{t:"Realizar 2 reuniões agendadas",s:"Apresentar proposta",tag:"🤝 Reunião"},{t:"Proposta formal em PDF",s:"Simulação de rendimento",tag:"📄 Proposta"},{t:"Prospectar 3 novos leads",s:"DMs + stories com CTA",tag:"🔍 Prospecção"}],insta:[{t:"Reel: Um dia na vida corretor",s:"Bastidores reais",tag:"🎬 Reel"},{t:"Carrossel: Vitacon vs concorrentes",s:"5 slides + CTA",tag:"📊 Carrossel"},{t:"Reel: Studio no Airbnb rende quanto?",s:"Números reais",tag:"🎬 Reel"},{t:"15 stories com votações",s:"Engajamento ativa algoritmo",tag:"📲 Stories"}],treino:[{t:"Full Body A +5% carga",s:"Overload progressivo",tag:"💪 Progressão"},{t:"Corrida 25 min",s:"+5 min vs semana anterior",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Foco em execução",tag:"💪 Técnica"},{t:"Corrida 30 min — Sábado",s:"Zona aeróbica",tag:"🏃 Cardio"}],nutri:[{t:"Variar: salmão 2x",s:"Substituir frango",tag:"🍗 Variação"},{t:"Registrar peso e medidas",s:"Foto de progresso",tag:"📏 Medição"},{t:"Água 3,5L/dia",s:"+500ml vs semana",tag:"💧 Água"}]},
   {label:"SEMANAS 3-4 — INTENSIDADE",vendas:[{t:"1ª venda até dia 28",s:"Foco nos leads quentes",tag:"🏆 Meta"},{t:"Script de fechamento",s:"Objeções + respostas",tag:"📝 Script"},{t:"LinkedIn + indicações",s:"5 novos contatos/semana",tag:"🔍 Prospecção"},{t:"Kit digital",s:"Vídeo + proposta link",tag:"📱 Digital"}],insta:[{t:"3 Reels por semana",s:"Produção em lote",tag:"🎬 Volume"},{t:"Live: dúvidas investimento",s:"30 min — gera leads",tag:"📡 Live"},{t:"Responder 100% DMs",s:"Algoritmo ama engajamento",tag:"💬 Engajamento"},{t:"Marcar @vitaconoficial",s:"Chance de repost",tag:"🤝 Collab"}],treino:[{t:"75-80% da carga",s:"Descanso 60 segundos",tag:"💪 Intensidade"},{t:"35 min com tiros",s:"1 min rápido + 2 leve",tag:"🏃 Intervalado"},{t:"4 dias sem faltar",s:"Consistência",tag:"✅ Consistência"}],nutri:[{t:"Ajustar calorias",s:"+200 kcal se ganho lento",tag:"📊 Ajuste"},{t:"Legumes variados",s:"Micronutrientes = recuperação",tag:"🥦 Micro"}]},
   {label:"SEMANAS 5-6 — FORÇA",vendas:[{t:"3 vendas até dia 42",s:"Comissão ~R$35k",tag:"🏆 Meta"},{t:"Indicações com bônus",s:"Cliente = novo lead",tag:"🎁 Indicação"},{t:"2 apresentações presenciais",s:"Showroom Vitacon",tag:"🏢 Presencial"}],insta:[{t:"Dobrar aposta nos Reels top",s:"Repetir formato viral",tag:"📊 Analytics"},{t:"Depoimento de cliente",s:"Prova social",tag:"⭐ Social"},{t:"Reel storytelling pessoal",s:"Alto engajamento",tag:"🎬 Story"}],treino:[{t:"85-90% da carga",s:"4-6 reps base",tag:"💪 Força"},{t:"Corridas 40-45 min",s:"Aeróbico + anaeróbico",tag:"🏃 Resistência"}],nutri:[{t:"Proteína >175g/dia",s:"Recuperação muscular",tag:"🥩 Proteína"},{t:"Carb up pós treino pesado",s:"Carboidratos extras",tag:"⚡ Carb Up"}]},
   {label:"SEMANAS 7-8 — SPRINT FINAL",vendas:[{t:"META: 6 vendas + R$70k",s:"Sprint final",tag:"🏆 META"},{t:"Ligar para todos leads",s:"Urgência: últimas unidades",tag:"⚡ Urgência"},{t:"Relatório 60 dias",s:"Base para próximo ciclo",tag:"📊 Relatório"}],insta:[{t:"Meta 2.000-5.000 seguidores",s:"Análise final",tag:"📈 Meta"},{t:"Reel: 60 dias de transformação",s:"Resultado + bastidores",tag:"🎬 Final"},{t:"Criar destaques no perfil",s:"Imóveis, resultados, eu",tag:"📁 Highlights"}],treino:[{t:"Semana 7: carga máxima",s:"Testar limite",tag:"💪 Peak"},{t:"Semana 8: deload 60%",s:"Recuperação",tag:"♻️ Deload"},{t:"Foto de progresso final",s:"Comparar com dia 1",tag:"📸 Progresso"}],nutri:[{t:"Manter padrão",s:"Consistência = resultado",tag:"✅ Manter"},{t:"Refeição livre semana 8",s:"Recompensa merecida",tag:"🎉 Recompensa"}]},
 ];
-const DEF_CFG = {metaComm:70000,metaSales:6,igHandle:'flavio.vitacon',igMetaFollowers:5000,igMetaReels:24,igMetaPosts:20,followers:0,reels:0,posts:0,igLeads:0,treinos:0,corridas:0,kcal:2800,prot:180,carbs:300};
+const DC={metaComm:70000,metaV:6,handle:'flavio.vitacon',followers:0,reels:0,posts:0,igLeads:0,treinos:0,corridas:0,kcal:2800,prot:180,carbs:300};
 
-// ════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════
-let leads    = lsGet('leads',    DEF_LEADS);
-let weeks    = lsGet('weeks',    DEF_WEEKS);
-let done     = lsGet('done',     {});
-let cfg      = lsGet('cfg',      DEF_CFG);
-let tpls     = lsGet('tpls',     DEF_TPLS);
-let workouts = lsGet('workouts', DEF_WORKOUTS);
-let meals    = lsGet('meals',    DEF_MEALS);
+let leads=lg('leads',DL),weeks=lg('weeks',DWKS),done=lg('done',{}),cfg=lg('cfg',DC);
+let tpls=lg('tpls',DTPL),workouts=lg('wo',DWO),meals=lg('meals',DML);
+let favs=lg('favs',DFAVS),appts=lg('appts',[]);
+const startDay=lg('start',null)||(()=>{const n=Date.now();ls('start',n);return n})();
 
-const startDay = lsGet('start', null) || (()=>{ const n=Date.now(); lsSet('start',n); return n; })();
+const brl=n=>`R$ ${Number(n||0).toLocaleString('pt-BR')}`;
+const fk=n=>{n=Number(n||0);return n>=1e6?`R$${(n/1e6).toFixed(1)}M`:n>=1e3?`R$${(n/1e3).toFixed(0)}k`:`R$${n}`};
+const fn=n=>Number(n||0)>=1000?`${(n/1000).toFixed(1)}k`:String(n||0);
+const fd=d=>{if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`};
+const td=()=>new Date().toISOString().split('T')[0];
+const gc=l=>l.pct&&l.valor?Math.round(Number(l.valor)*Number(l.pct)/100):0;
+const GR=[["#ff6b2b","#f59e0b"],["#3b82f6","#06b6d4"],["#22c55e","#06b6d4"],["#a855f7","#3b82f6"],["#f43f5e","#ff6b2b"],["#f59e0b","#22c55e"]];
+const gbg=i=>`linear-gradient(135deg,${GR[i%GR.length][0]},${GR[i%GR.length][1]})`;
+const SS={hot:{bg:"rgba(255,107,43,.15)",c:"#ff6b2b",l:"🔥 QUENTE"},warm:{bg:"rgba(245,158,11,.12)",c:"#f59e0b",l:"🌡️ MORNO"},cold:{bg:"rgba(59,130,246,.1)",c:"#3b82f6",l:"❄️ FRIO"},won:{bg:"rgba(34,197,94,.12)",c:"#22c55e",l:"✅ FECHADO"}};
 
-// Persist
-const saveLeads = () => lsSet('leads', leads);
-const saveWeeks = () => lsSet('weeks', weeks);
-const saveDone  = () => lsSet('done', done);
-const saveCfgLS = () => lsSet('cfg', cfg);
-const saveTpls  = () => lsSet('tpls', tpls);
-const saveWorkouts = () => lsSet('workouts', workouts);
-const saveMeals    = () => lsSet('meals', meals);
+function scr(l){if(l.stage==='won')return 100;let s=l.stage==='hot'?40:l.stage==='warm'?20:5;if(l.valor&&Number(l.valor)>0)s+=15;if(l.wa)s+=10;if(l.hist&&l.hist.length>30)s+=15;if(l.fu){s+=l.fu>=td()?20:-10}if(l.status&&l.status.length>5)s+=10;return Math.min(99,Math.max(5,s))}
+function scc(s){return s>=70?'var(--green)':s>=40?'var(--yellow)':'var(--acc)'}
+function nxt(l){if(l.stage==='won')return'🏆 Venda fechada! Peça indicação.';if(l.stage==='hot'){if(!l.fu)return'📅 Agende follow-up para hoje ou amanhã';const t=td();if(l.fu<t)return'🔴 Follow-up atrasado! Ligue agora.';if(l.fu===t)return'🟡 Follow-up hoje — entre em contato!';return'✅ Follow-up agendado. Prepare proposta.'}if(l.stage==='warm')return'📄 Envie proposta formal com simulação de rendimento';return'💬 Use mensagem de reaquecimento'}
 
-// ════════════════════════════════════════
-// UTILS
-// ════════════════════════════════════════
-const fmtBRL = n => `R$ ${Number(n||0).toLocaleString('pt-BR')}`;
-const fmtK   = n => { n=Number(n||0); return n>=1e6?`R$${(n/1e6).toFixed(1)}M`:n>=1e3?`R$${(n/1e3).toFixed(0)}k`:`R$${n}`; };
-const fmtN   = n => Number(n||0)>=1000?`${(n/1000).toFixed(1)}k`:String(n||0);
-const fmtDate= d => { if(!d)return''; const[y,m,dd]=d.split('-'); return`${dd}/${m}/${y}`; };
-const today  = () => new Date().toISOString().split('T')[0];
-const getComm= l => (l.commPct&&l.valor) ? Math.round(Number(l.valor)*Number(l.commPct)/100) : 0;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function showNotif(icon,t,s){document.getElementById('ni').textContent=icon;document.getElementById('nt').textContent=t;document.getElementById('ns').textContent=s;const n=document.getElementById('notif');n.classList.add('show');setTimeout(()=>n.classList.remove('show'),5000)}
+function closeNotif(){document.getElementById('notif').classList.remove('show')}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
 
-function leadScore(l) {
-  let s = 0;
-  if (l.stage==='won') return 100;
-  if (l.stage==='hot') s+=40; else if (l.stage==='warm') s+=20; else s+=5;
-  if (l.valor&&Number(l.valor)>0) s+=15;
-  if (l.whatsapp) s+=10;
-  if (l.history&&l.history.length>30) s+=15;
-  if (l.followup) { const t=today(); if(l.followup>=t) s+=20; else s-=10; }
-  if (l.status&&l.status.length>5) s+=10;
-  return Math.min(99,Math.max(5,s));
-}
-function scoreColor(s) { return s>=70?'var(--green)':s>=40?'var(--yellow)':'var(--acc)'; }
-function nextStep(l) {
-  if (l.stage==='won') return '🏆 Venda fechada! Peça indicação.';
-  if (l.stage==='hot') {
-    if (!l.followup) return '📅 Agende follow-up para hoje ou amanhã';
-    const t=today();
-    if (l.followup<t) return '🔴 Follow-up atrasado! Ligue agora.';
-    if (l.followup===t) return '🟡 Follow-up hoje — entre em contato!';
-    return '✅ Follow-up agendado. Prepare proposta personalizada.';
-  }
-  if (l.stage==='warm') return '📄 Envie proposta formal com simulação de rendimento';
-  if (l.stage==='cold') return '💬 Use mensagem de reaquecimento — mencione novidade';
-  return '📞 Entre em contato para qualificar o lead';
-}
-
-const GRADS = [["#ff6b2b","#f59e0b"],["#3b82f6","#06b6d4"],["#22c55e","#06b6d4"],["#a855f7","#3b82f6"],["#f43f5e","#ff6b2b"],["#f59e0b","#22c55e"],["#06b6d4","#a855f7"],["#22c55e","#f59e0b"]];
-const gradBg = i => `linear-gradient(135deg,${GRADS[i%GRADS.length][0]},${GRADS[i%GRADS.length][1]})`;
-const STAGE_S = {
-  hot:{bg:"rgba(255,107,43,.15)",c:"#ff6b2b",l:"🔥 QUENTE"},
-  warm:{bg:"rgba(245,158,11,.12)",c:"#f59e0b",l:"🌡️ MORNO"},
-  cold:{bg:"rgba(59,130,246,.1)",c:"#3b82f6",l:"❄️ FRIO"},
-  won:{bg:"rgba(34,197,94,.12)",c:"#22c55e",l:"✅ FECHADO"},
-};
-
-function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
-function showNotif(icon,title,sub){ ['notif-icon','notif-title','notif-sub'].forEach((id,i)=>document.getElementById(id).textContent=[icon,title,sub][i]); const n=document.getElementById('notif'); n.classList.add('show'); setTimeout(()=>n.classList.remove('show'),5000); }
-function closeNotif(){ document.getElementById('notif').classList.remove('show'); }
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-
-// ════════════════════════════════════════
-// NAVIGATION
-// ════════════════════════════════════════
-function showTab(id, el) {
+function goTab(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-m').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.snav-btn').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  // sync sidebar/mobile tabs
-  document.querySelectorAll('.snav-btn, .tab-m').forEach(b=>{
-    if(b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('active');
-  });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const p=document.getElementById('page-'+id);if(p)p.classList.add('active');
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.tab').forEach(t=>{if(t.dataset.id===id)t.classList.add('active')});
 }
 
-// ════════════════════════════════════════
-// WEEK NAV
-// ════════════════════════════════════════
-let curWeek=0;
-function changeWeek(d){ curWeek=Math.max(0,Math.min(weeks.length-1,curWeek+d)); renderTasks(); }
+let curW=0;
+function chgW(d){curW=Math.max(0,Math.min(weeks.length-1,curW+d));renderTasks()}
 
-// ════════════════════════════════════════
-// TASKS
-// ════════════════════════════════════════
 function renderTasks(){
-  document.getElementById('weekLbl').textContent=weeks[curWeek]?.label||'';
+  document.getElementById('weekLbl').textContent=weeks[curW]?.label||'';
   ['vendas','insta','treino','nutri'].forEach(s=>{
-    const el=document.getElementById('t-'+s); if(!el) return;
-    const tasks=weeks[curWeek]?.[s]||[];
-    el.innerHTML=tasks.length?tasks.map((t,i)=>taskHTML(curWeek,s,i,t)).join(''):'<div style="font-size:12px;color:var(--txt3);padding:8px">Sem tarefas.</div>';
+    const el=document.getElementById('t-'+s);if(!el)return;
+    const ts=weeks[curW]?.[s]||[];
+    el.innerHTML=ts.length?ts.map((t,i)=>tH(curW,s,i,t)).join(''):'<div style="font-size:12px;color:var(--txt3);padding:8px">Sem tarefas.</div>';
   });
-  renderAllVendas(); renderHeader();
+  renderAllV();renderHdr();
 }
-function taskHTML(wi,sec,i,t){
+function tH(wi,sec,i,t){
   const k=`${wi}_${sec}_${i}`,d=!!done[k];
-  return `<div class="task${d?' done':''}" onclick="toggleTask('${wi}','${sec}',${i})">
-    <div class="chk">${d?'✓':''}</div>
-    <div class="task-body"><div class="task-txt">${t.t}</div><div class="task-sub">${t.s}</div><span class="task-tag">${t.tag}</span></div>
+  return`<div class="task${d?' done':''}">
+    <div class="chk" onclick="togT('${wi}','${sec}',${i})">${d?'✓':''}</div>
+    <div class="task-body" onclick="togT('${wi}','${sec}',${i})"><div class="task-txt">${t.t}</div><div class="task-sub">${t.s}</div><span class="task-tag">${t.tag}</span></div>
+    <button onclick="openTaskEdit('${wi}','${sec}',${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:13px;padding:2px;flex-shrink:0">✏️</button>
   </div>`;
 }
-function toggleTask(wi,sec,i){
-  const k=`${wi}_${sec}_${i}`; done[k]=!done[k]; saveDone();
-  if(done[k]) showToast('✅ Concluída!');
-  renderTasks();
-}
-function renderAllVendas(){
-  const el=document.getElementById('all-vendas'); if(!el) return;
-  el.innerHTML=weeks.map((w,wi)=>`<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:12px 0 6px">${w.label}</div>`+(w.vendas||[]).map((t,i)=>taskHTML(wi,'vendas',i,t)).join('')).join('');
-}
+function togT(wi,sec,i){const k=`${wi}_${sec}_${i}`;done[k]=!done[k];ls('done',done);if(done[k])toast('✅ Concluída!');renderTasks()}
+function renderAllV(){const el=document.getElementById('all-vendas');if(!el)return;el.innerHTML=weeks.map((w,wi)=>`<div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin:12px 0 6px">${w.label}</div>`+(w.vendas||[]).map((t,i)=>tH(wi,'vendas',i,t)).join('')).join('')}
 
-// ════════════════════════════════════════
-// HEADER
-// ════════════════════════════════════════
-function renderHeader(){
+// Task modal (shared by inline edit + config)
+let etWi=null,etSec=null,etI=null;
+function openTaskEdit(wi,sec,i){etWi=wi;etSec=sec;etI=i;const t=weeks[wi][sec][i];document.getElementById('task-modal-title').textContent='✏️ EDITAR TAREFA';document.getElementById('tf-t').value=t.t||'';document.getElementById('tf-s').value=t.s||'';document.getElementById('tf-tag').value=t.tag||'';openM('m-task')}
+function saveTaskModal(){if(etWi===null)return;const t={t:document.getElementById('tf-t').value||'',s:document.getElementById('tf-s').value||'',tag:document.getElementById('tf-tag').value||'📌 Tarefa'};if(etI===-1){if(!weeks[etWi][etSec])weeks[etWi][etSec]=[];weeks[etWi][etSec].push(t)}else weeks[etWi][etSec][etI]=t;ls('weeks',weeks);closeM('m-task');renderTE();renderTasks();toast(etI===-1?'✅ Adicionada!':'✅ Atualizada!')}
+
+function renderHdr(){
   const allK=weeks.flatMap((w,wi)=>['vendas','insta','treino','nutri'].flatMap(s=>(w[s]||[]).map((_,i)=>`${wi}_${s}_${i}`)));
   const pct=allK.length?Math.round(allK.filter(k=>done[k]).length/allK.length*100):0;
   const day=Math.min(60,Math.max(1,Math.round((Date.now()-startDay)/86400000)+1));
   const won=leads.filter(l=>l.stage==='won');
-  const tComm=won.reduce((s,l)=>s+getComm(l),0);
-  const nSales=won.length;
-  const meta=cfg.metaSales||6;
-  const metaComm=cfg.metaComm||70000;
-  const pipeVGV=leads.filter(l=>l.stage!=='won').reduce((s,l)=>s+(Number(l.valor)||0),0);
-  const tVGV=leads.reduce((s,l)=>s+(Number(l.valor)||0),0);
-
-  // header
+  const tComm=won.reduce((s,l)=>s+gc(l),0);
+  const nS=won.length,meta=cfg.metaV||6,mComm=cfg.metaComm||70000;
+  const pVGV=leads.filter(l=>l.stage!=='won').reduce((s,l)=>s+(Number(l.valor)||0),0);
   document.getElementById('dayBadge').textContent=`DIA ${day}/60`;
-  document.getElementById('sideDay').textContent=`Dia ${day} de 60`;
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('progPct').textContent=pct+'%';
-  document.getElementById('mTarefas').textContent=pct+'%';
-  document.getElementById('mVendas').textContent=nSales+'/'+meta;
-  document.getElementById('mSeguidores').textContent=fmtN(cfg.followers||0);
-  document.getElementById('mComissao').textContent=fmtK(tComm);
-  document.getElementById('mNegociando').textContent=fmtK(pipeVGV);
-  document.getElementById('mVGV').textContent=fmtK(tVGV);
-
-  // gauge
-  const arc=document.getElementById('gaugeArc');
-  if(arc) arc.style.strokeDashoffset=220*(1-Math.min(1,tComm/metaComm));
-  const gv=document.getElementById('gaugeVal'); if(gv) gv.textContent=fmtK(tComm);
-  const gm=document.getElementById('gaugeMeta'); if(gm) gm.textContent=fmtK(metaComm);
-  const sv=document.getElementById('statVendas'); if(sv) sv.textContent=nSales;
-  const sp=document.getElementById('statPct'); if(sp) sp.textContent=Math.round(nSales/meta*100)+'%';
-  const sf=document.getElementById('statFaltam'); if(sf) sf.textContent=Math.max(0,meta-nSales);
-
-  // pipeline
-  const pv=document.getElementById('pipeVGV'); if(pv) pv.textContent=fmtK(pipeVGV);
-  const pp=document.getElementById('pipePotencial'); if(pp) pp.textContent='potencial: '+fmtK(pipeVGV*0.018);
-  const pc=document.getElementById('pipeComm'); if(pc) pc.textContent=fmtK(tComm);
-
-  // won list
+  document.getElementById('mT').textContent=pct+'%';
+  document.getElementById('mV').textContent=nS+'/'+meta;
+  document.getElementById('mS').textContent=fn(cfg.followers||0);
+  document.getElementById('mC').textContent=fk(tComm);
+  const ga=document.getElementById('gaugeArc');if(ga)ga.style.strokeDashoffset=220*(1-Math.min(1,tComm/mComm));
+  const gv=document.getElementById('gaugeVal');if(gv)gv.textContent=fk(tComm);
+  const gm=document.getElementById('gaugeMeta');if(gm)gm.textContent=fk(mComm);
+  const sv=document.getElementById('stV');if(sv)sv.textContent=nS;
+  const sf=document.getElementById('stF');if(sf)sf.textContent=Math.max(0,meta-nS);
+  const pv=document.getElementById('pipeVGV');if(pv)pv.textContent=fk(pVGV);
+  const pp=document.getElementById('pipePot');if(pp)pp.textContent='potencial: '+fk(pVGV*0.018);
+  const pc=document.getElementById('pipeComm');if(pc)pc.textContent=fk(tComm);
   const wl=document.getElementById('won-list');
-  if(wl){
-    wl.innerHTML=won.length?won.map(l=>`<div class="pipe-row"><span style="font-weight:600">${l.name}</span><span style="color:var(--green)">${fmtBRL(getComm(l))} <span style="color:var(--txt3)">(${fmtK(l.valor)})</span></span></div>`).join('')+'<div class="pipe-row" style="font-weight:700;padding-top:8px"><span>TOTAL</span><span style="color:var(--green)">${fmtBRL(tComm)}</span></div>':'';
-  }
-
-  // rings
-  const rT=document.getElementById('rTreino'),rTv=document.getElementById('rTreinoVal');
-  if(rT){rT.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.treinos||0)/34));rTv.textContent=cfg.treinos||0;}
-  const rC=document.getElementById('rCorrida'),rCv=document.getElementById('rCorridaVal');
-  if(rC){rC.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.corridas||0)/16));rCv.textContent=cfg.corridas||0;}
-
-  // ig
-  const ih=document.getElementById('igHandle'); if(ih) ih.textContent=cfg.igHandle||'flavio.vitacon';
+  if(wl){if(won.length){wl.innerHTML=won.map(l=>`<div class="pipe-row"><span style="font-weight:600">${l.name}</span><span style="color:var(--green)">${brl(gc(l))} <span style="color:var(--txt3)">(${fk(l.valor)})</span></span></div>`).join('')+`<div class="pipe-row" style="font-weight:700;border-top:2px solid var(--br2);padding-top:8px;margin-top:4px"><span>TOTAL COMISSÕES</span><span style="color:var(--green)">${brl(tComm)}</span></div>`}else{wl.innerHTML='<div style="font-size:11px;color:var(--txt3);padding:8px 0">Nenhuma venda fechada ainda.</div>'}}
+  const rt=document.getElementById('rT'),rtv=document.getElementById('rTv');if(rt){rt.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.treinos||0)/34));rtv.textContent=cfg.treinos||0}
+  const rc=document.getElementById('rC'),rcv=document.getElementById('rCv');if(rc){rc.style.strokeDashoffset=163.4*(1-Math.min(1,(cfg.corridas||0)/16));rcv.textContent=cfg.corridas||0}
+  const ih=document.getElementById('igHandle');if(ih)ih.textContent=cfg.handle||'flavio.vitacon';
   const igEl=document.getElementById('ig-metrics');
-  if(igEl){
-    igEl.innerHTML=[
-      {icon:'👥',l:'Seguidores',sub:`Meta: ${(cfg.igMetaFollowers||5000).toLocaleString('pt-BR')}`,v:fmtN(cfg.followers||0),c:'var(--blue)'},
-      {icon:'🎬',l:'Reels',sub:`Meta: ${cfg.igMetaReels||24}`,v:cfg.reels||0,c:'var(--acc)'},
-      {icon:'📊',l:'Posts Feed',sub:`Meta: ${cfg.igMetaPosts||20}`,v:cfg.posts||0,c:'var(--green)'},
-      {icon:'💬',l:'Leads via Insta',sub:'Meta: 10',v:cfg.igLeads||0,c:'var(--yellow)'},
-    ].map(m=>`<div class="ig-metric"><div style="display:flex;align-items:center;gap:9px"><div style="font-size:18px">${m.icon}</div><div><div style="font-size:12px;font-weight:500">${m.l}</div><div style="font-size:10px;color:var(--txt3)">${m.sub}</div></div></div><div style="font-family:var(--disp);font-size:18px;color:${m.c}">${m.v}</div></div>`).join('');
-  }
-
-  // nutri macros
-  const nk=document.getElementById('nutriKcal'); if(nk) nk.textContent=cfg.kcal||2800;
-  const np=document.getElementById('nutriProt'); if(np) np.textContent=(cfg.prot||180)+'g';
-  const nc=document.getElementById('nutriCarbs'); if(nc) nc.textContent=(cfg.carbs||300)+'g';
-
-  renderFuHoje();
+  if(igEl){igEl.innerHTML=[{icon:'👥',l:'Seguidores',sub:'Meta: 5.000',v:fn(cfg.followers||0),c:'var(--blue)'},{icon:'🎬',l:'Reels',sub:'Meta: 24',v:cfg.reels||0,c:'var(--acc)'},{icon:'📊',l:'Posts Feed',sub:'Meta: 20',v:cfg.posts||0,c:'var(--green)'},{icon:'💬',l:'Leads Insta',sub:'Meta: 10',v:cfg.igLeads||0,c:'var(--yellow)'}].map(m=>`<div class="ig-metric"><div style="display:flex;align-items:center;gap:9px"><div style="font-size:18px">${m.icon}</div><div><div style="font-size:12px;font-weight:500">${m.l}</div><div style="font-size:10px;color:var(--txt3)">${m.sub}</div></div></div><div style="font-family:var(--d);font-size:18px;color:${m.c}">${m.v}</div></div>`).join('')}
+  const nk=document.getElementById('nKcal');if(nk)nk.textContent=cfg.kcal||2800;
+  const np=document.getElementById('nProt');if(np)np.textContent=(cfg.prot||180)+'g';
+  const nc=document.getElementById('nCarbs');if(nc)nc.textContent=(cfg.carbs||300)+'g';
+  renderFuHoje();renderApptsHoje();
 }
 
-// ════════════════════════════════════════
-// FOLLOW-UP HOJE
-// ════════════════════════════════════════
+let dfuSet=new Set();
 function renderFuHoje(){
-  const el=document.getElementById('fu-hoje'); if(!el) return;
-  const t=today();
-  const due=leads.filter(l=>l.followup&&l.followup<=t&&l.stage!=='won');
-  if(!due.length){el.innerHTML='';return;}
-  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{
-    const i=leads.indexOf(l),ov=l.followup<t;
-    return `<div class="fu-today"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:6px 11px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">💬 Msg</button></div>`;
-  }).join('');
+  const el=document.getElementById('fu-hoje');if(!el)return;
+  const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won'&&!dfuSet.has(l.id));
+  if(!due.length){el.innerHTML='';return}
+  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{const i=leads.indexOf(l),ov=l.fu<t;return`<div class="fu-today" id="fu-${l.id}"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1;cursor:pointer" onclick="openDetail(${i})"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button><button onclick="openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">💬</button><button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button></div>`}).join('');
+}
+function disFU(id){dfuSet.add(id);const el=document.getElementById('fu-'+id);if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(renderFuHoje,320)}}
+
+function renderApptsHoje(){
+  const el=document.getElementById('appts-hoje');if(!el)return;
+  const t=td(),todays=appts.filter(a=>a.date===t).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  if(!todays.length){el.innerHTML='';return}
+  el.innerHTML='<div class="grp">📅 COMPROMISSOS HOJE</div>'+todays.map(a=>{const idx=appts.indexOf(a);return`<div class="appt-today" style="cursor:pointer" onclick="openEditAppt(${idx})"><div style="font-size:20px">📆</div><div style="flex:1"><div style="font-size:13px;font-weight:700">${a.title}</div><div style="font-size:11px;color:var(--txt3)">${a.time||''}${a.local?' · '+a.local:''}</div></div><button onclick="event.stopPropagation();openEditAppt(${idx})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button></div>`}).join('');
 }
 
-// ════════════════════════════════════════
-// LEADS
-// ════════════════════════════════════════
-function renderLeads(){
-  const el=document.getElementById('leads-list'); if(!el) return;
-  if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead. Clique em + Novo Lead.</div>';el.style.display='block';return;}
-  el.innerHTML=leads.map((l,i)=>leadCardHTML(l,i)).join('');
+let eiAppt=-1;
+function openAddAppt(){eiAppt=-1;document.getElementById('appt-title').textContent='📅 AGENDAR';document.getElementById('appt-del').style.display='none';document.getElementById('ap-title').value='';document.getElementById('ap-date').value=td();document.getElementById('ap-time').value='';document.getElementById('ap-local').value='';document.getElementById('ap-notes').value='';openM('m-appt')}
+function openEditAppt(i){eiAppt=i;const a=appts[i];document.getElementById('appt-title').textContent='✏️ COMPROMISSO';document.getElementById('appt-del').style.display='block';document.getElementById('ap-title').value=a.title||'';document.getElementById('ap-date').value=a.date||'';document.getElementById('ap-time').value=a.time||'';document.getElementById('ap-local').value=a.local||'';document.getElementById('ap-notes').value=a.notes||'';openM('m-appt')}
+function saveAppt(){const a={id:eiAppt===-1?Date.now():(appts[eiAppt]?.id||Date.now()),title:document.getElementById('ap-title').value||'Compromisso',date:document.getElementById('ap-date').value||td(),time:document.getElementById('ap-time').value||'',local:document.getElementById('ap-local').value||'',notes:document.getElementById('ap-notes').value||''};if(eiAppt===-1)appts.push(a);else appts[eiAppt]=a;ls('appts',appts);closeM('m-appt');renderHdr();toast(eiAppt===-1?'📅 Compromisso agendado!':'📅 Atualizado!')}
+function delAppt(){if(!confirm('Excluir compromisso?'))return;appts.splice(eiAppt,1);ls('appts',appts);closeM('m-appt');renderHdr();toast('🗑️ Removido!')}
+
+let calMon=0;
+function openCalFull(){renderCal();openM('m-cal')}
+function renderCal(){
+  const el=document.getElementById('cal-content');if(!el)return;
+  const now=new Date(),yr=now.getFullYear(),mn=now.getMonth()+calMon;
+  const d=new Date(yr,mn,1),year=d.getFullYear(),month=d.getMonth();
+  const first=new Date(year,month,1).getDay(),days=new Date(year,month+1,0).getDate();
+  const t=td();
+  const MN=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const evMap={};
+  leads.filter(l=>l.fu&&l.stage!=='won').forEach(l=>{if(!evMap[l.fu])evMap[l.fu]=[];evMap[l.fu].push({color:'var(--blue)',type:'fu',li:leads.indexOf(l)})});
+  appts.forEach((a,i)=>{if(!evMap[a.date])evMap[a.date]=[];evMap[a.date].push({color:'var(--green)',type:'appt',ai:i})});
+  let h=`<div class="cal-nav"><button onclick="calMon--;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">‹</button><div class="cal-month">${MN[month]} ${year}</div><button onclick="calMon++;renderCal()" style="background:var(--s2);border:1px solid var(--br);color:var(--txt);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:15px">›</button></div><div class="cal-grid">`;
+  ['D','S','T','Q','Q','S','S'].forEach(x=>h+=`<div class="cal-hdr">${x}</div>`);
+  for(let i=0;i<first;i++)h+=`<div class="cal-day empty"></div>`;
+  for(let dd=1;dd<=days;dd++){
+    const ds=`${year}-${String(month+1).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+    const evs=evMap[ds]||[],isT=ds===t,isO=ds<t&&evs.some(e=>e.type==='fu');
+    let cls='cal-day';if(isT)cls+=' today';if(evs.length&&!isO)cls+=' has-ev';if(isO)cls+=' overdue';
+    const oc=evs.length?`onclick="calClick('${ds}')" style="cursor:pointer"`:'';
+    h+=`<div class="${cls}" ${oc}><span>${dd}</span>${evs.length?`<div class="cal-dots">${evs.slice(0,3).map(e=>`<div class="cal-dot" style="background:${e.color}"></div>`).join('')}</div>`:''}</div>`;
+  }
+  h+='</div>';
+  const all=[...leads.filter(l=>l.fu&&l.stage!=='won').map(l=>({date:l.fu,time:'',label:l.name,sub:l.product,type:'fu',li:leads.indexOf(l)})),...appts.map((a,i)=>({date:a.date,time:a.time,label:a.title,sub:(a.time||'')+(a.local?' · '+a.local:''),type:'appt',ai:i}))].sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
+  if(all.length){
+    h+=`<div class="grp" style="margin-top:16px">📋 TODOS OS EVENTOS</div>`;
+    h+=all.map(ev=>{const ov=ev.date<t,tod=ev.date===t;return`<div style="display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid ${ev.type==='appt'?'rgba(34,197,94,.2)':ov?'rgba(239,68,68,.2)':tod?'rgba(255,107,43,.2)':'var(--br)'};cursor:pointer" onclick="${ev.type==='appt'?`closeM('m-cal');openEditAppt(${ev.ai})`:`closeM('m-cal');openDetail(${ev.li})`}"><div style="font-size:18px">${ev.type==='appt'?'📆':'📅'}</div><div style="flex:1"><div style="font-size:12px;font-weight:700">${ev.label}</div><div style="font-size:10px;color:var(--txt3)">${fd(ev.date)}${ev.time?' '+ev.time:''} ${ev.sub?'· '+ev.sub:''}</div></div><div style="font-size:9px;font-weight:700;color:${ev.type==='appt'?'var(--green)':ov?'var(--red)':tod?'var(--acc)':'var(--blue)'}">${ev.type==='appt'?'COMPROMISSO':ov?'ATRASADO':tod?'HOJE':'FOLLOW-UP'}</div></div>`}).join('');
+  }
+  el.innerHTML=h;
 }
-function leadCardHTML(l,i){
-  const ss=STAGE_S[l.stage]||STAGE_S.cold, t=today();
-  const fuOver=l.followup&&l.followup<t&&l.stage!=='won';
-  const fuTod=l.followup&&l.followup===t&&l.stage!=='won';
-  const comm=getComm(l);
-  return `<div class="lead-card">
-    <div class="lead-top">
-      <div class="lead-av" style="background:${gradBg(i)}">${l.avatar||l.name[0]||'?'}</div>
-      <div class="lead-info">
-        <div class="lead-name">${l.name}</div>
-        <div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>
-        ${l.valor?`<div class="lead-comm">💰 ${fmtBRL(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.commPct}% = ${fmtBRL(comm)}</span>`:''}</div>`:''}
-      </div>
-      <div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div>
-      <div style="font-size:10px;font-weight:700;color:${scoreColor(leadScore(l))}">Score: ${leadScore(l)}/100</div>
-    </div>
-    <div style="background:var(--s3);border-radius:8px;padding:7px 10px;font-size:11px;color:${scoreColor(leadScore(l))};font-weight:600;margin-bottom:8px">${nextStep(l)}</div>
-    ${l.followup&&l.stage!=='won'?`<div class="fu-bar" style="background:${fuOver?'rgba(239,68,68,.08)':fuTod?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fuOver?'rgba(239,68,68,.2)':fuTod?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fuOver?'var(--red)':fuTod?'var(--acc)':'var(--yellow)'}"><span>${fuOver?'🔴':fuTod?'🟡':'📅'}</span><span>${fuOver?'Atrasado!':fuTod?'Hoje!':'Follow-up:'} ${fmtDate(l.followup)}</span></div>`:''}
-    <div class="lead-btns">
-      ${l.whatsapp?`<a class="btn-wa" href="https://wa.me/55${l.whatsapp}" target="_blank">📲 WhatsApp</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WhatsApp</button>`}
-      <button class="btn-msg" onclick="openMsg(${i})">💬 Mensagem</button>
-      <button class="btn-icon" onclick="openEditLead(${i})">✏️</button>
-      <button class="btn-icon" onclick="openHist(${i})">📋</button>
-      <button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff" title="Analisar com IA">🤖</button>
-    </div>
-  </div>`;
+function calClick(ds){
+  const t=td(),fuL=leads.filter(l=>l.fu===ds&&l.stage!=='won'),dayA=appts.filter(a=>a.date===ds);
+  if(fuL.length===1&&!dayA.length){openDetail(leads.indexOf(fuL[0]));return}
+  if(dayA.length===1&&!fuL.length){openEditAppt(appts.indexOf(dayA[0]));return}
+  toast([...fuL.map(l=>l.name),...dayA.map(a=>a.title)].join(' · '));
 }
 
-let editLeadIdx=-1;
-function openAddLead(){
-  editLeadIdx=-1;
-  document.getElementById('lead-modal-title').textContent='➕ NOVO LEAD';
-  document.getElementById('lead-del-btn').style.display='none';
-  ['name','product','valor','commPct','status','whatsapp','avatar','followup','history'].forEach(f=>{ const el=document.getElementById('lf-'+f); if(el) el.value=''; });
-  document.getElementById('lf-stage').value='hot';
-  document.getElementById('comm-sug').textContent='';
-  openModal('modal-lead');
+function openDetail(i){
+  const l=leads[i],comm=gc(l),s=scr(l);
+  document.getElementById('detail-title').textContent='📋 '+l.name.split(' ')[0].toUpperCase();
+  document.getElementById('detail-content').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:11px;color:var(--txt3)">${l.product}${l.status?' · '+l.status:''}</div><div style="font-family:var(--d);font-size:18px;color:${scc(s)}">${s}/100</div></div>${l.valor?`<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px">💰 ${brl(l.valor)}${comm?' → '+l.pct+'% = '+brl(comm):''}</div>`:''}<div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu?`<div style="font-size:11px;color:var(--yellow);margin-bottom:10px">📅 Follow-up: <strong>${fd(l.fu)}</strong></div>`:''}<div style="background:var(--s2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:12px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">📝 HISTÓRICO</div><div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${l.hist||'Sem histórico.'}</div></div><div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="closeM('m-detail');openEditLead(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button><button onclick="closeM('m-detail');openMsg(${i})" class="btn" style="flex:1;background:var(--blue);color:#fff">💬 Mensagem</button></div><button onclick="closeM('m-detail');openAI(${i})" class="btn" style="width:100%;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 Analisar com IA</button>`;
+  openM('m-detail');
 }
-function openEditLead(i){
-  editLeadIdx=i; const l=leads[i];
-  document.getElementById('lead-modal-title').textContent='✏️ EDITAR LEAD';
-  document.getElementById('lead-del-btn').style.display='block';
-  ['name','product','valor','commPct','status','whatsapp','avatar','followup','history'].forEach(f=>{ const el=document.getElementById('lf-'+f); if(el) el.value=l[f]||''; });
-  document.getElementById('lf-stage').value=l.stage||'hot';
-  updateCommSug(); openModal('modal-lead');
+
+function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=leads.map((l,i)=>lCard(l,i)).join('')}
+function lCard(l,i){
+  const ss=SS[l.stage]||SS.cold,t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won',comm=gc(l),s=scr(l);
+  return`<div class="lead-card"><div class="lead-top"><div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div><div class="lead-info"><div class="lead-name">${l.name}</div><div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}</div><div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div><div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}<div class="lead-btns">${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}<button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button><button class="btn-icon" onclick="openDetail(${i})">👁️</button><button class="btn-icon" onclick="openEditLead(${i})">✏️</button><button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button></div></div>`;
 }
-function updateCommSug(){
-  const v=Number(document.getElementById('lf-valor').value)||0;
-  const p=Number(document.getElementById('lf-commPct').value)||0;
-  const el=document.getElementById('comm-sug');
-  if(v>0&&p>0) el.textContent=`= ${fmtBRL(Math.round(v*p/100))}`;
-  else if(v>0) el.textContent=`Sugestão 1,8%: ${fmtBRL(Math.round(v*0.018))}`;
-  else el.textContent='';
+
+let lView='list';
+function setView(v){lView=v;['list','kanban','cal'].forEach(x=>{document.getElementById('leads-'+x).style.display=v===x?'block':'none';const b=document.getElementById('vt-'+x);if(b)b.classList.toggle('active',v===x)});if(v==='list')renderLeads();else if(v==='kanban')renderKanban();else{calMon=0;openCalFull()}}
+
+function renderKanban(){
+  const el=document.getElementById('leads-kanban');if(!el)return;
+  const cols=[{key:'hot',l:'🔥 QUENTE',c:'var(--acc)'},{key:'warm',l:'🌡️ MORNO',c:'var(--yellow)'},{key:'cold',l:'❄️ FRIO',c:'var(--blue)'},{key:'won',l:'✅ FECHADO',c:'var(--green)'}];
+  el.innerHTML=`<div class="kanban-wrap"><div class="kanban">${cols.map(col=>{const cl=leads.filter(l=>l.stage===col.key),tv=cl.reduce((s,l)=>s+(Number(l.valor)||0),0);return`<div class="kanban-col" id="kcol-${col.key}" ondragover="kOv(event,'${col.key}')" ondragleave="kLv(event)" ondrop="kDp(event,'${col.key}')"><div class="kanban-hdr"><span style="color:${col.c}">${col.l}</span><span style="font-family:var(--d);font-size:14px;color:${col.c}">${cl.length}</span></div>${tv?`<div style="font-size:10px;color:var(--txt3);margin-bottom:8px">VGV: ${fk(tv)}</div>`:''} ${cl.length?cl.map(l=>{const i=leads.indexOf(l),t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won';return`<div class="k-card" draggable="true" id="kcard-${l.id}" ondragstart="kDs(event,${l.id})" ondragend="kDe()" onclick="openDetail(${i})"><div class="k-name">${l.avatar||l.name[0]||'?'} ${l.name}</div><div class="k-prod">${l.product}</div>${l.valor?`<div style="font-size:11px;color:var(--green);font-weight:700">💰 ${fk(l.valor)}</div>`:''}${l.fu&&l.stage!=='won'?`<div style="font-size:10px;color:${fo?'var(--red)':ft?'var(--acc)':'var(--txt3)'};margin-top:3px">${fo?'🔴':ft?'🟡':'📅'} ${fd(l.fu)}</div>`:''}<div style="font-size:9px;color:${scc(scr(l))};margin-top:3px;font-weight:700">Score: ${scr(l)}/100</div></div>`}).join(''):`<div style="font-size:11px;color:var(--txt3);padding:12px;text-align:center;border:1px dashed var(--br);border-radius:8px">Arraste leads aqui</div>`}</div>`}).join('')}</div></div>`;
 }
+let dId=null;
+function kDs(e,id){dId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>{const el=document.getElementById('kcard-'+id);if(el)el.classList.add('dragging')},0)}
+function kDe(){if(dId){const el=document.getElementById('kcard-'+dId);if(el)el.classList.remove('dragging')}document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));dId=null}
+function kOv(e,s){e.preventDefault();document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));const c=document.getElementById('kcol-'+s);if(c)c.classList.add('drag-over')}
+function kLv(e){if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove('drag-over')}
+function kDp(e,stage){e.preventDefault();if(!dId)return;const i=leads.findIndex(l=>l.id===dId);if(i===-1)return;if(leads[i].stage===stage){renderKanban();return}leads[i].stage=stage;ls('leads',leads);renderKanban();renderHdr();const sn={hot:'🔥 Quente',warm:'🌡️ Morno',cold:'❄️ Frio',won:'✅ Fechado'};toast(`${leads[i].name} → ${sn[stage]}`);if(stage==='won')setTimeout(()=>showNotif('🏆','Venda fechada!',leads[i].name+' — '+brl(gc(leads[i]))),300)}
+let tDId=null,tClone=null;
+document.addEventListener('touchstart',e=>{const c=e.target.closest('.k-card');if(!c)return;tDId=parseInt(c.id.replace('kcard-',''));tClone=c.cloneNode(true);tClone.style.cssText=`position:fixed;z-index:9999;pointer-events:none;opacity:.8;width:${c.offsetWidth}px;border-radius:9px;background:var(--s1);border:2px solid var(--acc);padding:10px;font-family:var(--f)`;document.body.appendChild(tClone);c.style.opacity='.3'},{passive:true});
+document.addEventListener('touchmove',e=>{if(!tDId||!tClone)return;e.preventDefault();const t=e.touches[0];tClone.style.left=(t.clientX-tClone.offsetWidth/2)+'px';tClone.style.top=(t.clientY-30)+'px';document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));const el=document.elementFromPoint(t.clientX,t.clientY);const col=el?.closest('.kanban-col');if(col)col.classList.add('drag-over')},{passive:false});
+document.addEventListener('touchend',e=>{if(!tDId)return;const t=e.changedTouches[0],el=document.elementFromPoint(t.clientX,t.clientY),col=el?.closest('.kanban-col');if(col){const stage=col.id.replace('kcol-',''),i=leads.findIndex(l=>l.id===tDId);if(i!==-1&&leads[i].stage!==stage){leads[i].stage=stage;ls('leads',leads);const sn={hot:'🔥 Quente',warm:'🌡️ Morno',cold:'❄️ Frio',won:'✅ Fechado'};toast(`${leads[i].name} → ${sn[stage]}`);if(stage==='won')setTimeout(()=>showNotif('🏆','Venda fechada!',leads[i].name+' — '+brl(gc(leads[i]))),300)}}if(tClone){tClone.remove();tClone=null}document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));const card=document.getElementById('kcard-'+tDId);if(card)card.style.opacity='1';tDId=null;renderKanban();renderHdr()});
+
+let eiL=-1;
+function openAddLead(){eiL=-1;document.getElementById('lead-title').textContent='➕ NOVO LEAD';document.getElementById('lead-del').style.display='none';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});document.getElementById('lf-stage').value='hot';document.getElementById('comm-hint').textContent='';openM('m-lead')}
+function openEditLead(i){eiL=i;const l=leads[i];document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';document.getElementById('lead-del').style.display='block';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});document.getElementById('lf-stage').value=l.stage||'hot';updComm();openM('m-lead')}
+function updComm(){const v=Number(document.getElementById('lf-valor').value)||0,p=Number(document.getElementById('lf-pct').value)||0,el=document.getElementById('comm-hint');if(v>0&&p>0)el.textContent='= '+brl(Math.round(v*p/100));else if(v>0)el.textContent='Sugestão 1,8%: '+brl(Math.round(v*0.018));else el.textContent=''}
 function saveLead(){
-  const l={
-    id:editLeadIdx===-1?Date.now():(leads[editLeadIdx]?.id||Date.now()),
-    name:document.getElementById('lf-name').value||'Lead',
-    product:document.getElementById('lf-product').value||'',
-    valor:document.getElementById('lf-valor').value||'',
-    commPct:document.getElementById('lf-commPct').value||'',
-    status:document.getElementById('lf-status').value||'',
-    whatsapp:(document.getElementById('lf-whatsapp').value||'').replace(/\D/g,''),
-    stage:document.getElementById('lf-stage').value,
-    avatar:document.getElementById('lf-avatar').value||document.getElementById('lf-name').value?.[0]?.toUpperCase()||'?',
-    followup:document.getElementById('lf-followup').value||'',
-    history:document.getElementById('lf-history').value||'',
-  };
-  if(editLeadIdx===-1) leads.push(l); else leads[editLeadIdx]=l;
-  saveLeads(); closeModal('modal-lead'); renderLeads(); renderHeader();
-  showToast(editLeadIdx===-1?'✅ Lead adicionado!':'✅ Lead atualizado!');
+  const name=(document.getElementById('lf-name').value||'Lead').trim();
+  const wa=(document.getElementById('lf-wa').value||'').replace(/\D/g,'');
+  // Check duplicate — same name or same WhatsApp (excluding current lead being edited)
+  const dupName=leads.findIndex((l,i)=>i!==eiL&&l.name.trim().toLowerCase()===name.toLowerCase());
+  const dupWa=wa?leads.findIndex((l,i)=>i!==eiL&&l.wa&&l.wa===wa):-1;
+  if(dupName!==-1){toast('⚠️ Já existe um lead com esse nome!');return}
+  if(dupWa!==-1){toast('⚠️ Esse WhatsApp já está cadastrado em: '+leads[dupWa].name);return}
+  const l={id:eiL===-1?Date.now():(leads[eiL]?.id||Date.now()),name,product:document.getElementById('lf-product').value||'',valor:document.getElementById('lf-valor').value||'',pct:document.getElementById('lf-pct').value||'',status:document.getElementById('lf-status').value||'',wa,stage:document.getElementById('lf-stage').value,avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',fu:document.getElementById('lf-fu').value||'',hist:document.getElementById('lf-hist').value||''};
+  if(eiL===-1)leads.push(l);else leads[eiL]=l;
+  ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();
+  toast(eiL===-1?'✅ Lead adicionado!':'✅ Lead atualizado!');
 }
-function deleteLead(){
-  if(!confirm('Excluir este lead?')) return;
-  leads.splice(editLeadIdx,1); saveLeads(); closeModal('modal-lead'); renderLeads(); renderHeader();
-  showToast('🗑️ Lead removido!');
-}
+function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();toast('🗑️ Removido!')}
 
-// ════════════════════════════════════════
-// HISTÓRICO
-// ════════════════════════════════════════
-function openHist(i){
-  const l=leads[i]; const comm=getComm(l);
-  document.getElementById('hist-title').textContent='📋 '+l.name.split(' ')[0].toUpperCase();
-  document.getElementById('hist-content').innerHTML=`
-    <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">${l.product} · ${l.status}</div>
-    ${l.valor?`<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:12px">💰 ${fmtBRL(l.valor)}${comm?' → '+l.commPct+'% = '+fmtBRL(comm):''}</div>`:''}
-    <div style="background:var(--s2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:12px">
-      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">📝 HISTÓRICO</div>
-      <div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${l.history||'Sem histórico registrado.'}</div>
-    </div>
-    ${l.followup?`<div style="font-size:11px;color:var(--txt3);margin-bottom:14px">📅 Follow-up: <strong style="color:var(--yellow)">${fmtDate(l.followup)}</strong></div>`:''}`;
-  openModal('modal-hist');
-}
+let msgI=null,selT=null;
+function openMsg(i){msgI=i;selT=null;const l=leads[i];document.getElementById('msg-info').textContent=l.name+' · '+l.product;document.getElementById('msg-fu').value=l.fu||'';document.getElementById('msg-prev-wrap').style.display='none';renderTplList();openM('m-msg')}
+function renderTplList(){const el=document.getElementById('tpl-list');if(!el)return;el.innerHTML=tpls.map(t=>`<div class="tpl-item${selT===t.id?' sel':''}" onclick="selTpl(${t.id})"><div class="tpl-name">${t.name}</div><div class="tpl-prev">${t.txt.substring(0,80)}${t.txt.length>80?'...':''}</div></div>`).join('')}
+function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t||!l)return;const msg=t.txt.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));document.getElementById('msg-prev').value=msg;document.getElementById('msg-prev-wrap').style.display='block';const wb=document.getElementById('msg-wa-btn');if(l.wa){wb.onclick=()=>{const preview=document.getElementById('msg-prev').value,now=new Date(),ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;ls('leads',leads);toast('💬 Salvo no histórico!');window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank')};wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
+function saveMsgFu(){const d=document.getElementById('msg-fu').value;if(!d){toast('⚠️ Selecione uma data!');return}leads[msgI].fu=d;ls('leads',leads);setView(lView);renderHdr();closeM('m-msg');showNotif('📅','Follow-up agendado!',leads[msgI].name+' — '+fd(d));toast('📅 Follow-up salvo!')}
 
-// ════════════════════════════════════════
-// MENSAGENS
-// ════════════════════════════════════════
-let msgLeadIdx=null, selTplId=null;
-function openMsg(i){
-  msgLeadIdx=i; selTplId=null;
-  const l=leads[i];
-  document.getElementById('msg-lead-info').textContent=l.name+' · '+l.product;
-  document.getElementById('msg-fu-date').value=l.followup||'';
-  document.getElementById('msg-preview-wrap').style.display='none';
-  renderTplList(); openModal('modal-msg');
-}
-function renderTplList(){
-  const el=document.getElementById('tpl-list'); if(!el) return;
-  el.innerHTML=tpls.map(t=>`<div class="tpl-item${selTplId===t.id?' sel':''}" onclick="selectTpl(${t.id})"><div class="tpl-name">${t.name}</div><div class="tpl-preview">${t.text.substring(0,80)}${t.text.length>80?'...':''}</div></div>`).join('');
-}
-function selectTpl(id){
-  selTplId=id;
-  const t=tpls.find(t=>t.id===id), l=leads[msgLeadIdx];
-  if(!t||!l) return;
-  const msg=t.text.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fmtDate(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));
-  document.getElementById('msg-preview').value=msg;
-  document.getElementById('msg-preview-wrap').style.display='block';
-  const waBtn=document.getElementById('msg-wa-btn');
-  if(l.whatsapp){ waBtn.onclick=()=>window.open(`https://wa.me/55${l.whatsapp}?text=${encodeURIComponent(document.getElementById('msg-preview').value)}`,'_blank'); waBtn.style.opacity='1'; }
-  else { waBtn.onclick=()=>showToast('⚠️ Adicione o WhatsApp primeiro!'); waBtn.style.opacity='.6'; }
-  renderTplList();
-}
-function saveMsgFu(){
-  const d=document.getElementById('msg-fu-date').value;
-  if(!d){showToast('⚠️ Selecione uma data!');return;}
-  leads[msgLeadIdx].followup=d; saveLeads(); renderLeads(); renderHeader();
-  closeModal('modal-msg');
-  showNotif('📅','Follow-up agendado!',leads[msgLeadIdx].name+' — '+fmtDate(d));
-  showToast('📅 Follow-up salvo!');
-}
+function renderTplEditor(){const el=document.getElementById('tpl-editor');if(!el)return;el.innerHTML=tpls.map((t,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;gap:8px;margin-bottom:8px"><input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;ls('tpls',tpls)"><button onclick="delTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button></div><textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].txt=this.value;ls('tpls',tpls)">${t.txt}</textarea><div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div></div>`).join('')}
+function addTpl(){tpls.push({id:Date.now(),name:'Nova Mensagem',txt:'Olá, [NOME]! ...'});ls('tpls',tpls);renderTplEditor();toast('✅ Adicionada!')}
+function delTpl(i){if(!confirm('Excluir?'))return;tpls.splice(i,1);ls('tpls',tpls);renderTplEditor();toast('🗑️ Removido!')}
 
-// ════════════════════════════════════════
-// TEMPLATE EDITOR
-// ════════════════════════════════════════
-function renderTplEditor(){
-  const el=document.getElementById('tpl-editor'); if(!el) return;
-  el.innerHTML=tpls.map((t,i)=>`
-    <div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px">
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;saveTpls()">
-        <button onclick="deleteTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button>
-      </div>
-      <textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].text=this.value;saveTpls()">${t.text}</textarea>
-      <div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div>
-    </div>`).join('');
-}
-function addTemplate(){ tpls.push({id:Date.now(),name:'Nova Mensagem',text:'Olá, [NOME]! ...'}); saveTpls(); renderTplEditor(); showToast('✅ Adicionada!'); }
-function deleteTpl(i){ if(!confirm('Excluir modelo?'))return; tpls.splice(i,1); saveTpls(); renderTplEditor(); showToast('🗑️ Removido!'); }
+function renderWorkouts(){const el=document.getElementById('workout-list');if(!el)return;if(!workouts.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum treino.</div>';return}el.innerHTML=workouts.map((w,i)=>{const tc=w.type==='MUSCULAÇÃO'?'var(--acc)':w.type==='CARDIO'?'var(--blue)':'var(--txt3)',tb=w.type==='MUSCULAÇÃO'?'rgba(255,107,43,.12)':w.type==='CARDIO'?'rgba(59,130,246,.12)':'rgba(255,255,255,.05)';return`<div class="workout-day"><div class="wd-hdr"><div class="wd-name">${w.name}</div><div class="wd-type" style="background:${tb};color:${tc}">${w.type}</div><button onclick="openEditWO(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px;margin-left:4px">✏️</button></div>${(w.exs||[]).map(([n,s])=>`<div class="ex-row"><span>${n}</span><span class="ex-sets">${s}</span></div>`).join('')}</div>`}).join('')}
+let eiWO=-1,tmpEx=[];
+function openAddWO(){eiWO=-1;tmpEx=[];document.getElementById('wo-title').textContent='💪 NOVO DIA';document.getElementById('wo-del').style.display='none';document.getElementById('wo-name').value='';document.getElementById('wo-type').value='MUSCULAÇÃO';renderExs();openM('m-wo')}
+function openEditWO(i){eiWO=i;const w=workouts[i];tmpEx=[...(w.exs||[]).map(e=>[...e])];document.getElementById('wo-title').textContent='✏️ EDITAR DIA';document.getElementById('wo-del').style.display='block';document.getElementById('wo-name').value=w.name;document.getElementById('wo-type').value=w.type||'MUSCULAÇÃO';renderExs();openM('m-wo')}
+function renderExs(){const el=document.getElementById('wo-exs');if(!el)return;el.innerHTML=tmpEx.map((e,i)=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:center"><input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Exercício" value="${e[0].replace(/"/g,'&quot;')}" oninput="tmpEx[${i}][0]=this.value"><input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Séries" value="${e[1].replace(/"/g,'&quot;')}" oninput="tmpEx[${i}][1]=this.value"><button onclick="rmEx(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button></div>`).join('')}
+function addEx(){tmpEx.push(['','']);renderExs()}
+function rmEx(i){tmpEx.splice(i,1);renderExs()}
+function saveWO(){const w={id:eiWO===-1?Date.now():(workouts[eiWO]?.id||Date.now()),name:document.getElementById('wo-name').value||'Treino',type:document.getElementById('wo-type').value,exs:tmpEx.filter(e=>e[0].trim())};if(eiWO===-1)workouts.push(w);else workouts[eiWO]=w;ls('wo',workouts);closeM('m-wo');renderWorkouts();toast(eiWO===-1?'✅ Dia adicionado!':'✅ Atualizado!')}
+function delWO(){if(!confirm('Excluir?'))return;workouts.splice(eiWO,1);ls('wo',workouts);closeM('m-wo');renderWorkouts();toast('🗑️ Removido!')}
 
-// ════════════════════════════════════════
-// WORKOUT
-// ════════════════════════════════════════
-function renderWorkouts(){
-  const el=document.getElementById('workout-list'); if(!el) return;
-  if(!workouts.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum dia de treino.</div>';return;}
-  el.innerHTML=workouts.map((w,i)=>{
-    const typeColor=w.type==='MUSCULAÇÃO'?'var(--acc)':w.type==='CARDIO'?'var(--blue)':'var(--txt3)';
-    const typeBg=w.type==='MUSCULAÇÃO'?'rgba(255,107,43,.12)':w.type==='CARDIO'?'rgba(59,130,246,.12)':'rgba(255,255,255,.05)';
-    return `<div class="workout-day">
-      <div class="wd-hdr">
-        <div class="wd-name">${w.name}</div>
-        <div class="wd-type" style="background:${typeBg};color:${typeColor}">${w.type}</div>
-        <div class="wd-actions">
-          <button onclick="openEditWorkout(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button>
-        </div>
-      </div>
-      ${(w.exercises||[]).map(([n,s])=>`<div class="ex-row"><span>${n}</span><span class="ex-sets">${s}</span></div>`).join('')}
-    </div>`;
-  }).join('');
-}
-let editWorkoutIdx=-1, tempExercises=[];
-function openAddWorkout(){ editWorkoutIdx=-1; tempExercises=[]; document.getElementById('workout-modal-title').textContent='💪 NOVO DIA DE TREINO'; document.getElementById('workout-del-btn').style.display='none'; document.getElementById('wd-name').value=''; document.getElementById('wd-type').value='MUSCULAÇÃO'; renderExercises(); openModal('modal-workout'); }
-function openEditWorkout(i){ editWorkoutIdx=i; const w=workouts[i]; tempExercises=[...(w.exercises||[]).map(e=>[...e])]; document.getElementById('workout-modal-title').textContent='✏️ EDITAR DIA'; document.getElementById('workout-del-btn').style.display='block'; document.getElementById('wd-name').value=w.name; document.getElementById('wd-type').value=w.type||'MUSCULAÇÃO'; renderExercises(); openModal('modal-workout'); }
-function renderExercises(){
-  const el=document.getElementById('wd-exercises'); if(!el) return;
-  el.innerHTML=tempExercises.map((e,i)=>`
-    <div style="display:flex;gap:8px;margin-bottom:7px;align-items:center">
-      <input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Exercício" value="${e[0].replace(/"/g,'&quot;')}" oninput="tempExercises[${i}][0]=this.value">
-      <input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Séries" value="${e[1].replace(/"/g,'&quot;')}" oninput="tempExercises[${i}][1]=this.value">
-      <button onclick="removeExercise(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
-    </div>`).join('');
-}
-function addExercise(){ tempExercises.push(['','']); renderExercises(); }
-function removeExercise(i){ tempExercises.splice(i,1); renderExercises(); }
-function saveWorkout(){
-  const w={id:editWorkoutIdx===-1?Date.now():(workouts[editWorkoutIdx]?.id||Date.now()),name:document.getElementById('wd-name').value||'Treino',type:document.getElementById('wd-type').value,exercises:tempExercises.filter(e=>e[0].trim())};
-  if(editWorkoutIdx===-1) workouts.push(w); else workouts[editWorkoutIdx]=w;
-  saveWorkouts(); closeModal('modal-workout'); renderWorkouts(); showToast(editWorkoutIdx===-1?'✅ Dia adicionado!':'✅ Atualizado!');
-}
-function deleteWorkout(){ if(!confirm('Excluir este dia de treino?'))return; workouts.splice(editWorkoutIdx,1); saveWorkouts(); closeModal('modal-workout'); renderWorkouts(); showToast('🗑️ Removido!'); }
+function renderMeals(){const el=document.getElementById('meal-list');if(!el)return;if(!meals.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhuma refeição.</div>';return}el.innerHTML=meals.map((m,i)=>`<div class="meal"><div class="meal-hdr"><div style="font-size:17px">${m.icon||'🍽️'}</div><div class="meal-name">${m.name}</div><div class="meal-kcal">${m.kcal}</div><button onclick="openEditMeal(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px;margin-left:6px">✏️</button></div>${(m.items||[]).map(([n,v])=>`<div class="meal-item"><span>${n}</span><span class="macro">${v}</span></div>`).join('')}</div>`).join('')}
+let eiM=-1,tmpMI=[];
+function openAddMeal(){eiM=-1;tmpMI=[];document.getElementById('meal-title').textContent='🍽️ NOVA REFEIÇÃO';document.getElementById('meal-del').style.display='none';document.getElementById('ml-name').value='';document.getElementById('ml-icon').value='';document.getElementById('ml-kcal').value='';renderMI();openM('m-meal')}
+function openEditMeal(i){eiM=i;const m=meals[i];tmpMI=[...(m.items||[]).map(e=>[...e])];document.getElementById('meal-title').textContent='✏️ EDITAR REFEIÇÃO';document.getElementById('meal-del').style.display='block';document.getElementById('ml-name').value=m.name;document.getElementById('ml-icon').value=m.icon||'';document.getElementById('ml-kcal').value=m.kcal||'';renderMI();openM('m-meal')}
+function renderMI(){const el=document.getElementById('ml-items');if(!el)return;el.innerHTML=tmpMI.map((e,i)=>`<div style="display:flex;gap:8px;margin-bottom:7px;align-items:center"><input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Alimento" value="${e[0].replace(/"/g,'&quot;')}" oninput="tmpMI[${i}][0]=this.value"><input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Macro" value="${e[1].replace(/"/g,'&quot;')}" oninput="tmpMI[${i}][1]=this.value"><button onclick="rmMI(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button></div>`).join('')}
+function addMealItem(){tmpMI.push(['','']);renderMI()}
+function rmMI(i){tmpMI.splice(i,1);renderMI()}
+function saveMeal(){const m={id:eiM===-1?Date.now():(meals[eiM]?.id||Date.now()),name:document.getElementById('ml-name').value||'Refeição',icon:document.getElementById('ml-icon').value||'🍽️',kcal:document.getElementById('ml-kcal').value||'',items:tmpMI.filter(e=>e[0].trim())};if(eiM===-1)meals.push(m);else meals[eiM]=m;ls('meals',meals);closeM('m-meal');renderMeals();toast(eiM===-1?'✅ Adicionada!':'✅ Atualizada!')}
+function delMeal(){if(!confirm('Excluir?'))return;meals.splice(eiM,1);ls('meals',meals);closeM('m-meal');renderMeals();toast('🗑️ Removida!')}
 
-// ════════════════════════════════════════
-// MEALS
-// ════════════════════════════════════════
-function renderMeals(){
-  const el=document.getElementById('meal-list'); if(!el) return;
-  if(!meals.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhuma refeição.</div>';return;}
-  el.innerHTML=meals.map((m,i)=>`
-    <div class="meal">
-      <div class="meal-hdr">
-        <div style="font-size:17px">${m.icon||'🍽️'}</div>
-        <div class="meal-name">${m.name}</div>
-        <div class="meal-kcal">${m.kcal}</div>
-        <button onclick="openEditMeal(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px;margin-left:6px">✏️</button>
-      </div>
-      ${(m.items||[]).map(([n,v])=>`<div class="meal-item"><span>${n}</span><span class="macro">${v}</span></div>`).join('')}
-    </div>`).join('');
-}
-let editMealIdx=-1, tempMealItems=[];
-function openAddMeal(){ editMealIdx=-1; tempMealItems=[]; document.getElementById('meal-modal-title').textContent='🍽️ NOVA REFEIÇÃO'; document.getElementById('meal-del-btn').style.display='none'; document.getElementById('ml-name').value=''; document.getElementById('ml-icon').value=''; document.getElementById('ml-kcal').value=''; renderMealItems(); openModal('modal-meal'); }
-function openEditMeal(i){ editMealIdx=i; const m=meals[i]; tempMealItems=[...(m.items||[]).map(e=>[...e])]; document.getElementById('meal-modal-title').textContent='✏️ EDITAR REFEIÇÃO'; document.getElementById('meal-del-btn').style.display='block'; document.getElementById('ml-name').value=m.name; document.getElementById('ml-icon').value=m.icon||''; document.getElementById('ml-kcal').value=m.kcal||''; renderMealItems(); openModal('modal-meal'); }
-function renderMealItems(){
-  const el=document.getElementById('ml-items'); if(!el) return;
-  el.innerHTML=tempMealItems.map((e,i)=>`
-    <div style="display:flex;gap:8px;margin-bottom:7px;align-items:center">
-      <input class="inp" style="flex:2;padding:8px 10px;font-size:13px" placeholder="Alimento" value="${e[0].replace(/"/g,'&quot;')}" oninput="tempMealItems[${i}][0]=this.value">
-      <input class="inp" style="flex:1;padding:8px 10px;font-size:13px" placeholder="Macro" value="${e[1].replace(/"/g,'&quot;')}" oninput="tempMealItems[${i}][1]=this.value">
-      <button onclick="removeMealItem(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:18px;flex-shrink:0">✕</button>
-    </div>`).join('');
-}
-function addMealItem(){ tempMealItems.push(['','']); renderMealItems(); }
-function removeMealItem(i){ tempMealItems.splice(i,1); renderMealItems(); }
-function saveMeal(){
-  const m={id:editMealIdx===-1?Date.now():(meals[editMealIdx]?.id||Date.now()),name:document.getElementById('ml-name').value||'Refeição',icon:document.getElementById('ml-icon').value||'🍽️',kcal:document.getElementById('ml-kcal').value||'',items:tempMealItems.filter(e=>e[0].trim())};
-  if(editMealIdx===-1) meals.push(m); else meals[editMealIdx]=m;
-  saveMeals(); closeModal('modal-meal'); renderMeals(); showToast(editMealIdx===-1?'✅ Refeição adicionada!':'✅ Atualizada!');
-}
-function deleteMeal(){ if(!confirm('Excluir esta refeição?'))return; meals.splice(editMealIdx,1); saveMeals(); closeModal('modal-meal'); renderMeals(); showToast('🗑️ Removida!'); }
+function renderFavs(){const el=document.getElementById('favs-list');if(!el)return;if(!favs.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum link.</div>';return}el.innerHTML=favs.map((f,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:11px;background:var(--s2);border-radius:10px;margin-bottom:7px;border:1px solid var(--br)"><a href="${f.url}" target="_blank" style="display:flex;align-items:center;gap:10px;flex:1;text-decoration:none;color:var(--txt)"><div style="font-size:22px;flex-shrink:0">${f.icon||'🔗'}</div><div style="min-width:0"><div style="font-size:13px;font-weight:600">${f.name}</div><div style="font-size:10px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.url}</div></div></a><button onclick="openEditFav(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;flex-shrink:0">✏️</button></div>`).join('')}
+let eiFav=-1;
+function openAddFav(){eiFav=-1;document.getElementById('fav-title').textContent='🔗 NOVO LINK';document.getElementById('fav-del').style.display='none';document.getElementById('fav-name').value='';document.getElementById('fav-url').value='';document.getElementById('fav-icon').value='';openM('m-fav')}
+function openEditFav(i){eiFav=i;const f=favs[i];document.getElementById('fav-title').textContent='✏️ EDITAR LINK';document.getElementById('fav-del').style.display='block';document.getElementById('fav-name').value=f.name||'';document.getElementById('fav-url').value=f.url||'';document.getElementById('fav-icon').value=f.icon||'';openM('m-fav')}
+function saveFav(){let url=document.getElementById('fav-url').value||'';if(url&&!url.startsWith('http'))url='https://'+url;const f={id:eiFav===-1?Date.now():(favs[eiFav]?.id||Date.now()),name:document.getElementById('fav-name').value||'Link',url,icon:document.getElementById('fav-icon').value||'🔗'};if(eiFav===-1)favs.push(f);else favs[eiFav]=f;ls('favs',favs);closeM('m-fav');renderFavs();toast(eiFav===-1?'✅ Link adicionado!':'✅ Atualizado!')}
+function delFav(){if(!confirm('Excluir?'))return;favs.splice(eiFav,1);ls('favs',favs);closeM('m-fav');renderFavs();toast('🗑️ Removido!')}
 
-// ════════════════════════════════════════
-// TASK EDITOR
-// ════════════════════════════════════════
-let edWeek=0, edSec='vendas';
-function renderWeekTabs(){
-  const el=document.getElementById('week-tabs'); if(!el) return;
-  el.innerHTML=weeks.map((_,i)=>`<button class="sec-tab${i===edWeek?' active':''}" onclick="selectEdWeek(${i},this)">Sem ${i+1}</button>`).join('');
-}
-function selectEdWeek(i,el){ edWeek=i; document.querySelectorAll('#week-tabs .sec-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTaskEditor(); }
-function selectSec(s,el){ edSec=s; document.querySelectorAll('#sec-tabs .sec-tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); renderTaskEditor(); }
-function renderTaskEditor(){
-  const el=document.getElementById('task-editor'); if(!el) return;
-  const tasks=weeks[edWeek]?.[edSec]||[];
-  el.innerHTML=tasks.map((t,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--br)">
-      <div style="flex:1;min-width:0"><div style="font-size:12px">${t.t}</div><div style="font-size:10px;color:var(--txt3)">${t.s}</div></div>
-      <button onclick="editTask(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button>
-      <button onclick="deleteTask(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">🗑️</button>
-    </div>`).join('');
-}
-function editTask(i){ const t=weeks[edWeek][edSec][i]; const name=prompt('Tarefa:',t.t); if(name===null)return; const sub=prompt('Detalhe:',t.s); if(sub===null)return; const tag=prompt('Etiqueta:',t.tag); if(tag===null)return; weeks[edWeek][edSec][i]={t:name,s:sub,tag:tag||t.tag}; saveWeeks(); renderTaskEditor(); renderTasks(); showToast('✅ Atualizada!'); }
-function addTask(){ const name=prompt('Nova tarefa:'); if(!name)return; const sub=prompt('Detalhe (opcional):',''); const tag=prompt('Etiqueta:','📌 Tarefa'); if(!weeks[edWeek][edSec]) weeks[edWeek][edSec]=[]; weeks[edWeek][edSec].push({t:name,s:sub||'',tag:tag||'📌 Tarefa'}); saveWeeks(); renderTaskEditor(); renderTasks(); showToast('✅ Adicionada!'); }
-function deleteTask(i){ if(!confirm('Excluir?'))return; weeks[edWeek][edSec].splice(i,1); saveWeeks(); renderTaskEditor(); renderTasks(); showToast('🗑️ Removida!'); }
+function openClaudeNews(){const tp={imob:'Busque as últimas notícias e tendências do mercado imobiliário em São Paulo e Brasil em 2025. Inclua preços, lançamentos, índices do setor, perspectivas para investidores. Dados recentes e específicos.',invest:'Últimas notícias sobre investimentos no Brasil 2025: Selic, renda fixa, fundos imobiliários FIIs, mercado de capitais, perspectivas econômicas. Foque em oportunidades para pessoa física.',selic:'Últimas notícias sobre Selic e financiamento imobiliário Brasil. Como a taxa atual afeta crédito imobiliário e investimentos em imóveis? Dados do Banco Central e perspectivas.',lanc:'Últimos lançamentos imobiliários São Paulo 2025. Imóveis compactos, studios, apart-hotéis para investimento. Preços, localização, expectativas de valorização.',airbnb:'Últimas notícias mercado aluguel por temporada e Airbnb Brasil 2025. Taxa de ocupação, rentabilidade, regulamentações, melhores cidades e bairros para investir.',fii:'Últimas notícias fundos imobiliários FIIs Brasil 2025. Melhores fundos, dividend yield, perspectivas, como escolher FIIs para renda passiva.'};const sel=document.getElementById('news-topic').value;window.open('https://claude.ai/new?q='+encodeURIComponent(tp[sel]||tp.imob),'_blank');closeM('m-news')}
 
-// ════════════════════════════════════════
-// CONFIG
-// ════════════════════════════════════════
-function saveCfg(){
-  cfg.metaComm=Number(document.getElementById('cfgMetaComm').value)||70000;
-  cfg.metaSales=Number(document.getElementById('cfgMetaVendas').value)||6;
-  cfg.igHandle=document.getElementById('cfgHandle').value||'flavio.vitacon';
-  cfg.igMetaFollowers=Number(document.getElementById('cfgMetaFollowers').value)||5000;
-  cfg.followers=Number(document.getElementById('cfgFollowers').value)||0;
-  cfg.reels=Number(document.getElementById('cfgReels').value)||0;
-  cfg.posts=Number(document.getElementById('cfgPosts').value)||0;
-  cfg.igLeads=Number(document.getElementById('cfgIgLeads').value)||0;
-  cfg.treinos=Number(document.getElementById('cfgTreinos').value)||0;
-  cfg.corridas=Number(document.getElementById('cfgCorridas').value)||0;
-  cfg.kcal=Number(document.getElementById('cfgKcal').value)||2800;
-  cfg.prot=Number(document.getElementById('cfgProt').value)||180;
-  cfg.carbs=Number(document.getElementById('cfgCarbs').value)||300;
-  saveCfgLS(); renderHeader();
-}
-function loadCfg(){
-  const m={cfgMetaComm:'metaComm',cfgMetaVendas:'metaSales',cfgHandle:'igHandle',cfgMetaFollowers:'igMetaFollowers',cfgFollowers:'followers',cfgReels:'reels',cfgPosts:'posts',cfgIgLeads:'igLeads',cfgTreinos:'treinos',cfgCorridas:'corridas',cfgKcal:'kcal',cfgProt:'prot',cfgCarbs:'carbs'};
-  Object.entries(m).forEach(([id,k])=>{ const el=document.getElementById(id); if(el) el.value=cfg[k]||''; });
-}
+let edW=0,edSec='vendas';
+function renderWeekTabs(){const el=document.getElementById('week-tabs');if(!el)return;el.innerHTML=weeks.map((_,i)=>`<button class="sec-tab${i===edW?' active':''}" onclick="selEdW(${i},this)">Sem ${i+1}</button>`).join('')}
+function selEdW(i,el){edW=i;document.querySelectorAll('#week-tabs .sec-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderTE()}
+function selSec(s,el){edSec=s;document.querySelectorAll('#sec-tabs-cfg .sec-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderTE()}
+function renderTE(){const el=document.getElementById('task-editor');if(!el)return;const ts=weeks[edW]?.[edSec]||[];el.innerHTML=ts.map((t,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:9px;background:var(--s2);border-radius:9px;margin-bottom:6px;border:1px solid var(--br)"><div style="flex:1;min-width:0"><div style="font-size:12px">${t.t}</div><div style="font-size:10px;color:var(--txt3)">${t.s}</div></div><button onclick="openEditTaskCfg(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button><button onclick="delTcfg(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">🗑️</button></div>`).join('')}
+function openEditTaskCfg(i){etWi=edW;etSec=edSec;etI=i;const t=weeks[edW][edSec][i];document.getElementById('task-modal-title').textContent='✏️ EDITAR TAREFA';document.getElementById('tf-t').value=t.t||'';document.getElementById('tf-s').value=t.s||'';document.getElementById('tf-tag').value=t.tag||'';openM('m-task')}
+function addTaskCfg(){etWi=edW;etSec=edSec;etI=-1;document.getElementById('task-modal-title').textContent='➕ NOVA TAREFA';document.getElementById('tf-t').value='';document.getElementById('tf-s').value='';document.getElementById('tf-tag').value='📌 Tarefa';openM('m-task')}
+function delTcfg(i){if(!confirm('Excluir?'))return;weeks[edW][edSec].splice(i,1);ls('weeks',weeks);renderTE();renderTasks();toast('🗑️ Removida!')}
 
-// ════════════════════════════════════════
-// EXPORT / IMPORT
-// ════════════════════════════════════════
-function exportData(){
-  const d={leads,weeks,done,cfg,tpls,workouts,meals,start:startDay};
-  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
-  const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download='plano60dias_flavio.json'; a.click(); URL.revokeObjectURL(u);
-  showToast('📦 Exportado!');
-}
-function importData(e){
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try{
-      const d=JSON.parse(ev.target.result);
-      if(d.leads){leads=d.leads;saveLeads();}
-      if(d.weeks){weeks=d.weeks;saveWeeks();}
-      if(d.done){done=d.done;saveDone();}
-      if(d.cfg){cfg=d.cfg;saveCfgLS();}
-      if(d.tpls){tpls=d.tpls;saveTpls();}
-      if(d.workouts){workouts=d.workouts;saveWorkouts();}
-      if(d.meals){meals=d.meals;saveMeals();}
-      renderAll(); showToast('✅ Dados importados!');
-    }catch{showToast('❌ Arquivo inválido!');}
-  };
-  r.readAsText(f);
-}
-function resetDone(){ done={}; saveDone(); renderTasks(); showToast('🔄 Reiniciado!'); }
+function saveCfg(){cfg.metaComm=Number(document.getElementById('cMetaComm').value)||70000;cfg.metaV=Number(document.getElementById('cMetaV').value)||6;cfg.handle=document.getElementById('cHandle').value||'flavio.vitacon';cfg.followers=Number(document.getElementById('cFollowers').value)||0;cfg.reels=Number(document.getElementById('cReels').value)||0;cfg.posts=Number(document.getElementById('cPosts').value)||0;cfg.igLeads=Number(document.getElementById('cIgLeads').value)||0;cfg.treinos=Number(document.getElementById('cTreinos').value)||0;cfg.corridas=Number(document.getElementById('cCorridas').value)||0;cfg.kcal=Number(document.getElementById('cKcal').value)||2800;cfg.prot=Number(document.getElementById('cProt').value)||180;cfg.carbs=Number(document.getElementById('cCarbs').value)||300;ls('cfg',cfg);renderHdr()}
+function loadCfg(){const m={cMetaComm:'metaComm',cMetaV:'metaV',cHandle:'handle',cFollowers:'followers',cReels:'reels',cPosts:'posts',cIgLeads:'igLeads',cTreinos:'treinos',cCorridas:'corridas',cKcal:'kcal',cProt:'prot',cCarbs:'carbs'};Object.entries(m).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.value=cfg[k]||''})}
 
-// ════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════
-function renderAll(){
-  renderTasks(); renderLeads(); renderHeader();
-  renderWorkouts(); renderMeals();
-  loadCfg(); renderWeekTabs(); renderTaskEditor(); renderTplEditor();
-}
+let aiI=null;
+function openAI(i){aiI=i;const l=leads[i],s=scr(l),comm=gc(l);document.getElementById('ai-info').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-family:var(--d);font-size:20px;color:${scc(s)}">${s}<span style="font-size:10px;color:var(--txt3)"> /100</span></div></div><div style="font-size:11px;color:var(--txt3);margin-bottom:6px">${l.product}${l.valor?' · '+brl(l.valor):''}${comm?' · comissão: '+brl(comm):''}</div><div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>`;document.getElementById('ai-convo').value=l.hist||'';document.getElementById('ai-q').value='proximo';document.getElementById('ai-cw').style.display='none';openM('m-ai')}
+function updAIQ(){document.getElementById('ai-cw').style.display=document.getElementById('ai-q').value==='custom'?'block':'none'}
+function openClaude(){const l=leads[aiI];if(!l)return;const qm={proximo:'Qual o melhor próximo passo para fechar essa venda?',objecao:'Como superar a objeção desse lead?',mensagem:'Crie uma mensagem de WhatsApp para reativar esse lead.',analise:'Análise completa do lead com recomendações estratégicas.',urgencia:'Como criar urgência real e ética para fechar agora?',custom:document.getElementById('ai-custom').value||'Qual o próximo passo?'};const q=qm[document.getElementById('ai-q').value],convo=document.getElementById('ai-convo').value,s=scr(l),comm=gc(l);const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Lead do Flávio Garcia, corretor Vitacon:\n\nNome: ${l.name}\nProduto: ${l.product}\nValor: ${l.valor?brl(l.valor):'não informado'}\nComissão potencial: ${comm?brl(comm)+' ('+l.pct+'%)':'não calculada'}\nStatus: ${l.status||'não informado'}\nTemperatura: ${l.stage==='hot'?'🔥 QUENTE':l.stage==='warm'?'🌡️ MORNO':l.stage==='cold'?'❄️ FRIO':'✅ FECHADO'}\nScore: ${s}/100\nFollow-up: ${l.fu?fd(l.fu):'não agendado'}\n\nHISTÓRICO:\n${convo||'Sem histórico.'}\n\nPERGUNTA: ${q}\n\nResponda de forma direta e prática.`;window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');closeM('m-ai')}
+
+function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
+function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
+function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
+
+function renderAll(){renderTasks();setView('list');renderHdr();renderWorkouts();renderMeals();renderFavs();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
-setTimeout(()=>{
-  const t=today(), due=leads.filter(l=>l.followup&&l.followup<=t&&l.stage!=='won');
-  if(due.length) showNotif('📱',`Follow-up ${due[0].followup<t?'ATRASADO!':'hoje!'}`,due[0].name);
-},800);
+setTimeout(()=>{const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won');if(due.length)showNotif('📱',`Follow-up ${due[0].fu<t?'ATRASADO!':'hoje!'}`,due[0].name)},800);
 </script>
-<!-- MODAL IA -->
-<div class="overlay" id="modal-ai">
-  <div class="modal">
-    <div class="modal-hdr"><span>🤖 ANALISAR COM IA</span><button class="modal-close" onclick="closeModal('modal-ai')">✕</button></div>
-    <div id="ai-lead-info" style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;line-height:1.6"></div>
-    <div class="field">
-      <label class="inp-lbl">📝 Histórico + conversa do WhatsApp</label>
-      <textarea class="inp" id="ai-convo" placeholder="Histórico do lead aparece aqui automaticamente. Adicione conversas recentes do WhatsApp abaixo..." style="min-height:120px"></textarea>
-    </div>
-    <div class="field">
-      <label class="inp-lbl">❓ Sua pergunta para a IA</label>
-      <select class="inp" id="ai-question-select" onchange="updateAIQuestion()">
-        <option value="proximo">Qual o melhor próximo passo para fechar essa venda?</option>
-        <option value="objecao">Como superar a objeção desse lead?</option>
-        <option value="mensagem">Crie uma mensagem personalizada para reativar esse lead</option>
-        <option value="analise">Faça uma análise completa desse lead e dê recomendações</option>
-        <option value="urgencia">Como criar urgência real para esse lead fechar agora?</option>
-        <option value="custom">Pergunta personalizada...</option>
-      </select>
-    </div>
-    <div class="field" id="ai-custom-wrap" style="display:none">
-      <label class="inp-lbl">Sua pergunta</label>
-      <input class="inp" id="ai-custom-q" placeholder="Digite sua pergunta...">
-    </div>
-    <button class="btn btn-primary" onclick="openClaude()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);margin-bottom:8px">🤖 Abrir no Claude.ai</button>
-    <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com o contexto completo do lead já preenchido. Gratuito.</p>
-  </div>
-</div>
-
-<script>
-// ── AI ANALYSIS ──
-let aiLeadIdx = null;
-
-function openAI(i) {
-  aiLeadIdx = i;
-  const l = leads[i];
-  const score = leadScore(l);
-  const step = nextStep(l);
-  const comm = getComm(l);
-
-  document.getElementById('ai-lead-info').innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700">${l.name}</div>
-      <div style="font-family:var(--disp);font-size:20px;color:${scoreColor(score)}">${score}<span style="font-size:10px;color:var(--txt3)"> /100</span></div>
-    </div>
-    <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">${l.product}${l.valor ? ' · ' + fmtBRL(l.valor) : ''}${comm ? ' · comissão: ' + fmtBRL(comm) : ''}</div>
-    <div style="background:var(--s3);border-radius:8px;padding:8px 10px;font-size:11px;color:${scoreColor(score)};font-weight:700">${step}</div>`;
-
-  document.getElementById('ai-convo').value = l.history || '';
-  document.getElementById('ai-question-select').value = 'proximo';
-  document.getElementById('ai-custom-wrap').style.display = 'none';
-  openModal('modal-ai');
-}
-
-function updateAIQuestion() {
-  const v = document.getElementById('ai-question-select').value;
-  document.getElementById('ai-custom-wrap').style.display = v === 'custom' ? 'block' : 'none';
-}
-
-function openClaude() {
-  const l = leads[aiLeadIdx];
-  if (!l) return;
-
-  const qMap = {
-    proximo: 'Qual o melhor próximo passo para fechar essa venda?',
-    objecao: 'Como superar a objeção desse lead e avançar no processo?',
-    mensagem: 'Crie uma mensagem personalizada de WhatsApp para reativar esse lead.',
-    analise: 'Faça uma análise completa desse lead e dê recomendações estratégicas.',
-    urgencia: 'Como criar urgência real e ética para esse lead fechar agora?',
-    custom: document.getElementById('ai-custom-q').value || 'Qual o próximo passo?',
-  };
-  const sel = document.getElementById('ai-question-select').value;
-  const question = qMap[sel];
-  const convo = document.getElementById('ai-convo').value;
-  const score = leadScore(l);
-  const comm = getComm(l);
-
-  const prompt = `Você é um especialista em vendas de imóveis de alto padrão em São Paulo. Vou te apresentar um lead do Flávio Garcia, corretor da Vitacon, e preciso de orientação estratégica.
-
-═══ DADOS DO LEAD ═══
-Nome: ${l.name}
-Produto: ${l.product}
-Valor: ${l.valor ? fmtBRL(l.valor) : 'não informado'}
-Comissão potencial: ${comm ? fmtBRL(comm) + ' (' + l.commPct + '%)' : 'não calculada'}
-Status atual: ${l.status || 'não informado'}
-Temperatura: ${l.stage === 'hot' ? '🔥 QUENTE' : l.stage === 'warm' ? '🌡️ MORNO' : l.stage === 'cold' ? '❄️ FRIO' : '✅ FECHADO'}
-Score do lead: ${score}/100
-Follow-up: ${l.followup ? fmtDate(l.followup) : 'não agendado'}
-
-═══ HISTÓRICO / NOTAS ═══
-${l.history || 'Sem histórico registrado.'}
-${convo ? '\n═══ CONVERSA RECENTE ═══\n' + convo : ''}
-
-═══ PERGUNTA ═══
-${question}
-
-Por favor, responda de forma direta e prática. Flávio é um corretor focado em resultados, então dê orientações concretas e acionáveis.`;
-
-  const url = 'https://claude.ai/new?q=' + encodeURIComponent(prompt);
-  window.open(url, '_blank');
-  closeModal('modal-ai');
-}
-</script>
-
 </body>
 </html>
