@@ -471,6 +471,10 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">🏙️ Localização / Geradores de demanda</label><textarea class="inp" id="pj-local" placeholder="Ex: Próximo ao Allianz Parque, Estação Metro, Av. Paulista" style="min-height:60px"></textarea></div>
   <div class="field"><label class="inp-lbl">📝 Notas extras</label><textarea class="inp" id="pj-notas" placeholder="Informações adicionais, restrições, plantão..." style="min-height:60px"></textarea></div>
   <div class="field"><label class="inp-lbl">🔗 Link Book/Tabela</label><input class="inp" type="url" id="pj-link" placeholder="https://..."></div>
+  <div class="field"><label class="inp-lbl">📊 Link Apresentação (.pptx)</label>
+    <input class="inp" type="text" id="pj-pptx" placeholder="Ex: vitacon-jardins.pptx">
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole só o nome do arquivo (ex: jardins.pptx) ou o link completo. Faça upload no GitHub primeiro.</div>
+  </div>
   <div style="display:flex;gap:8px;margin-bottom:8px">
     <button class="btn btn-ghost" onclick="closeM('m-proj')" style="flex:1">Cancelar</button>
     <button class="btn btn-primary" onclick="saveProjeto()" style="flex:1">💾 Salvar</button>
@@ -504,6 +508,36 @@ select.inp option{background:var(--s1)}
   <div class="field" id="proj-ai-cw" style="display:none"><input class="inp" id="proj-ai-custom" placeholder="Digite sua pergunta..."></div>
   <button class="btn" onclick="openClaudeProjeto()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;width:100%;margin-bottom:8px">🤖 Abrir no Claude.ai</button>
   <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com todos os dados do projeto. Gratuito.</p>
+</div></div>
+
+<!-- PROJETOS PARA LEAD -->
+<div class="overlay" id="m-proj-lead" style="z-index:350"><div class="modal">
+  <div class="modal-hdr"><span id="proj-lead-title">🏢 PROJETOS</span><button class="modal-close" onclick="closeM('m-proj-lead')">✕</button></div>
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Selecione um projeto para ver as apresentações e enviar ao lead.</p>
+  <div id="proj-lead-list"></div>
+</div></div>
+
+<!-- APRESENTACOES DO PROJETO PARA LEAD -->
+<div class="overlay" id="m-apres" style="z-index:400"><div class="modal">
+  <div class="modal-hdr"><span id="apres-title">📋 APRESENTAÇÃO</span><button class="modal-close" onclick="closeM('m-apres')">✕</button></div>
+  <div id="apres-info" style="background:var(--s2);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--txt3)"></div>
+  <div id="apres-list"></div>
+  <div id="apres-prev-wrap" style="display:none;margin-top:8px">
+    <div class="grp">EDITE ANTES DE ENVIAR</div>
+    <textarea class="inp" id="apres-prev" style="min-height:140px;margin-bottom:10px"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" onclick="document.getElementById('apres-prev-wrap').style.display='none'" style="flex:1">Voltar</button>
+      <button class="btn" id="apres-wa-btn" style="flex:1;background:var(--wa);color:#fff">📲 Enviar WA</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- EDITOR APRESENTACOES (dentro do projeto) -->
+<div class="overlay" id="m-apres-edit" style="z-index:450"><div class="modal">
+  <div class="modal-hdr"><span id="apres-edit-title">📋 APRESENTAÇÕES</span><button class="modal-close" onclick="closeM('m-apres-edit')">✕</button></div>
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Textos prontos para enviar ao cliente por WhatsApp. Use [NOME] para personalizar.</p>
+  <div id="apres-edit-list"></div>
+  <button class="btn-add" onclick="addApresentacao()" style="margin-top:4px">+ Nova apresentação</button>
 </div></div>
 
 <script>
@@ -776,7 +810,7 @@ function calDayOpen(ds){
 function openDetail(i){
   const l=leads[i],comm=gc(l),s=scr(l);
   document.getElementById('detail-title').textContent='📋 '+l.name.split(' ')[0].toUpperCase();
-  document.getElementById('detail-content').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:11px;color:var(--txt3)">${l.product}${l.status?' · '+l.status:''}</div><div style="font-family:var(--d);font-size:18px;color:${scc(s)}">${s}/100</div></div>${l.valor?`<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px">💰 ${brl(l.valor)}${comm?' → '+l.pct+'% = '+brl(comm):''}</div>`:''}<div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu?`<div style="font-size:11px;color:var(--yellow);margin-bottom:10px">📅 Follow-up: <strong>${fd(l.fu)}</strong></div>`:''}<div style="background:var(--s2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:12px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">📝 HISTÓRICO</div><div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${l.hist||'Sem histórico.'}</div></div><div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="closeM('m-detail');openEditLead(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button><button onclick="closeM('m-detail');openMsg(${i})" class="btn" style="flex:1;background:var(--blue);color:#fff">💬 Mensagem</button></div><button onclick="closeM('m-detail');openAI(${i})" class="btn" style="width:100%;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 Analisar com IA</button>`;
+  document.getElementById('detail-content').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div style="font-size:11px;color:var(--txt3)">${l.product}${l.status?' · '+l.status:''}</div><div style="font-family:var(--d);font-size:18px;color:${scc(s)}">${s}/100</div></div>${l.valor?`<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px">💰 ${brl(l.valor)}${comm?' → '+l.pct+'% = '+brl(comm):''}</div>`:''}<div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu?`<div style="font-size:11px;color:var(--yellow);margin-bottom:10px">📅 Follow-up: <strong>${fd(l.fu)}</strong></div>`:''}<div style="background:var(--s2);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:11px 13px;margin-bottom:12px"><div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--yellow);margin-bottom:5px">📝 HISTÓRICO</div><div style="font-size:12px;line-height:1.6;white-space:pre-wrap">${l.hist||'Sem histórico.'}</div></div><div style="display:flex;gap:8px;margin-bottom:8px"><button onclick="closeM('m-detail');openEditLead(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button><button onclick="closeM('m-detail');openMsg(${i})" class="btn" style="flex:1;background:var(--blue);color:#fff">💬 Mensagem</button></div><div style="display:flex;gap:8px"><button onclick="closeM('m-detail');openAI(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 IA</button><button onclick="openProjetosParaLead(${i})" class="btn" style="flex:1;background:rgba(255,107,43,.15);border:1px solid rgba(255,107,43,.3);color:var(--acc)">🏢 Projetos</button></div>`;
   openM('m-detail');
 }
 
@@ -922,6 +956,8 @@ function renderProjetos(){
         <button onclick="openEditProjeto(${i})" class="btn-icon">✏️</button>
         <button onclick="openAIProjeto(${i})" class="btn-icon" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button>
         <button onclick="openCalcFluxo(${i})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳</button>
+        <button onclick="openApresEdit(${i})" class="btn-icon" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue)">📋</button>
+        ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)" title="Baixar apresentação PPT">📊</a>`:''}
         ${p.link?`<a href="${p.link}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center">🔗</a>`:''}
       </div>
     </div>`;
@@ -955,6 +991,7 @@ function openEditProjeto(i){
   document.getElementById('pj-local').value=p.local||'';
   document.getElementById('pj-notas').value=p.notas||'';
   document.getElementById('pj-link').value=p.link||'';
+  document.getElementById('pj-pptx').value=p.pptx||'';
   openM('m-proj');
 }
 
@@ -975,6 +1012,7 @@ function saveProjeto(){
     local:document.getElementById('pj-local').value||'',
     notas:document.getElementById('pj-notas').value||'',
     link:document.getElementById('pj-link').value||'',
+    pptx:document.getElementById('pj-pptx').value||'',
   };
   if(eiProj===-1)projetos.push(p);else projetos[eiProj]=p;
   ls('projetos',projetos);closeM('m-proj');renderProjetos();
@@ -1006,11 +1044,13 @@ function openDetailProjeto(i){
     ${p.dif?`<div style="padding:8px 0;border-bottom:1px solid var(--br)"><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">🎯 Diferenciais</div>${p.dif.split('\n').filter(d=>d.trim()).map(d=>`<div style="font-size:12px;padding:3px 0">✓ ${d.trim()}</div>`).join('')}</div>`:''}
     ${row('📝','Notas',p.notas)}
     ${p.link?`<div style="padding:8px 0"><a href="${p.link}" target="_blank" style="color:var(--blue);font-size:12px">🔗 Ver Book/Tabela completa</a></div>`:''}
+    ${p.pptx?`<div style="padding:8px 0"><a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" style="color:var(--yellow);font-size:12px;font-weight:700">📊 Abrir Apresentação PowerPoint</a></div>`:''}
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="closeM('m-proj-detail');openEditProjeto(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button>
       <button onclick="closeM('m-proj-detail');openAIProjeto(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 IA</button>
       <button onclick="closeM('m-proj-detail');openCalcFluxo(${i})" class="btn" style="flex:1;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳 Fluxo</button>
-    </div>`;
+    </div>
+    <button onclick="closeM('m-proj-detail');openApresEdit(${i})" class="btn" style="width:100%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue);margin-top:8px">📋 Gerenciar Apresentações</button>`;
   openM('m-proj-detail');
 }
 
@@ -1046,7 +1086,144 @@ function openClaudeProjeto(){
   closeM('m-proj-ai');
 }
 
-// ════ CALCULADORA DE FLUXO ════
+// ════ APRESENTACOES ════
+let apresProjIdx=null, apresLeadIdx=null;
+
+function openApresEdit(pi){
+  apresProjIdx=pi;
+  const p=projetos[pi];
+  document.getElementById('apres-edit-title').textContent='📋 '+p.name;
+  renderApresEdit();
+  openM('m-apres-edit');
+}
+
+function renderApresEdit(){
+  const el=document.getElementById('apres-edit-list');if(!el)return;
+  const p=projetos[apresProjIdx];
+  const apres=p.apres||[];
+  if(!apres.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--txt3);padding:12px;text-align:center;background:var(--s2);border-radius:10px;margin-bottom:8px">Nenhuma apresentação salva.<br>Clique em + Nova para criar.</div>`;
+    return;
+  }
+  el.innerHTML=apres.map((a,i)=>`
+    <div style="background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${a.nome.replace(/"/g,'&quot;')}"
+          oninput="projetos[${apresProjIdx}].apres[${i}].nome=this.value;ls('projetos',projetos)">
+        <button onclick="delApresentacao(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button>
+      </div>
+      <textarea class="inp" style="min-height:100px;font-size:12px;line-height:1.5"
+        oninput="projetos[${apresProjIdx}].apres[${i}].txt=this.value;ls('projetos',projetos)">${a.txt}</textarea>
+      <div style="font-size:10px;color:var(--txt3);margin-top:5px">Use [NOME] para personalizar com o nome do lead</div>
+    </div>`).join('');
+}
+
+function addApresentacao(){
+  if(apresProjIdx===null)return;
+  if(!projetos[apresProjIdx].apres)projetos[apresProjIdx].apres=[];
+  const p=projetos[apresProjIdx];
+  // Default template with project data
+  const defaultTxt=`Olá, [NOME]! Tudo bem?\n\nQuero te apresentar o *${p.name}*${p.end?' — '+p.end:''}.\n\n${p.rentab?'📊 Rentabilidade: '+p.rentab+'\n\n':''}${p.dif?p.dif.split('\n').filter(d=>d.trim()).slice(0,3).map(d=>'✅ '+d.trim()).join('\n')+'\n\n':''}\n${p.vmin?'💰 A partir de '+fk(Number(p.vmin))+'\n':''}${p.metro?'📐 '+p.metro+'\n':''}\nPosso te enviar mais detalhes agora?`;
+  projetos[apresProjIdx].apres.push({id:Date.now(),nome:'Nova Apresentação',txt:defaultTxt.trim()});
+  ls('projetos',projetos);
+  renderApresEdit();
+  toast('✅ Apresentação adicionada!');
+}
+
+function delApresentacao(i){
+  if(!confirm('Excluir esta apresentação?'))return;
+  projetos[apresProjIdx].apres.splice(i,1);
+  ls('projetos',projetos);
+  renderApresEdit();
+  toast('🗑️ Removida!');
+}
+
+// Projetos para lead — abre lista de projetos com apresentações
+function openProjetosParaLead(li){
+  apresLeadIdx=li;
+  const l=leads[li];
+  document.getElementById('proj-lead-title').textContent='🏢 Projetos para '+l.name.split(' ')[0];
+  const el=document.getElementById('proj-lead-list');
+  if(!projetos.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:12px;text-align:center">Nenhum projeto cadastrado ainda.<br>Vá em Projetos para adicionar.</div>';
+    openM('m-proj-lead');return;
+  }
+  el.innerHTML=projetos.map((p,pi)=>{
+    const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
+    const nApres=(p.apres||[]).length;
+    return`<div style="background:var(--s2);border:1px solid var(--br);border-radius:11px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${p.name}</div>
+          <div style="font-size:10px;color:${st.c};margin-top:2px">${st.l}${p.entrega?' · '+p.entrega:''}</div>
+        </div>
+        <div style="font-size:10px;color:var(--txt3);text-align:right">${p.vmin?fk(Number(p.vmin))+'':''}<br>${nApres} apresentação${nApres!==1?'s':''}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        ${nApres?`<button onclick="openApresParaLead(${pi})" class="btn" style="flex:1;background:var(--blue);color:#fff;font-size:11px">📋 Ver Apresentações</button>`:`<button onclick="openApresEdit(${pi})" class="btn btn-ghost" style="flex:1;font-size:11px">📝 Criar Apresentação</button>`}
+        <button onclick="openCalcFluxo(${pi})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳</button>
+      </div>
+    </div>`;
+  }).join('');
+  openM('m-proj-lead');
+}
+
+function openApresParaLead(pi){
+  apresProjIdx=pi;
+  const p=projetos[pi];
+  const l=apresLeadIdx!==null?leads[apresLeadIdx]:null;
+  document.getElementById('apres-title').textContent='📋 '+p.name;
+  document.getElementById('apres-info').textContent=`${(PROJ_STATUS[p.status]||PROJ_STATUS.pronto).l}${p.entrega?' · Entrega '+p.entrega:''}${p.vmin?' · a partir de '+fk(Number(p.vmin)):''}`;
+  document.getElementById('apres-prev-wrap').style.display='none';
+  const apres=p.apres||[];
+  const el=document.getElementById('apres-list');
+  if(!apres.length){
+    el.innerHTML=`<div style="font-size:12px;color:var(--txt3);padding:12px;text-align:center;background:var(--s2);border-radius:10px">Nenhuma apresentação cadastrada para este projeto.</div>`;
+    openM('m-apres');return;
+  }
+  el.innerHTML=apres.map((a,ai)=>`
+    <div class="tpl-item" onclick="selectApres(${ai})">
+      <div class="tpl-name">${a.nome}</div>
+      <div class="tpl-prev">${a.txt.substring(0,80)}${a.txt.length>80?'...':''}</div>
+    </div>`).join('');
+  openM('m-apres');
+}
+
+function selectApres(ai){
+  const p=projetos[apresProjIdx];
+  const l=apresLeadIdx!==null?leads[apresLeadIdx]:null;
+  const a=p.apres[ai];
+  let txt=a.txt;
+  if(l)txt=txt.replace(/\[NOME\]/g,l.name.split(' ')[0]);
+  document.getElementById('apres-prev').value=txt;
+  document.getElementById('apres-prev-wrap').style.display='block';
+  const waBtn=document.getElementById('apres-wa-btn');
+  if(l&&l.wa){
+    waBtn.onclick=()=>{
+      const msg=document.getElementById('apres-prev').value;
+      // Save to lead history
+      const now=new Date();
+      const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      leads[apresLeadIdx].hist=(leads[apresLeadIdx].hist||'')+`\n\n📤 [${ds}] — Apresentação ${p.name}:\n${msg}`;
+      ls('leads',leads);
+      toast('💬 Enviando...');
+      window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(msg)}`,'_blank');
+    };
+    waBtn.style.opacity='1';
+    waBtn.textContent='📲 Enviar por WhatsApp';
+  } else {
+    waBtn.onclick=()=>{
+      // Copy to clipboard
+      navigator.clipboard.writeText(document.getElementById('apres-prev').value)
+        .then(()=>toast('✅ Copiado!'))
+        .catch(()=>toast('✅ Copiado!'));
+    };
+    waBtn.style.opacity='1';
+    waBtn.textContent='📋 Copiar texto';
+  }
+  // Scroll to preview
+  document.getElementById('apres-prev').scrollIntoView({behavior:'smooth'});
+}
 const CALC_MONTHS=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
 // Fases fixas conforme tabela oficial Vitacon
