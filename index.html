@@ -411,7 +411,44 @@ select.inp option{background:var(--s1)}
   <div id="day-modal-content"></div>
 </div></div>
 
-<!-- PROJETO FORM -->
+<!-- CALCULADORA FLUXO -->
+<div class="overlay" id="m-calc" style="z-index:450"><div class="modal" style="padding:0;border-radius:18px 18px 0 0;overflow:hidden;max-height:95vh;display:flex;flex-direction:column">
+  <div style="background:#0F0F0F;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0">
+    <input type="text" id="calc-nome" value="VITACON" placeholder="Nome do empreendimento" maxlength="60"
+      style="background:transparent;border:none;outline:none;color:#fff;font-size:13px;font-weight:500;letter-spacing:.06em;font-family:var(--f);flex:1;min-width:0">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="calc-mes" style="color:#666;font-size:11px;letter-spacing:.06em"></span>
+      <button onclick="closeM('m-calc')" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>
+    </div>
+  </div>
+  <div style="background:#F7F6F4;border-bottom:1px solid #E5E2DC;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+      <label style="font-size:10px;color:#888;white-space:nowrap;font-weight:500;letter-spacing:.06em">VALOR</label>
+      <div style="display:flex;align-items:center;border:1px solid #D0CCC6;border-radius:7px;overflow:hidden;background:#fff;flex:1">
+        <div style="padding:0 10px;font-size:11px;color:#999;border-right:1px solid #E5E2DC;height:36px;display:flex;align-items:center;flex-shrink:0">R$</div>
+        <input type="text" id="calc-val" style="border:none;outline:none;font-size:15px;font-weight:500;color:#0F0F0F;padding:0 10px;height:36px;width:100%;font-family:var(--f);background:transparent;min-width:0" oninput="calcHandleVal(this)">
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <label style="font-size:10px;color:#888;white-space:nowrap;font-weight:500;letter-spacing:.06em">ENTRADA</label>
+      <div style="display:flex;align-items:center;border:1px solid #D0CCC6;border-radius:7px;overflow:hidden;background:#fff">
+        <input type="number" id="calc-entrada" value="30" min="10" max="90" step="5"
+          style="border:none;outline:none;font-size:15px;font-weight:500;color:#0F0F0F;padding:0 10px;height:36px;width:55px;font-family:var(--f);background:transparent" oninput="calcRender()">
+        <div style="padding:0 8px;font-size:11px;color:#999;border-left:1px solid #E5E2DC;height:36px;display:flex;align-items:center">%</div>
+      </div>
+    </div>
+  </div>
+  <div style="overflow-y:auto;flex:1">
+    <div id="calc-cards" style="padding:12px 14px"></div>
+  </div>
+  <div style="background:#1F5C30;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="color:#A8D4B4;font-size:11px;font-weight:500;letter-spacing:.06em">VALOR DE VENDA</div>
+    <div style="color:#fff;font-size:17px;font-weight:500" id="calc-total">R$ 0,00</div>
+  </div>
+  <div style="padding:8px 18px;background:#F7F6F4;border-top:1px solid #E5E2DC;flex-shrink:0">
+    <p style="font-size:10px;color:#AAA;text-align:center;line-height:1.5">Percentuais estimados. Confirme tabela oficial Vitacon antes de apresentar ao cliente.</p>
+  </div>
+</div></div>
 <div class="overlay" id="m-proj" style="z-index:300"><div class="modal">
   <div class="modal-hdr"><span id="proj-title">🏢 NOVO PROJETO</span><button class="modal-close" onclick="closeM('m-proj')">✕</button></div>
   <div class="field"><label class="inp-lbl">Nome do Empreendimento</label><input class="inp" id="pj-name" placeholder="Ex: Vitacon Jardins"></div>
@@ -891,6 +928,7 @@ function renderProjetos(){
         <button onclick="openDetailProjeto(${i})" class="btn" style="flex:1;background:var(--s3);border:1px solid var(--br);color:var(--txt);font-size:11px">👁️ Ver tudo</button>
         <button onclick="openEditProjeto(${i})" class="btn-icon">✏️</button>
         <button onclick="openAIProjeto(${i})" class="btn-icon" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button>
+        <button onclick="openCalcFluxo(${i})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳</button>
         ${p.link?`<a href="${p.link}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center">🔗</a>`:''}
       </div>
     </div>`;
@@ -977,7 +1015,8 @@ function openDetailProjeto(i){
     ${p.link?`<div style="padding:8px 0"><a href="${p.link}" target="_blank" style="color:var(--blue);font-size:12px">🔗 Ver Book/Tabela completa</a></div>`:''}
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="closeM('m-proj-detail');openEditProjeto(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button>
-      <button onclick="closeM('m-proj-detail');openAIProjeto(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 Usar IA</button>
+      <button onclick="closeM('m-proj-detail');openAIProjeto(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 IA</button>
+      <button onclick="closeM('m-proj-detail');openCalcFluxo(${i})" class="btn" style="flex:1;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳 Fluxo</button>
     </div>`;
   openM('m-proj-detail');
 }
@@ -1014,7 +1053,90 @@ function openClaudeProjeto(){
   closeM('m-proj-ai');
 }
 
-// Include projetos in export/import
+// ════ CALCULADORA DE FLUXO ════
+const CALC_MONTHS=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+
+function calcPhases(entradaPct){
+  const fin=100-entradaPct;
+  // Distribute entrada: ato 10%, sinal 5%, mensais, anuais, única
+  const ato=10, sinal=5, unica=5, anual=5*3; // 15% anuais
+  const mensalTotal=entradaPct-ato-sinal-unica-anual;
+  const mensalQtd=38;
+  const mensalPct=Math.max(0,mensalTotal)/100*100; // store as total %
+  return[
+    {label:'ATO',           pct:ato,                    qtd:1,         offM:0,  offD:20},
+    {label:'SINAL',         pct:sinal,                  qtd:3,         offM:1,  offD:20},
+    {label:'MENSAL',        pct:Math.max(0,mensalTotal), qtd:mensalQtd, offM:4,  offD:20},
+    {label:'ANUAL',         pct:anual,                  qtd:3,         offM:12, offD:20},
+    {label:'ÚNICA',         pct:unica,                  qtd:1,         offM:42, offD:20},
+    {label:'FINANCIAMENTO', pct:fin-0.10,               qtd:1,         offM:43, offD:30},
+    {label:'PERIODICIDADE', pct:0.10,                   qtd:1,         offM:44, offD:20},
+  ];
+}
+
+function calcAddMonths(date,m){const d=new Date(date);d.setMonth(d.getMonth()+m);return d}
+function calcFmtDate(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
+function calcFmtR(v){return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+function calcHandleVal(el){
+  const d=el.value.replace(/\D/g,'');
+  el.value=parseInt(d||'0').toLocaleString('pt-BR');
+  calcRender();
+}
+
+function calcRender(){
+  const valStr=(document.getElementById('calc-val').value||'0').replace(/\D/g,'');
+  const total=parseInt(valStr)||0;
+  const entrada=parseInt(document.getElementById('calc-entrada').value)||30;
+  const phases=calcPhases(entrada);
+  const today=new Date();
+  let html='';
+  phases.forEach(p=>{
+    if(p.pct<=0)return;
+    const sub=total*p.pct/100;
+    const parc=sub/p.qtd;
+    const d=calcAddMonths(new Date(today),p.offM);
+    d.setDate(Math.min(p.offD,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
+    const isFinanc=p.label==='FINANCIAMENTO';
+    html+=`<div style="background:${isFinanc?'#F0FAF3':'#fff'};border:1px solid ${isFinanc?'#B8DEC4':'#E5E2DC'};border-radius:10px;padding:11px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:12px;font-weight:700;color:${isFinanc?'#1F5C30':'#0F0F0F'};letter-spacing:.05em">${p.label}</div>
+        <div style="font-size:10px;color:#999;background:#F2F1EF;padding:2px 8px;border-radius:5px">${p.pct.toFixed(2).replace('.',',')}% · ${p.qtd}x</div>
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;color:#999;margin-bottom:2px">Parcela</div>
+          <div style="font-size:15px;font-weight:600;color:${isFinanc?'#1F5C30':'#0F0F0F'}">${calcFmtR(parc)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:#999;margin-bottom:2px">Subtotal</div>
+          <div style="font-size:13px;font-weight:500;color:#333">${calcFmtR(sub)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:#999;margin-bottom:2px">1º Venc.</div>
+          <div style="font-size:12px;color:#666">${calcFmtDate(d)}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  const el=document.getElementById('calc-cards');
+  if(el)el.innerHTML=html;
+  document.getElementById('calc-total').textContent=calcFmtR(total);
+  const mes=CALC_MONTHS[today.getMonth()]+' '+today.getFullYear();
+  document.getElementById('calc-mes').textContent=mes;
+}
+
+function openCalcFluxo(i){
+  const p=projetos[i];
+  document.getElementById('calc-nome').value=p.name||'VITACON';
+  const vmin=p.vmin?parseInt(p.vmin).toLocaleString('pt-BR'):'450.000';
+  document.getElementById('calc-val').value=vmin;
+  document.getElementById('calc-entrada').value=30;
+  calcRender();
+  openM('m-calc');
+}
+
+
 function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
 function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
 function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
