@@ -462,6 +462,8 @@ select.inp option{background:var(--s1)}
     <select class="inp" id="proj-ai-q" onchange="document.getElementById('proj-ai-cw').style.display=this.value==='custom'?'block':'none'">
       <option value="resumo">📋 Resumo executivo para o cliente</option>
       <option value="whatsapp">💬 Mensagem de apresentação WhatsApp</option>
+      <option value="fluxo">💳 Fluxo de pagamento detalhado</option>
+      <option value="rentabilidade">📊 Estudo de rentabilidade completo</option>
       <option value="objecoes">🛡️ Como responder objeções</option>
       <option value="investidor">💰 Análise de retorno para investidor</option>
       <option value="post">📱 Legenda para post no Instagram</option>
@@ -997,6 +999,8 @@ function openClaudeProjeto(){
   const qm={
     resumo:'Crie um resumo executivo profissional deste empreendimento para apresentar a um cliente investidor. Destaque os principais atrativos, rentabilidade e diferenciais. Seja objetivo e convincente.',
     whatsapp:'Crie uma mensagem de apresentação para WhatsApp sobre este empreendimento. Deve ser direta, atrativa e com CTA claro para agendar uma conversa. Máximo 5 parágrafos curtos.',
+    fluxo:`Crie um fluxo de pagamento detalhado e didático para este empreendimento, considerando as informações fornecidas. Apresente de forma clara: valor total, entrada, parcelas durante obras, financiamento bancário e chaves. Se possível, simule para um valor de ${p.vmin?fk(Number(p.vmin)):'R$ 500.000'} e para ${p.vmax?fk(Number(p.vmax)):'R$ 800.000'}. Use tabela ou formato visual fácil de enviar por WhatsApp.`,
+    rentabilidade:`Faça um estudo de rentabilidade completo e detalhado para um investidor neste empreendimento. Inclua: 1) Rentabilidade via locação por temporada (Airbnb/Housi) com taxa de ocupação 65%, 75% e 85%; 2) Rentabilidade via locação tradicional; 3) Valorização estimada durante obras; 4) Comparativo com CDI/Selic; 5) Payback do investimento; 6) ROI em 5 e 10 anos. Base: valor de ${p.vmin?fk(Number(p.vmin)):'R$ 500.000'}. Use dados realistas do mercado de São Paulo.`,
     objecoes:'Liste as principais objeções que um cliente pode ter sobre este empreendimento e como respondê-las de forma convincente. Foque em preço, localização, rentabilidade e risco.',
     investidor:'Faça uma análise detalhada do retorno sobre investimento neste empreendimento. Calcule rentabilidade estimada, payback, comparativo com renda fixa e valorização esperada.',
     post:'Crie uma legenda engajante para post no Instagram sobre este empreendimento. Use emojis, seja informativo mas descontraído, inclua CTA e sugestões de hashtags.',
