@@ -421,32 +421,25 @@ select.inp option{background:var(--s1)}
       <button onclick="closeM('m-calc')" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:14px;flex-shrink:0">✕</button>
     </div>
   </div>
-  <div style="background:#F7F6F4;border-bottom:1px solid #E5E2DC;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0">
-    <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
-      <label style="font-size:10px;color:#888;white-space:nowrap;font-weight:500;letter-spacing:.06em">VALOR</label>
-      <div style="display:flex;align-items:center;border:1px solid #D0CCC6;border-radius:7px;overflow:hidden;background:#fff;flex:1">
-        <div style="padding:0 10px;font-size:11px;color:#999;border-right:1px solid #E5E2DC;height:36px;display:flex;align-items:center;flex-shrink:0">R$</div>
-        <input type="text" id="calc-val" style="border:none;outline:none;font-size:15px;font-weight:500;color:#0F0F0F;padding:0 10px;height:36px;width:100%;font-family:var(--f);background:transparent;min-width:0" oninput="calcHandleVal(this)">
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <label style="font-size:10px;color:#888;white-space:nowrap;font-weight:500;letter-spacing:.06em">ENTRADA</label>
-      <div style="display:flex;align-items:center;border:1px solid #D0CCC6;border-radius:7px;overflow:hidden;background:#fff">
-        <input type="number" id="calc-entrada" value="30" min="10" max="90" step="5"
-          style="border:none;outline:none;font-size:15px;font-weight:500;color:#0F0F0F;padding:0 10px;height:36px;width:55px;font-family:var(--f);background:transparent" oninput="calcRender()">
-        <div style="padding:0 8px;font-size:11px;color:#999;border-left:1px solid #E5E2DC;height:36px;display:flex;align-items:center">%</div>
-      </div>
+  <div style="background:#F7F6F4;border-bottom:1px solid #E5E2DC;padding:12px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0">
+    <label style="font-size:10px;color:#888;white-space:nowrap;font-weight:500;letter-spacing:.06em;flex-shrink:0">VALOR DO IMÓVEL</label>
+    <div style="display:flex;align-items:center;border:1px solid #D0CCC6;border-radius:7px;overflow:hidden;background:#fff;flex:1">
+      <div style="padding:0 10px;font-size:11px;color:#999;border-right:1px solid #E5E2DC;height:38px;display:flex;align-items:center;flex-shrink:0">R$</div>
+      <input type="text" id="calc-val" style="border:none;outline:none;font-size:16px;font-weight:600;color:#0F0F0F;padding:0 12px;height:38px;width:100%;font-family:var(--f);background:transparent;min-width:0" oninput="calcHandleVal(this)">
     </div>
   </div>
-  <div style="overflow-y:auto;flex:1">
-    <div id="calc-cards" style="padding:12px 14px"></div>
+  <div style="overflow-y:auto;flex:1;padding:12px 14px">
+    <div id="calc-cards"></div>
   </div>
-  <div style="background:#1F5C30;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+  <div style="background:#1F5C30;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
     <div style="color:#A8D4B4;font-size:11px;font-weight:500;letter-spacing:.06em">VALOR DE VENDA</div>
-    <div style="color:#fff;font-size:17px;font-weight:500" id="calc-total">R$ 0,00</div>
+    <div style="color:#fff;font-size:17px;font-weight:600" id="calc-total">R$ 0,00</div>
   </div>
-  <div style="padding:8px 18px;background:#F7F6F4;border-top:1px solid #E5E2DC;flex-shrink:0">
-    <p style="font-size:10px;color:#AAA;text-align:center;line-height:1.5">Percentuais estimados. Confirme tabela oficial Vitacon antes de apresentar ao cliente.</p>
+  <div style="padding:12px 14px;background:#F7F6F4;border-top:1px solid #E5E2DC;flex-shrink:0">
+    <button onclick="calcGerarWhatsapp()" style="width:100%;background:#25D366;color:#fff;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:8px">
+      📲 Enviar Fluxo por WhatsApp
+    </button>
+    <p style="font-size:10px;color:#AAA;text-align:center;line-height:1.5;margin-top:8px">Percentuais fixos: 30% entrada + 70% financiamento · Confirme tabela oficial Vitacon</p>
   </div>
 </div></div>
 <div class="overlay" id="m-proj" style="z-index:300"><div class="modal">
@@ -1056,27 +1049,23 @@ function openClaudeProjeto(){
 // ════ CALCULADORA DE FLUXO ════
 const CALC_MONTHS=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
-function calcPhases(entradaPct){
-  const fin=100-entradaPct;
-  // Distribute entrada: ato 10%, sinal 5%, mensais, anuais, única
-  const ato=10, sinal=5, unica=5, anual=5*3; // 15% anuais
-  const mensalTotal=entradaPct-ato-sinal-unica-anual;
-  const mensalQtd=38;
-  const mensalPct=Math.max(0,mensalTotal)/100*100; // store as total %
-  return[
-    {label:'ATO',           pct:ato,                    qtd:1,         offM:0,  offD:20},
-    {label:'SINAL',         pct:sinal,                  qtd:3,         offM:1,  offD:20},
-    {label:'MENSAL',        pct:Math.max(0,mensalTotal), qtd:mensalQtd, offM:4,  offD:20},
-    {label:'ANUAL',         pct:anual,                  qtd:3,         offM:12, offD:20},
-    {label:'ÚNICA',         pct:unica,                  qtd:1,         offM:42, offD:20},
-    {label:'FINANCIAMENTO', pct:fin-0.10,               qtd:1,         offM:43, offD:30},
-    {label:'PERIODICIDADE', pct:0.10,                   qtd:1,         offM:44, offD:20},
-  ];
-}
+// Fases fixas conforme tabela oficial Vitacon
+// Entrada total = 30%, Financiamento = 70%
+// ATO 10%, SINAL 5% (3x), MENSAL 5% (38x), ANUAL 5% (3x), ÚNICA 5% (1x), FINANCIAMENTO 69.90%, PERIODICIDADE 0.10%
+const CALC_PHASES=[
+  {label:'ATO',          pct:10.00, qtd:1,  offM:0,  offD:20},
+  {label:'SINAL',        pct:5.00,  qtd:3,  offM:1,  offD:20},
+  {label:'MENSAL',       pct:5.00,  qtd:38, offM:4,  offD:20},
+  {label:'ANUAL',        pct:5.00,  qtd:3,  offM:12, offD:20},
+  {label:'ÚNICA',        pct:5.00,  qtd:1,  offM:42, offD:20},
+  {label:'FINANCIAMENTO',pct:69.90, qtd:1,  offM:43, offD:30},
+  {label:'PERIODICIDADE',pct:0.10,  qtd:1,  offM:44, offD:20},
+];
 
 function calcAddMonths(date,m){const d=new Date(date);d.setMonth(d.getMonth()+m);return d}
 function calcFmtDate(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
 function calcFmtR(v){return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function calcFmtRShort(v){return'R$\u00a0'+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 
 function calcHandleVal(el){
   const d=el.value.replace(/\D/g,'');
@@ -1087,43 +1076,93 @@ function calcHandleVal(el){
 function calcRender(){
   const valStr=(document.getElementById('calc-val').value||'0').replace(/\D/g,'');
   const total=parseInt(valStr)||0;
-  const entrada=parseInt(document.getElementById('calc-entrada').value)||30;
-  const phases=calcPhases(entrada);
   const today=new Date();
   let html='';
-  phases.forEach(p=>{
-    if(p.pct<=0)return;
+
+  CALC_PHASES.forEach(p=>{
     const sub=total*p.pct/100;
     const parc=sub/p.qtd;
     const d=calcAddMonths(new Date(today),p.offM);
     d.setDate(Math.min(p.offD,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
     const isFinanc=p.label==='FINANCIAMENTO';
-    html+=`<div style="background:${isFinanc?'#F0FAF3':'#fff'};border:1px solid ${isFinanc?'#B8DEC4':'#E5E2DC'};border-radius:10px;padding:11px 14px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <div style="font-size:12px;font-weight:700;color:${isFinanc?'#1F5C30':'#0F0F0F'};letter-spacing:.05em">${p.label}</div>
-        <div style="font-size:10px;color:#999;background:#F2F1EF;padding:2px 8px;border-radius:5px">${p.pct.toFixed(2).replace('.',',')}% · ${p.qtd}x</div>
+    const isPeriod=p.label==='PERIODICIDADE';
+    const bg=isFinanc?'#EDF7F0':isPeriod?'#FAFAF8':'#fff';
+    const border=isFinanc?'#B8DEC4':'#EDEAE5';
+    const nameColor=isFinanc?'#1F5C30':'#111';
+    const valColor=isFinanc?'#1F5C30':'#111';
+
+    html+=`<div style="background:${bg};border:1px solid ${border};border-radius:10px;padding:10px 14px;margin-bottom:7px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;font-weight:800;color:${nameColor};letter-spacing:.08em">${p.label}</span>
+          <span style="font-size:10px;color:#AAA">${p.qtd}x · ${p.pct.toFixed(2).replace('.',',')}%</span>
+        </div>
+        <span style="font-size:10.5px;color:#888;font-weight:500">${calcFmtDate(d)}</span>
       </div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between">
         <div>
-          <div style="font-size:11px;color:#999;margin-bottom:2px">Parcela</div>
-          <div style="font-size:15px;font-weight:600;color:${isFinanc?'#1F5C30':'#0F0F0F'}">${calcFmtR(parc)}</div>
+          <div style="font-size:9.5px;color:#BBB;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em">Parcela</div>
+          <div style="font-size:16px;font-weight:700;color:${valColor}">${calcFmtR(parc)}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:11px;color:#999;margin-bottom:2px">Subtotal</div>
-          <div style="font-size:13px;font-weight:500;color:#333">${calcFmtR(sub)}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:11px;color:#999;margin-bottom:2px">1º Venc.</div>
-          <div style="font-size:12px;color:#666">${calcFmtDate(d)}</div>
+          <div style="font-size:9.5px;color:#BBB;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em">Subtotal</div>
+          <div style="font-size:13px;font-weight:600;color:#444">${calcFmtR(sub)}</div>
         </div>
       </div>
     </div>`;
   });
+
+  // Resumo entrada/financiamento
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+    <div style="background:#FFF8F0;border:1px solid #F5D9B8;border-radius:9px;padding:10px 12px;text-align:center">
+      <div style="font-size:9.5px;color:#C87A2A;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Entrada (30%)</div>
+      <div style="font-size:14px;font-weight:700;color:#C87A2A">${calcFmtR(total*0.30)}</div>
+    </div>
+    <div style="background:#EDF7F0;border:1px solid #B8DEC4;border-radius:9px;padding:10px 12px;text-align:center">
+      <div style="font-size:9.5px;color:#1F5C30;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Financiamento (70%)</div>
+      <div style="font-size:14px;font-weight:700;color:#1F5C30">${calcFmtR(total*0.70)}</div>
+    </div>
+  </div>`;
+
   const el=document.getElementById('calc-cards');
   if(el)el.innerHTML=html;
   document.getElementById('calc-total').textContent=calcFmtR(total);
-  const mes=CALC_MONTHS[today.getMonth()]+' '+today.getFullYear();
-  document.getElementById('calc-mes').textContent=mes;
+  document.getElementById('calc-mes').textContent=CALC_MONTHS[today.getMonth()]+' '+today.getFullYear();
+}
+
+function calcGerarWhatsapp(){
+  const valStr=(document.getElementById('calc-val').value||'0').replace(/\D/g,'');
+  const total=parseInt(valStr)||0;
+  const nome=document.getElementById('calc-nome').value||'Vitacon';
+  const today=new Date();
+  if(!total){toast('⚠️ Informe o valor do imóvel!');return}
+
+  let msg=`🏢 *${nome.toUpperCase()}*\n`;
+  msg+=`📊 *Fluxo de Pagamento*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━\n\n`;
+
+  CALC_PHASES.forEach(p=>{
+    const sub=total*p.pct/100;
+    const parc=sub/p.qtd;
+    const d=calcAddMonths(new Date(today),p.offM);
+    d.setDate(Math.min(p.offD,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
+    const emoji=p.label==='ATO'?'🔑':p.label==='SINAL'?'📝':p.label==='MENSAL'?'📅':p.label==='ANUAL'?'🗓️':p.label==='ÚNICA'?'⭐':p.label==='FINANCIAMENTO'?'🏦':'🔄';
+    msg+=`${emoji} *${p.label}*\n`;
+    if(p.qtd>1){
+      msg+=`${p.qtd}x de ${calcFmtR(parc)}\n`;
+    }else{
+      msg+=`${calcFmtR(sub)}\n`;
+    }
+    msg+=`Venc: ${calcFmtDate(d)}\n\n`;
+  });
+
+  msg+=`━━━━━━━━━━━━━━━━━\n`;
+  msg+=`🟠 *Entrada (30%): ${calcFmtR(total*0.30)}*\n`;
+  msg+=`🏦 *Financiamento (70%): ${calcFmtR(total*0.70)}*\n`;
+  msg+=`✅ *Valor Total: ${calcFmtR(total)}*\n\n`;
+  msg+=`_Valores sujeitos à confirmação pela tabela oficial Vitacon._`;
+
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
 
 function openCalcFluxo(i){
@@ -1131,10 +1170,10 @@ function openCalcFluxo(i){
   document.getElementById('calc-nome').value=p.name||'VITACON';
   const vmin=p.vmin?parseInt(p.vmin).toLocaleString('pt-BR'):'450.000';
   document.getElementById('calc-val').value=vmin;
-  document.getElementById('calc-entrada').value=30;
   calcRender();
   openM('m-calc');
 }
+
 
 
 function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
