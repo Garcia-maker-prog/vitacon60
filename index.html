@@ -184,7 +184,7 @@ select.inp option{background:var(--s1)}
   <div class="hdr-btns">
     <button class="hdr-btn" onclick="openM('m-news')">📰 Notícias</button>
     <button class="hdr-btn" onclick="openAddAppt()">📅 Agendar</button>
-    <button class="hdr-btn" onclick="openCalFull()">🗓️ Agenda</button>
+    <button class="hdr-btn" onclick="openCalFull()">📆 Agenda</button>
     <button class="hdr-btn" onclick="goTab('favs',document.querySelector('[data-id=favs]'))">🔗 Links</button>
   </div>
 </div>
@@ -402,12 +402,12 @@ select.inp option{background:var(--s1)}
 </div></div>
 
 <div class="overlay" id="m-cal" style="z-index:200"><div class="modal">
-  <div class="modal-hdr"><span>🗓️ AGENDA</span><button class="modal-close" onclick="closeM('m-cal')">✕</button></div>
+  <div class="modal-hdr"><span>📆 AGENDA</span><button class="modal-close" onclick="closeM('m-cal')">✕</button></div>
   <div id="cal-content"></div>
 </div></div>
 
 <div class="overlay" id="m-day" style="z-index:250"><div class="modal">
-  <div class="modal-hdr"><span id="day-modal-title">🗓️ DIA</span><button class="modal-close" onclick="closeM('m-day')">✕</button></div>
+  <div class="modal-hdr"><span id="day-modal-title">📆 DIA</span><button class="modal-close" onclick="closeM('m-day')">✕</button></div>
   <div id="day-modal-content"></div>
 </div></div>
 
@@ -733,7 +733,7 @@ function calDayOpen(ds){
   }
   content+=`<button onclick="closeM('m-day');eiAppt=-1;document.getElementById('appt-title').textContent='📅 AGENDAR';document.getElementById('appt-del').style.display='none';document.getElementById('ap-title').value='';document.getElementById('ap-date').value='${ds}';document.getElementById('ap-time').value='';document.getElementById('ap-local').value='';document.getElementById('ap-notes').value='';openM('m-appt')" class="btn btn-ghost" style="width:100%;margin-top:4px">📅 Agendar neste dia</button>`;
 
-  document.getElementById('day-modal-title').textContent='🗓️ '+dayLabel;
+  document.getElementById('day-modal-title').textContent='📆 '+dayLabel;
   document.getElementById('day-modal-content').innerHTML=content;
   openM('m-day');
 }
@@ -768,7 +768,7 @@ function calDayOpen(ds){
 
   content+=`<button onclick="closeM('m-detail');eiAppt=-1;document.getElementById('appt-title').textContent='📅 AGENDAR';document.getElementById('appt-del').style.display='none';document.getElementById('ap-title').value='';document.getElementById('ap-date').value='${ds}';document.getElementById('ap-time').value='';document.getElementById('ap-local').value='';document.getElementById('ap-notes').value='';openM('m-appt')" class="btn btn-ghost" style="width:100%;margin-top:4px">📅 Agendar neste dia</button>`;
 
-  document.getElementById('detail-title').textContent='🗓️ '+dayLabel;
+  document.getElementById('detail-title').textContent='📆 '+dayLabel;
   document.getElementById('detail-content').innerHTML=content;
   openM('m-detail');
 }
@@ -1115,7 +1115,7 @@ function calcRender(){
   // Resumo entrada/financiamento
   html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
     <div style="background:#FFF8F0;border:1px solid #F5D9B8;border-radius:9px;padding:10px 12px;text-align:center">
-      <div style="font-size:9.5px;color:#C87A2A;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Entrada (30%)</div>
+      <div style="font-size:9.5px;color:#C87A2A;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Investimento (30%)</div>
       <div style="font-size:14px;font-weight:700;color:#C87A2A">${calcFmtR(total*0.30)}</div>
     </div>
     <div style="background:#EDF7F0;border:1px solid #B8DEC4;border-radius:9px;padding:10px 12px;text-align:center">
@@ -1146,8 +1146,7 @@ function calcGerarWhatsapp(){
     const parc=sub/p.qtd;
     const d=calcAddMonths(new Date(today),p.offM);
     d.setDate(Math.min(p.offD,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
-    const emoji=p.label==='ATO'?'🔑':p.label==='SINAL'?'📝':p.label==='MENSAL'?'📅':p.label==='ANUAL'?'🗓️':p.label==='ÚNICA'?'⭐':p.label==='FINANCIAMENTO'?'🏦':'🔄';
-    msg+=`${emoji} *${p.label}*\n`;
+    msg+=`*${p.label}*\n`;
     if(p.qtd>1){
       msg+=`${p.qtd}x de ${calcFmtR(parc)}\n`;
     }else{
@@ -1157,10 +1156,10 @@ function calcGerarWhatsapp(){
   });
 
   msg+=`━━━━━━━━━━━━━━━━━\n`;
-  msg+=`🟠 *Entrada (30%): ${calcFmtR(total*0.30)}*\n`;
-  msg+=`🏦 *Financiamento (70%): ${calcFmtR(total*0.70)}*\n`;
-  msg+=`✅ *Valor Total: ${calcFmtR(total)}*\n\n`;
-  msg+=`_Valores sujeitos à confirmação pela tabela oficial Vitacon._`;
+  msg+=`*Investimento (30%): ${calcFmtR(total*0.30)}*\n`;
+  msg+=`*Financiamento (70%): ${calcFmtR(total*0.70)}*\n`;
+  msg+=`*Valor Total: ${calcFmtR(total)}*\n\n`;
+  msg+=`_Valores sujeitos a confirmacao pela tabela oficial Vitacon._`;
 
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
 }
