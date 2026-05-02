@@ -455,9 +455,9 @@ select.inp option{background:var(--s1)}
 
 <div class="overlay" id="m-news"><div class="modal">
   <div class="modal-hdr"><span>📰 NOTÍCIAS DO MERCADO</span><button class="modal-close" onclick="closeM('m-news')">✕</button></div>
-  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">A IA buscará as últimas notícias relevantes para você corretor Vitacon.</p>
-  <div class="field"><label class="inp-lbl">Foco da busca</label>
-    <select class="inp" id="news-topic">
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Escolha um tema ou digite sua própria busca. A IA buscará as últimas notícias relevantes.</p>
+  <div class="field"><label class="inp-lbl">Tema rápido</label>
+    <select class="inp" id="news-topic" onchange="document.getElementById('news-custom').value=''">
       <option value="imob">🏢 Mercado Imobiliário SP</option>
       <option value="invest">📈 Investimentos no Brasil</option>
       <option value="selic">💰 Selic & Financiamento Imobiliário</option>
@@ -465,6 +465,10 @@ select.inp option{background:var(--s1)}
       <option value="airbnb">🛎️ Mercado Airbnb & Temporada</option>
       <option value="fii">📊 Fundos Imobiliários (FIIs)</option>
     </select>
+  </div>
+  <div class="field">
+    <label class="inp-lbl">— ou busca personalizada —</label>
+    <textarea class="inp" id="news-custom" placeholder="Ex: Impacto da Selic nos studios de SP em 2025&#10;Lançamentos Vitacon no segundo semestre&#10;Rendimento Airbnb no Itaim Bibi..." style="min-height:80px" oninput="if(this.value.trim())document.getElementById('news-topic').value=''"></textarea>
   </div>
   <button class="btn" onclick="openClaudeNews()" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;width:100%;margin-bottom:8px">🔍 Buscar no Claude.ai</button>
   <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com a busca configurada. Gratuito.</p>
@@ -1009,7 +1013,14 @@ function openEditFav(i){eiFav=i;const f=favs[i];document.getElementById('fav-tit
 function saveFav(){let url=document.getElementById('fav-url').value||'';if(url&&!url.startsWith('http'))url='https://'+url;const f={id:eiFav===-1?Date.now():(favs[eiFav]?.id||Date.now()),name:document.getElementById('fav-name').value||'Link',url,icon:document.getElementById('fav-icon').value||'🔗'};if(eiFav===-1)favs.push(f);else favs[eiFav]=f;ls('favs',favs);closeM('m-fav');renderFavs();toast(eiFav===-1?'✅ Link adicionado!':'✅ Atualizado!')}
 function delFav(){if(!confirm('Excluir?'))return;favs.splice(eiFav,1);ls('favs',favs);closeM('m-fav');renderFavs();toast('🗑️ Removido!')}
 
-function openClaudeNews(){const tp={imob:'Busque as últimas notícias e tendências do mercado imobiliário em São Paulo e Brasil em 2025. Inclua preços, lançamentos, índices do setor, perspectivas para investidores. Dados recentes e específicos.',invest:'Últimas notícias sobre investimentos no Brasil 2025: Selic, renda fixa, fundos imobiliários FIIs, mercado de capitais, perspectivas econômicas. Foque em oportunidades para pessoa física.',selic:'Últimas notícias sobre Selic e financiamento imobiliário Brasil. Como a taxa atual afeta crédito imobiliário e investimentos em imóveis? Dados do Banco Central e perspectivas.',lanc:'Últimos lançamentos imobiliários São Paulo 2025. Imóveis compactos, studios, apart-hotéis para investimento. Preços, localização, expectativas de valorização.',airbnb:'Últimas notícias mercado aluguel por temporada e Airbnb Brasil 2025. Taxa de ocupação, rentabilidade, regulamentações, melhores cidades e bairros para investir.',fii:'Últimas notícias fundos imobiliários FIIs Brasil 2025. Melhores fundos, dividend yield, perspectivas, como escolher FIIs para renda passiva.'};const sel=document.getElementById('news-topic').value;window.open('https://claude.ai/new?q='+encodeURIComponent(tp[sel]||tp.imob),'_blank');closeM('m-news')}
+function openClaudeNews(){
+  const custom=(document.getElementById('news-custom')?.value||'').trim();
+  const tp={imob:'Busque as últimas notícias e tendências do mercado imobiliário em São Paulo e Brasil em 2025. Inclua preços, lançamentos, índices do setor, perspectivas para investidores. Dados recentes e específicos.',invest:'Últimas notícias sobre investimentos no Brasil 2025: Selic, renda fixa, fundos imobiliários FIIs, mercado de capitais, perspectivas econômicas. Foque em oportunidades para pessoa física.',selic:'Últimas notícias sobre Selic e financiamento imobiliário Brasil. Como a taxa atual afeta crédito imobiliário e investimentos em imóveis? Dados do Banco Central e perspectivas.',lanc:'Últimos lançamentos imobiliários São Paulo 2025. Imóveis compactos, studios, apart-hotéis para investimento. Preços, localização, expectativas de valorização.',airbnb:'Últimas notícias mercado aluguel por temporada e Airbnb Brasil 2025. Taxa de ocupação, rentabilidade, regulamentações, melhores cidades e bairros para investir.',fii:'Últimas notícias fundos imobiliários FIIs Brasil 2025. Melhores fundos, dividend yield, perspectivas, como escolher FIIs para renda passiva.'};
+  const sel=document.getElementById('news-topic').value;
+  const prompt=custom?`Você é especialista em mercado imobiliário e investimentos no Brasil. Busque e analise informações sobre: ${custom}\n\nForneça dados atualizados, análise prática e o que isso significa para um corretor de imóveis de alto padrão em São Paulo.`:tp[sel]||tp.imob;
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  closeM('m-news');
+}
 
 let edW=0,edSec='vendas';
 function renderWeekTabs(){const el=document.getElementById('week-tabs');if(!el)return;el.innerHTML=weeks.map((_,i)=>`<button class="sec-tab${i===edW?' active':''}" onclick="selEdW(${i},this)">Sem ${i+1}</button>`).join('')}
