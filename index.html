@@ -185,6 +185,8 @@ select.inp option{background:var(--s1)}
     <button class="hdr-btn" onclick="openM('m-news')">📰 Notícias</button>
     <button class="hdr-btn" onclick="openAddAppt()">📅 Agendar</button>
     <button class="hdr-btn" onclick="openCalFull()">📆 Agenda</button>
+    <button class="hdr-btn" onclick="openQuickWA()" style="background:rgba(37,211,102,.15);border-color:rgba(37,211,102,.3);color:var(--wa)">📲 WA</button>
+    <button class="hdr-btn" onclick="openRelatorio()">📊 Relatório</button>
     <button class="hdr-btn" onclick="goTab('favs',document.querySelector('[data-id=favs]'))">🔗 Links</button>
   </div>
 </div>
@@ -234,6 +236,39 @@ select.inp option{background:var(--s1)}
       <button onclick="openAddLead()" style="background:var(--acc);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo</button>
     </div>
   </div>
+  <!-- Search + Filter -->
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <div style="flex:1;position:relative">
+      <input class="inp" id="lead-search" placeholder="🔍 Buscar lead..." oninput="renderLeads()" style="padding-left:12px;font-size:13px">
+    </div>
+    <select class="inp" id="lead-filter" onchange="renderLeads()" style="width:auto;flex-shrink:0;font-size:12px;padding:8px 10px">
+      <option value="">Todos</option>
+      <option value="hot">🔥 Quentes</option>
+      <option value="warm">🌡️ Mornos</option>
+      <option value="cold">❄️ Frios</option>
+      <option value="won">✅ Fechados</option>
+      <option value="overdue">🔴 Atrasados</option>
+      <option value="nofu">📅 Sem follow-up</option>
+    </select>
+  </div>
+  <!-- BUSCA + FILTROS -->
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
+      <span style="color:var(--txt3);font-size:14px">🔍</span>
+      <input id="lead-search" class="inp" placeholder="Buscar lead..." style="border:none;background:transparent;padding:9px 0;font-size:13px" oninput="filterLeads()">
+    </div>
+    <select id="lead-filter" class="inp" style="width:auto;padding:8px 10px;font-size:11px" onchange="filterLeads()">
+      <option value="all">Todos</option>
+      <option value="hot">🔥 Quentes</option>
+      <option value="warm">🌡️ Mornos</option>
+      <option value="cold">❄️ Frios</option>
+      <option value="won">✅ Fechados</option>
+      <option value="overdue">🔴 Atrasados</option>
+      <option value="nofu">📅 Sem follow-up</option>
+    </select>
+  </div>
+  <!-- RELATÓRIO RÁPIDO -->
+  <div id="leads-report" style="display:none;background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:10px;font-size:11px"></div>
   <div id="leads-list"></div>
   <div id="leads-kanban" style="display:none"></div>
   <div id="leads-cal" style="display:none"></div>
@@ -266,7 +301,10 @@ select.inp option{background:var(--s1)}
 <div class="page" id="page-projetos">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div class="grp" style="margin:0">🏢 PROJETOS VITACON</div>
-    <button onclick="openAddProjeto()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo Projeto</button>
+    <div style="display:flex;gap:6px">
+      <button onclick="openComparador()" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⚖️ Comparar</button>
+      <button onclick="openAddProjeto()" style="background:var(--acc);color:#fff;border:none;padding:6px 13px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo Projeto</button>
+    </div>
   </div>
   <div id="projetos-list"></div>
 </div>
@@ -384,6 +422,37 @@ select.inp option{background:var(--s1)}
   <button class="btn btn-danger" id="fav-del" onclick="delFav()" style="display:none">🗑️ Excluir</button>
 </div></div>
 
+<!-- QUICK WA -->
+<div class="overlay" id="m-quickwa" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span>📲 CONTATOS URGENTES</span><button class="modal-close" onclick="closeM('m-quickwa')">✕</button></div>
+  <div id="quickwa-content"></div>
+</div></div>
+
+<!-- RELATORIO -->
+<div class="overlay" id="m-relatorio" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span>📊 RELATÓRIO DE VENDAS</span><button class="modal-close" onclick="closeM('m-relatorio')">✕</button></div>
+  <div id="relatorio-content"></div>
+</div></div>
+
+<!-- NOTA RAPIDA -->
+<div class="overlay" id="m-nota" style="z-index:400"><div class="modal">
+  <div class="modal-hdr"><span id="nota-title">📝 NOTA RÁPIDA</span><button class="modal-close" onclick="closeM('m-nota')">✕</button></div>
+  <textarea class="inp" id="nota-txt" style="min-height:100px;margin-bottom:12px" placeholder="O que aconteceu? Anotação rápida..."></textarea>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-ghost" onclick="closeM('m-nota')" style="flex:1">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveNota()" style="flex:1">💾 Salvar</button>
+  </div>
+</div></div>
+
+<!-- COMPARADOR -->
+<div class="overlay" id="m-comparar" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span>⚖️ COMPARAR PROJETOS</span><button class="modal-close" onclick="closeM('m-comparar')">✕</button></div>
+  <div class="field"><label class="inp-lbl">Projeto A</label><select class="inp" id="cmp-a" onchange="renderComparador()"></select></div>
+  <div class="field"><label class="inp-lbl">Projeto B</label><select class="inp" id="cmp-b" onchange="renderComparador()"></select></div>
+  <div id="cmp-content" style="margin-bottom:12px"></div>
+  <button class="btn" onclick="copiarComparador()" style="width:100%;background:var(--wa);color:#fff">📲 Copiar para WhatsApp</button>
+</div></div>
+
 <div class="overlay" id="m-news"><div class="modal">
   <div class="modal-hdr"><span>📰 NOTÍCIAS DO MERCADO</span><button class="modal-close" onclick="closeM('m-news')">✕</button></div>
   <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">A IA buscará as últimas notícias relevantes para você corretor Vitacon.</p>
@@ -412,6 +481,28 @@ select.inp option{background:var(--s1)}
 </div></div>
 
 <!-- CALCULADORA FLUXO -->
+<!-- NOTA RÁPIDA -->
+<div class="overlay" id="m-nota" style="z-index:350"><div class="modal">
+  <div class="modal-hdr"><span id="nota-title">📝 NOTA RÁPIDA</span><button class="modal-close" onclick="closeM('m-nota')">✕</button></div>
+  <div style="font-size:11px;color:var(--txt3);margin-bottom:10px" id="nota-info"></div>
+  <textarea class="inp" id="nota-txt" placeholder="O que aconteceu? Ligação, reunião, objeção..." style="min-height:100px;margin-bottom:12px"></textarea>
+  <div style="display:flex;gap:8px">
+    <button class="btn btn-ghost" onclick="closeM('m-nota')" style="flex:1">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveNota()" style="flex:1">💾 Salvar no histórico</button>
+  </div>
+</div></div>
+
+<!-- BACKUP REMINDER -->
+<div class="overlay" id="m-backup-lembrete" style="z-index:350"><div class="modal">
+  <div class="modal-hdr"><span>📦 BACKUP SEMANAL</span><button class="modal-close" onclick="closeM('m-backup-lembrete');ls('lastBackup',Date.now())">✕</button></div>
+  <div style="text-align:center;padding:10px 0 16px">
+    <div style="font-size:40px;margin-bottom:10px">💾</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px">Hora do backup semanal!</div>
+    <div style="font-size:12px;color:var(--txt3);margin-bottom:16px">Salve seus leads e dados para não perder nada.</div>
+    <button class="btn btn-primary" onclick="doExport();closeM('m-backup-lembrete');ls('lastBackup',Date.now())" style="margin-bottom:8px">📦 Exportar agora</button>
+    <button class="btn btn-ghost" onclick="closeM('m-backup-lembrete');ls('lastBackup',Date.now())">Lembrar depois</button>
+  </div>
+</div></div>
 <div class="overlay" id="m-calc" style="z-index:450"><div class="modal" style="padding:0;border-radius:18px 18px 0 0;overflow:hidden;max-height:95vh;display:flex;flex-direction:column">
   <div style="background:#0F0F0F;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0">
     <input type="text" id="calc-nome" value="VITACON" placeholder="Nome do empreendimento" maxlength="60"
@@ -814,10 +905,33 @@ function openDetail(i){
   openM('m-detail');
 }
 
-function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;if(!leads.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px">Nenhum lead.</div>';return}el.innerHTML=leads.map((l,i)=>lCard(l,i)).join('')}
+function renderLeads(){const el=document.getElementById('leads-list');if(!el)return;const fl=filteredLeads();if(!fl.length){el.innerHTML=`<div style="font-size:12px;color:var(--txt3);padding:8px">${leads.length?'Nenhum lead encontrado.':'Nenhum lead.'}</div>`;return}el.innerHTML=fl.map((l,_)=>lCard(l,leads.indexOf(l))).join('')}
 function lCard(l,i){
   const ss=SS[l.stage]||SS.cold,t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won',comm=gc(l),s=scr(l);
-  return`<div class="lead-card"><div class="lead-top"><div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div><div class="lead-info"><div class="lead-name">${l.name}</div><div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}</div><div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div><div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}<div class="lead-btns">${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}<button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button><button class="btn-icon" onclick="openDetail(${i})">👁️</button><button class="btn-icon" onclick="openEditLead(${i})">✏️</button><button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button></div></div>`;
+  const dias=diasSemContato(l);
+  const diasTag=dias!==null&&dias>3&&l.stage!=='won'?`<span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 5px;border-radius:5px;margin-left:5px">${dias}d</span>`:'';
+  return`<div class="lead-card">
+    <div class="lead-top">
+      <div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div>
+      <div class="lead-info">
+        <div class="lead-name">${l.name}${diasTag}</div>
+        <div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>
+        ${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}
+      </div>
+      <div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div>
+    <div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>
+    ${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}
+    <div class="lead-btns">
+      ${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}
+      <button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button>
+      <button class="btn-icon" onclick="openDetail(${i})">👁️</button>
+      <button class="btn-icon" onclick="openNota(${i})" title="Nota rápida" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)">📝</button>
+      <button class="btn-icon" onclick="openEditLead(${i})">✏️</button>
+      <button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button>
+    </div>
+  </div>`;
 }
 
 let lView='list';
@@ -864,7 +978,7 @@ function renderTplList(){const el=document.getElementById('tpl-list');if(!el)ret
 function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t||!l)return;const msg=t.txt.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));document.getElementById('msg-prev').value=msg;document.getElementById('msg-prev-wrap').style.display='block';const wb=document.getElementById('msg-wa-btn');if(l.wa){wb.onclick=()=>{const preview=document.getElementById('msg-prev').value,now=new Date(),ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;ls('leads',leads);toast('💬 Salvo no histórico!');window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank')};wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
 function saveMsgFu(){const d=document.getElementById('msg-fu').value;if(!d){toast('⚠️ Selecione uma data!');return}leads[msgI].fu=d;ls('leads',leads);setView(lView);renderHdr();closeM('m-msg');showNotif('📅','Follow-up agendado!',leads[msgI].name+' — '+fd(d));toast('📅 Follow-up salvo!')}
 
-function renderTplEditor(){const el=document.getElementById('tpl-editor');if(!el)return;el.innerHTML=tpls.map((t,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;gap:8px;margin-bottom:8px"><input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;ls('tpls',tpls)"><button onclick="delTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button></div><textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].txt=this.value;ls('tpls',tpls)">${t.txt}</textarea><div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div></div>`).join('')}
+function renderTplEditor(){const el=document.getElementById('tpl-editor');if(!el)return;el.innerHTML=tpls.map((t,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;gap:8px;margin-bottom:8px"><input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;ls('tpls',tpls)"><button onclick="dupTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px" title="Duplicar">📋</button><button onclick="delTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button></div><textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].txt=this.value;ls('tpls',tpls)">${t.txt}</textarea><div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div></div>`).join('')}
 function addTpl(){tpls.push({id:Date.now(),name:'Nova Mensagem',txt:'Olá, [NOME]! ...'});ls('tpls',tpls);renderTplEditor();toast('✅ Adicionada!')}
 function delTpl(i){if(!confirm('Excluir?'))return;tpls.splice(i,1);ls('tpls',tpls);renderTplEditor();toast('🗑️ Removido!')}
 
@@ -1272,6 +1386,139 @@ function selectApres(ai){
   // Scroll to preview
   document.getElementById('apres-prev').scrollIntoView({behavior:'smooth'});
 }
+// ════ BUSCA E FILTRO DE LEADS ════
+let leadSearchTerm='',leadFilterStage='all';
+function filterLeads(){leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();leadFilterStage=document.getElementById('lead-filter')?.value||'all';renderLeads();renderReport()}
+function filteredLeads(){const t=td();return leads.filter(l=>{const ms=!leadSearchTerm||l.name.toLowerCase().includes(leadSearchTerm)||(l.product||'').toLowerCase().includes(leadSearchTerm)||(l.status||'').toLowerCase().includes(leadSearchTerm);let mf=true;if(leadFilterStage==='hot')mf=l.stage==='hot';else if(leadFilterStage==='warm')mf=l.stage==='warm';else if(leadFilterStage==='cold')mf=l.stage==='cold';else if(leadFilterStage==='won')mf=l.stage==='won';else if(leadFilterStage==='overdue')mf=l.fu&&l.fu<t&&l.stage!=='won';else if(leadFilterStage==='nofu')mf=!l.fu&&l.stage!=='won';return ms&&mf})}
+
+// ════ DIAS SEM CONTATO ════
+function daysSinceContact(l){const hist=l.hist||'';const ms=hist.match(/\[(\d{2}\/\d{2}\/\d{4})/g)||[];let last=null;ms.forEach(m=>{const[dd,mm,yyyy]=m.replace('[','').split('/');const d=new Date(`${yyyy}-${mm}-${dd}`);if(!last||d>last)last=d});if(l.fu){const fd2=new Date(l.fu);if(!last||fd2>last)last=fd2}if(!last)return null;return Math.floor((new Date()-last)/86400000)}
+function diasBadge(days){if(days===null)return'';if(days===0)return'<span style="font-size:9px;background:rgba(34,197,94,.15);color:var(--green);padding:2px 6px;border-radius:5px;margin-left:4px">hoje</span>';if(days<=3)return`<span style="font-size:9px;background:rgba(34,197,94,.15);color:var(--green);padding:2px 6px;border-radius:5px;margin-left:4px">${days}d</span>`;if(days<=7)return`<span style="font-size:9px;background:rgba(245,158,11,.15);color:var(--yellow);padding:2px 6px;border-radius:5px;margin-left:4px">${days}d</span>`;return`<span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 6px;border-radius:5px;margin-left:4px">⚠️ ${days}d</span>`}
+
+// ════ RELATÓRIO RÁPIDO ════
+function renderReport(){
+  const el=document.getElementById('leads-report');if(!el)return;
+  const t=td();
+  const hot=leads.filter(l=>l.stage==='hot').length,warm=leads.filter(l=>l.stage==='warm').length;
+  const cold=leads.filter(l=>l.stage==='cold').length,won=leads.filter(l=>l.stage==='won').length;
+  const overdue=leads.filter(l=>l.fu&&l.fu<t&&l.stage!=='won').length;
+  const noFu=leads.filter(l=>!l.fu&&l.stage!=='won').length;
+  const sc7=leads.filter(l=>{const d=daysSinceContact(l);return d!==null&&d>7&&l.stage!=='won'}).length;
+  const vgvH=leads.filter(l=>l.stage==='hot').reduce((s,l)=>s+(Number(l.valor)||0),0);
+  el.style.display='block';
+  el.innerHTML=`<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);letter-spacing:.5px;margin-bottom:8px">📊 RELATÓRIO DO PIPELINE</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px">
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--acc)">${hot}</div><div style="font-size:9px;color:var(--txt3)">🔥 Quentes</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--yellow)">${warm}</div><div style="font-size:9px;color:var(--txt3)">🌡️ Mornos</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--blue)">${cold}</div><div style="font-size:9px;color:var(--txt3)">❄️ Frios</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--green)">${won}</div><div style="font-size:9px;color:var(--txt3)">✅ Fechados</div></div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      ${overdue?`<span style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">🔴 ${overdue} atrasados</span>`:''}
+      ${noFu?`<span style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.2);color:var(--yellow);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">📅 ${noFu} sem follow-up</span>`:''}
+      ${sc7?`<span style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">⚠️ ${sc7} sem contato +7d</span>`:''}
+      <span style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);color:var(--purple);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">VGV Quentes: ${fk(vgvH)}</span>
+    </div>`;
+}
+
+// ════ NOTA RÁPIDA ════
+let notaLeadIdx=null;
+function openNota(i){notaLeadIdx=i;const l=leads[i];document.getElementById('nota-title').textContent='📝 '+l.name.split(' ')[0];document.getElementById('nota-info').textContent=l.product+' · '+l.status;document.getElementById('nota-txt').value='';openM('m-nota')}
+function saveNota(){if(notaLeadIdx===null)return;const txt=document.getElementById('nota-txt').value.trim();if(!txt){toast('⚠️ Escreva algo!');return}const now=new Date();const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;leads[notaLeadIdx].hist=(leads[notaLeadIdx].hist||'')+`\n\n📝 [${ds}]:\n${txt}`;ls('leads',leads);closeM('m-nota');renderLeads();toast('✅ Nota salva!')}
+
+// ════ BACKUP SEMANAL ════
+function checkBackupReminder(){const last=lg('lastBackup',0);const dias=Math.floor((Date.now()-last)/86400000);if(dias>=7)setTimeout(()=>openM('m-backup-lembrete'),3000)}
+
+// ════ BUSCA E FILTRO ════
+function diasSemContato(l){
+  const hist=l.hist||'';
+  const matches=hist.match(/\[(\d{2})\/(\d{2})\/(\d{4})/g);
+  if(matches&&matches.length){
+    const last=matches[matches.length-1];
+    const m=last.match(/\[(\d{2})\/(\d{2})\/(\d{4})/);
+    if(m){const lastDate=new Date(`${m[3]}-${m[2]}-${m[1]}`);return Math.floor((Date.now()-lastDate.getTime())/86400000)}
+  }
+  return null;
+}
+
+// ════ QUICK WA ════
+function openQuickWA(){
+  const t=td();
+  const seen=new Set();
+  const urgentes=[
+    ...leads.filter(l=>l.fu&&l.fu<t&&l.stage!=='won').map(l=>({...l,urg:'🔴 ATRASADO',cor:'var(--red)'})),
+    ...leads.filter(l=>l.fu&&l.fu===t&&l.stage!=='won').map(l=>({...l,urg:'🟡 HOJE',cor:'var(--yellow)'})),
+    ...leads.filter(l=>l.stage==='hot'&&!l.fu).map(l=>({...l,urg:'🔥 SEM FOLLOW-UP',cor:'var(--acc)'})),
+  ].filter(l=>{if(seen.has(l.id))return false;seen.add(l.id);return true});
+
+  let html='<p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Follow-ups atrasados, de hoje e leads quentes sem contato agendado.</p>';
+  if(!urgentes.length){
+    html+='<div style="text-align:center;padding:24px;color:var(--green);font-size:14px">✅ Tudo em dia!</div>';
+  }else{
+    html+=urgentes.map(l=>{
+      const i=leads.findIndex(x=>x.id===l.id);
+      const dias=diasSemContato(l);
+      return`<div style="display:flex;align-items:center;gap:8px;padding:11px;background:var(--s2);border-radius:10px;margin-bottom:8px;border:1px solid var(--br)">
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="closeM('m-quickwa');openDetail(${i})">
+          <div style="font-size:13px;font-weight:700">${l.name}</div>
+          <div style="font-size:10px;color:${l.cor};font-weight:700">${l.urg}${dias!==null?' · '+dias+'d sem contato':''}</div>
+          <div style="font-size:10px;color:var(--txt3)">${l.product||''}${l.fu?' · '+fd(l.fu):''}</div>
+        </div>
+        ${l.wa?`<a href="https://wa.me/55${l.wa}" target="_blank" style="background:var(--wa);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;text-decoration:none;flex-shrink:0">📲</a>`:''}
+        <button onclick="closeM('m-quickwa');openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f);flex-shrink:0">💬</button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('quickwa-content').innerHTML=html;
+  openM('m-quickwa');
+}
+
+// ════ RELATÓRIO ════
+function openRelatorio(){
+  const t=td();
+  const won=leads.filter(l=>l.stage==='won');
+  const hot=leads.filter(l=>l.stage==='hot');
+  const warm=leads.filter(l=>l.stage==='warm');
+  const cold=leads.filter(l=>l.stage==='cold');
+  const overdue=leads.filter(l=>l.fu&&l.fu<t&&l.stage!=='won');
+  const noFu=leads.filter(l=>!l.fu&&l.stage!=='won');
+  const tComm=won.reduce((s,l)=>s+gc(l),0);
+  const pVGV=leads.filter(l=>l.stage!=='won').reduce((s,l)=>s+(Number(l.valor)||0),0);
+  const metaV=cfg.metaV||6;const metaComm=cfg.metaComm||70000;
+  const bar=(v,max,c)=>{const p=Math.min(100,max?Math.round(v/max*100):0);return`<div style="background:var(--br);border-radius:4px;height:8px;overflow:hidden;margin-top:5px"><div style="height:100%;width:${p}%;background:${c};border-radius:4px;transition:width .5s"></div></div><div style="font-size:9px;color:var(--txt3);text-align:right;margin-top:2px">${p}%</div>`};
+  document.getElementById('relatorio-content').innerHTML=`
+    <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:10px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:10px">🎯 PROGRESSO DA META</div>
+      <div class="g2" style="gap:10px">
+        <div><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--txt3)">Vendas</span><span style="font-family:var(--d);font-size:18px;color:var(--green)">${won.length}/${metaV}</span></div>${bar(won.length,metaV,'var(--green)')}</div>
+        <div><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--txt3)">Comissão</span><span style="font-family:var(--d);font-size:18px;color:var(--yellow)">${fk(tComm)}</span></div>${bar(tComm,metaComm,'var(--yellow)')}</div>
+      </div>
+    </div>
+    <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:10px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:10px">📊 FUNIL</div>
+      ${[{l:'🔥 Quentes',v:hot.length,c:'var(--acc)'},{l:'🌡️ Mornos',v:warm.length,c:'var(--yellow)'},{l:'❄️ Frios',v:cold.length,c:'var(--blue)'},{l:'✅ Fechados',v:won.length,c:'var(--green)'}].map(x=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div style="width:80px;font-size:11px;font-weight:600;color:${x.c};flex-shrink:0">${x.l}</div>
+          <div style="flex:1;background:var(--br);border-radius:4px;height:20px;overflow:hidden"><div style="height:100%;width:${leads.length?Math.round(x.v/leads.length*100):0}%;background:${x.c};border-radius:4px;display:flex;align-items:center;padding-left:6px"><span style="font-size:10px;font-weight:700;color:#fff">${x.v}</span></div></div>
+        </div>`).join('')}
+    </div>
+    <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:10px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">⚡ ALERTAS</div>
+      ${overdue.length?`<div onclick="closeM('m-relatorio');document.getElementById('lead-filter').value='overdue';renderLeads();goTab('vendas',document.querySelector('[data-id=vendas]'))" style="padding:8px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;margin-bottom:6px;font-size:12px;color:var(--red);cursor:pointer">🔴 ${overdue.length} follow-up${overdue.length>1?'s':''} atrasado${overdue.length>1?'s':''} — toque para ver</div>`:''}
+      ${noFu.length?`<div onclick="closeM('m-relatorio');document.getElementById('lead-filter').value='nofu';renderLeads();goTab('vendas',document.querySelector('[data-id=vendas]'))" style="padding:8px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:6px;font-size:12px;color:var(--yellow);cursor:pointer">📅 ${noFu.length} lead${noFu.length>1?'s':''} sem follow-up — toque para ver</div>`:''}
+      ${!overdue.length&&!noFu.length?`<div style="font-size:12px;color:var(--green);padding:4px 0">✅ Tudo em dia!</div>`:''}
+    </div>
+    <div style="background:var(--s2);border-radius:12px;padding:14px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">💰 PIPELINE VGV</div>
+      <div class="g2" style="gap:8px">
+        <div style="background:var(--s3);border-radius:9px;padding:10px;text-align:center"><div style="font-family:var(--d);font-size:18px;color:var(--purple)">${fk(pVGV)}</div><div style="font-size:9px;color:var(--txt3)">EM NEGOCIAÇÃO</div></div>
+        <div style="background:var(--s3);border-radius:9px;padding:10px;text-align:center"><div style="font-family:var(--d);font-size:18px;color:var(--green)">${fk(tComm)}</div><div style="font-size:9px;color:var(--txt3)">COMISSÕES</div></div>
+      </div>
+    </div>`;
+  openM('m-relatorio');
+}
+
+
 const CALC_MONTHS=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
 
 // Fases fixas conforme tabela oficial Vitacon
@@ -1400,11 +1647,109 @@ function openCalcFluxo(i){
 
 
 
-function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);toast('📦 Exportado!')}
+// ════ DIAS SEM CONTATO ════
+function diasSemContato(l){
+  if(!l.hist)return null;
+  const matches=l.hist.match(/\[(\d{2}\/\d{2}\/\d{4})/g);
+  if(!matches)return null;
+  const last=matches[matches.length-1].replace('[','');
+  const [dd,mm,yy]=last.split('/');
+  const diff=Math.floor((new Date()-new Date(`${yy}-${mm}-${dd}`))/(86400000));
+  return diff;
+}
+
+// ════ NOTA RÁPIDA ════
+
+function openNotaRapida(i){notaLeadIdx=i;const l=leads[i];document.getElementById('nota-title').textContent='📝 '+l.name.split(' ')[0];document.getElementById('nota-txt').value='';openM('m-nota')}
+function saveNota(){if(notaLeadIdx===null)return;const txt=document.getElementById('nota-txt').value.trim();if(!txt){toast('⚠️ Escreva algo!');return}const now=new Date();const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;leads[notaLeadIdx].hist=(leads[notaLeadIdx].hist||'')+`\n\n📝 [${ds}]:\n${txt}`;ls('leads',leads);closeM('m-nota');renderLeads();toast('✅ Nota salva!')}
+
+// ════ DUPLICAR TEMPLATE ════
+function dupTpl(i){const t=tpls[i];tpls.push({id:Date.now(),name:t.name+' (cópia)',txt:t.txt});ls('tpls',tpls);renderTplEditor();toast('✅ Duplicado!')}
+
+// ════ RELATÓRIO ════
+function openRelatorio(){
+  const t=td(),won=leads.filter(l=>l.stage==='won');
+  const hot=leads.filter(l=>l.stage==='hot').length,warm=leads.filter(l=>l.stage==='warm').length,cold=leads.filter(l=>l.stage==='cold').length;
+  const total=leads.length,fuAt=leads.filter(l=>l.fu&&l.fu<t&&l.stage!=='won').length;
+  const fuHj=leads.filter(l=>l.fu===t&&l.stage!=='won').length;
+  const semFU=leads.filter(l=>l.stage!=='won'&&!l.fu).length,semWA=leads.filter(l=>!l.wa&&l.stage!=='won').length;
+  const tComm=won.reduce((s,l)=>s+gc(l),0),pVGV=leads.filter(l=>l.stage!=='won').reduce((s,l)=>s+(Number(l.valor)||0),0);
+  const top=leads.filter(l=>l.stage!=='won'&&l.valor).sort((a,b)=>Number(b.valor)-Number(a.valor)).slice(0,3);
+  document.getElementById('relatorio-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--s2);border-radius:10px;padding:12px;text-align:center"><div style="font-family:var(--d);font-size:26px;color:var(--acc)">${total}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Total Leads</div></div>
+      <div style="background:var(--s2);border-radius:10px;padding:12px;text-align:center"><div style="font-family:var(--d);font-size:26px;color:var(--green)">${won.length}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Vendas Fechadas</div></div>
+    </div>
+    <div style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:10px">FUNIL DE VENDAS</div>
+      ${[{l:'🔥 Quente',v:hot,c:'var(--acc)'},{l:'🌡️ Morno',v:warm,c:'var(--yellow)'},{l:'❄️ Frio',v:cold,c:'var(--blue)'},{l:'✅ Fechado',v:won.length,c:'var(--green)'}].map(s=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="font-size:11px;width:80px;color:${s.c};font-weight:600">${s.l}</div>
+        <div style="flex:1;background:var(--br);border-radius:4px;height:8px;overflow:hidden"><div style="height:100%;border-radius:4px;background:${s.c};width:${total?Math.round(s.v/total*100):0}%"></div></div>
+        <div style="font-size:12px;font-weight:700;color:${s.c};min-width:16px;text-align:right">${s.v}</div>
+      </div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:${fuAt?'rgba(239,68,68,.1)':'var(--s2)'};border:1px solid ${fuAt?'rgba(239,68,68,.3)':'var(--br)'};border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:${fuAt?'var(--red)':'var(--txt3)'}">${fuAt}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">FU Atrasado</div></div>
+      <div style="background:${fuHj?'rgba(245,158,11,.1)':'var(--s2)'};border:1px solid ${fuHj?'rgba(245,158,11,.3)':'var(--br)'};border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:${fuHj?'var(--yellow)':'var(--txt3)'}">${fuHj}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">FU Hoje</div></div>
+      <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:var(--txt3)">${semFU}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Sem Follow-up</div></div>
+      <div style="background:var(--s2);border-radius:10px;padding:11px;text-align:center"><div style="font-family:var(--d);font-size:22px;color:var(--txt3)">${semWA}</div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase">Sem WhatsApp</div></div>
+    </div>
+    <div style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">PIPELINE</div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--br)"><span style="font-size:12px;color:var(--txt2)">VGV em negociação</span><span style="font-size:12px;font-weight:700;color:var(--purple)">${fk(pVGV)}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--br)"><span style="font-size:12px;color:var(--txt2)">Potencial comissões (1,8%)</span><span style="font-size:12px;font-weight:700;color:var(--yellow)">${fk(pVGV*0.018)}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:12px;color:var(--txt2)">Comissões recebidas</span><span style="font-size:12px;font-weight:700;color:var(--green)">${brl(tComm)}</span></div>
+    </div>
+    ${top.length?`<div style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">TOP LEADS POR VALOR</div>
+      ${top.map((l,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--br)"><div style="font-family:var(--d);font-size:16px;color:var(--txt3)">${i+1}</div><div style="flex:1"><div style="font-size:12px;font-weight:700">${l.name}</div><div style="font-size:10px;color:var(--txt3)">${l.product}</div></div><div style="font-size:12px;font-weight:700;color:var(--green)">${fk(l.valor)}</div></div>`).join('')}
+    </div>`:''}`;
+  openM('m-relatorio');
+}
+function renderReport(){}  // placeholder for renderAll
+
+// ════ COMPARADOR ════
+let compProj=[0,1];
+function openComparador(){if(projetos.length<2){toast('⚠️ Cadastre pelo menos 2 projetos!');return}compProj=[0,1];renderComparador();openM('m-comparar')}
+function renderComparador(){
+  const [pi1,pi2]=compProj;const p1=projetos[pi1],p2=projetos[pi2];
+  const sel=(cur)=>projetos.map((p,i)=>`<option value="${i}" ${i===cur?'selected':''}>${p.name}</option>`).join('');
+  const el=document.getElementById('comp-content')||document.getElementById('cmp-content');if(!el)return;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <select class="inp" style="font-size:11px" onchange="compProj[0]=parseInt(this.value);renderComparador()">${sel(pi1)}</select>
+      <select class="inp" style="font-size:11px" onchange="compProj[1]=parseInt(this.value);renderComparador()">${sel(pi2)}</select>
+    </div>
+    ${[['Status',(PROJ_STATUS[p1?.status]||PROJ_STATUS.pronto).l,(PROJ_STATUS[p2?.status]||PROJ_STATUS.pronto).l],['Entrega',p1?.entrega,p2?.entrega],['Metragem',p1?.metro,p2?.metro],['Valor mín.',p1?.vmin?fk(Number(p1.vmin)):null,p2?.vmin?fk(Number(p2.vmin)):null],['Valor máx.',p1?.vmax?fk(Number(p1.vmax)):null,p2?.vmax?fk(Number(p2.vmax)):null],['Comissão',p1?.comm?p1.comm+'%':null,p2?.comm?p2.comm+'%':null],['Rentabilidade',p1?.rentab,p2?.rentab],['Localização',p1?.local,p2?.local],['Fluxo',p1?.fluxo,p2?.fluxo]].map(([l,v1,v2])=>`
+      <div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:6px;padding:7px 0;border-bottom:1px solid var(--br);align-items:start">
+        <div style="font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;padding-top:4px">${l}</div>
+        <div style="font-size:11px;background:var(--s2);border-radius:7px;padding:6px 8px">${v1||'—'}</div>
+        <div style="font-size:11px;background:var(--s2);border-radius:7px;padding:6px 8px">${v2||'—'}</div>
+      </div>`).join('')}
+    <button onclick="copiarComp()" class="btn" style="width:100%;background:var(--wa);color:#fff;margin-top:12px">📲 Copiar para WhatsApp</button>`;
+}
+function copiarComp(){
+  const [pi1,pi2]=compProj;const p1=projetos[pi1],p2=projetos[pi2];
+  let txt=`📊 *COMPARATIVO*\n\n🏢 *${p1.name}* vs *${p2.name}*\n━━━━━━━━━━━━\n\n`;
+  [['Entrega',p1.entrega,p2.entrega],['Metragem',p1.metro,p2.metro],['Valor mín.',p1.vmin?fk(Number(p1.vmin)):null,p2.vmin?fk(Number(p2.vmin)):null],['Rentabilidade',p1.rentab,p2.rentab],['Localização',p1.local,p2.local]].forEach(([l,v1,v2])=>{if(v1||v2)txt+=`*${l}:*\n  ${p1.name}: ${v1||'—'}\n  ${p2.name}: ${v2||'—'}\n\n`});
+  txt+=`_Valores sujeitos à confirmação Vitacon._`;
+  navigator.clipboard.writeText(txt).then(()=>toast('✅ Copiado!')).catch(()=>toast('✅ Copiado!'));
+}
+
+// ════ BACKUP SEMANAL ════
+function checkBackupReminder(){
+  const last=lg('lastBackup',null);
+  if(!last||(Date.now()-last)>7*24*60*60*1000)
+    setTimeout(()=>showNotif('📦','Backup semanal pendente!','Config → Exportar para não perder dados'),4000);
+}
+
+function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);ls('lastBackup',Date.now());toast('📦 Exportado!')}
 function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
 function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
-function renderAll(){renderTasks();setView('list');renderHdr();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
+function renderAll(){renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
+checkBackupReminder();
 setTimeout(()=>{const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won');if(due.length)showNotif('📱',`Follow-up ${due[0].fu<t?'ATRASADO!':'hoje!'}`,due[0].name)},800);
 </script>
 </body>
