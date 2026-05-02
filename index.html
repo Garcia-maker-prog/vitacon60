@@ -1161,7 +1161,8 @@ function openProjetosParaLead(li){
       </div>
       <div style="display:flex;gap:6px">
         ${nApres?`<button onclick="openApresParaLead(${pi})" class="btn" style="flex:1;background:var(--blue);color:#fff;font-size:11px">📋 Ver Apresentações</button>`:`<button onclick="openApresEdit(${pi})" class="btn btn-ghost" style="flex:1;font-size:11px">📝 Criar Apresentação</button>`}
-        <button onclick="openCalcFluxo(${pi})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳</button>
+        <button onclick="openCalcFluxo(${pi})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)" title="Fluxo de Pagamento">💳</button>
+        ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)" title="Abrir apresentação PPT">📊</a>`:''}
       </div>
     </div>`;
   }).join('');
