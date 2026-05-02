@@ -1150,23 +1150,70 @@ function openProjetosParaLead(li){
   }
   el.innerHTML=projetos.map((p,pi)=>{
     const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
-    const nApres=(p.apres||[]).length;
-    return`<div style="background:var(--s2);border:1px solid var(--br);border-radius:11px;padding:12px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    const apres=p.apres||[];
+    return`<div style="background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:13px;margin-bottom:10px">
+      <!-- Cabeçalho projeto -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div>
           <div style="font-size:13px;font-weight:700">${p.name}</div>
-          <div style="font-size:10px;color:${st.c};margin-top:2px">${st.l}${p.entrega?' · '+p.entrega:''}</div>
+          <div style="font-size:10px;color:${st.c};margin-top:2px">${st.l}${p.entrega?' · '+p.entrega:''}${p.vmin?' · a partir de '+fk(Number(p.vmin)):''}</div>
         </div>
-        <div style="font-size:10px;color:var(--txt3);text-align:right">${p.vmin?fk(Number(p.vmin))+'':''}<br>${nApres} apresentação${nApres!==1?'s':''}</div>
       </div>
-      <div style="display:flex;gap:6px">
-        ${nApres?`<button onclick="openApresParaLead(${pi})" class="btn" style="flex:1;background:var(--blue);color:#fff;font-size:11px">📋 Ver Apresentações</button>`:`<button onclick="openApresEdit(${pi})" class="btn btn-ghost" style="flex:1;font-size:11px">📝 Criar Apresentação</button>`}
-        <button onclick="openCalcFluxo(${pi})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)" title="Fluxo de Pagamento">💳</button>
-        ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)" title="Abrir apresentação PPT">📊</a>`:''}
+
+      <!-- Ações rápidas -->
+      <div style="display:flex;gap:6px;margin-bottom:${apres.length?'10px':'0'}">
+        ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank"
+          style="flex:1;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow);border-radius:9px;padding:9px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px">
+          📊 Apresentação PPT</a>`:''}
+        <button onclick="openCalcFluxo(${pi})" style="flex:1;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">💳 Fluxo</button>
       </div>
+
+      <!-- Apresentações de texto -->
+      ${apres.length?`
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:6px">📋 MENSAGENS PRONTAS</div>
+        ${apres.map((a,ai)=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--s3);border-radius:9px;margin-bottom:6px;border:1px solid var(--br)">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;margin-bottom:2px">${a.nome}</div>
+              <div style="font-size:10px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.txt||'').substring(0,50)}...</div>
+            </div>
+            <button onclick="enviarApresWA(${pi},${ai},${li})"
+              style="background:var(--wa);color:#fff;border:none;padding:8px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0">
+              📲 Enviar</button>
+          </div>`).join('')}
+      `:`<button onclick="closeM('m-proj-lead');openApresEdit(${pi})" style="width:100%;background:transparent;border:1px dashed var(--br);color:var(--txt3);border-radius:9px;padding:8px;font-size:11px;cursor:pointer;font-family:var(--f)">+ Criar mensagem para este projeto</button>`}
     </div>`;
   }).join('');
   openM('m-proj-lead');
+}
+
+function enviarApresWA(pi,ai,li){
+  const p=projetos[pi];
+  const l=leads[li];
+  const a=(p.apres||[])[ai];
+  if(!a)return;
+  let txt=(a.txt||'').replace(/\[NOME\]/g,l.name.split(' ')[0]);
+  if(!l.wa){
+    // No WhatsApp — show preview to copy
+    document.getElementById('apres-info').textContent=p.name+' · '+a.nome;
+    document.getElementById('apres-list').innerHTML='';
+    document.getElementById('apres-prev').value=txt;
+    document.getElementById('apres-prev-wrap').style.display='block';
+    document.getElementById('apres-wa-btn').textContent='📋 Copiar texto';
+    document.getElementById('apres-wa-btn').onclick=()=>{
+      navigator.clipboard.writeText(txt).then(()=>toast('✅ Copiado!')).catch(()=>toast('✅ Copiado!'));
+    };
+    document.getElementById('apres-title').textContent='📋 '+a.nome;
+    openM('m-apres');
+    return;
+  }
+  // Save to history
+  const now=new Date();
+  const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  leads[li].hist=(leads[li].hist||'')+`\n\n📤 [${ds}] — ${a.nome} (${p.name}):\n${txt}`;
+  ls('leads',leads);
+  toast('💬 Salvo no histórico!');
+  window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(txt)}`,'_blank');
 }
 
 function openApresParaLead(pi){
