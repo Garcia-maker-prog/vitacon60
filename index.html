@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Vitacon 60</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Vitacon 60">
@@ -328,7 +330,7 @@ select.inp option{background:var(--s1)}
     <div id="task-editor"></div>
     <button class="btn-add" onclick="addTaskCfg()">+ Adicionar tarefa</button>
   </div>
-  <div class="card" style="margin-bottom:20px"><div class="card-title">📦 BACKUP</div><p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Exporte no iPhone, envie por WhatsApp/email e importe no desktop para sincronizar.</p><button class="btn btn-ghost" onclick="doExport()" style="margin-bottom:8px">📦 Exportar (.json)</button><label class="btn btn-ghost" style="cursor:pointer;margin-bottom:12px">📥 Importar<input type="file" accept=".json" onchange="doImport(event)" style="display:none"></label><button class="btn btn-danger" onclick="if(confirm('Zerar progresso?'))resetDone()">🗑️ Reiniciar Progresso</button></div>
+  <div class="card" style="margin-bottom:20px"><div class="card-title">📦 BACKUP</div><p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Exporte no iPhone, envie por WhatsApp/email e importe no desktop para sincronizar.</p><button class="btn btn-ghost" onclick="doExport()" style="margin-bottom:8px">📦 Exportar (.json)</button><label class="btn btn-ghost" style="cursor:pointer;margin-bottom:8px">📥 Importar<input type="file" accept=".json" onchange="doImport(event)" style="display:none"></label><button class="btn" onclick="openQRSync()" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue);width:100%;margin-bottom:8px">📱 Sincronizar via QR Code</button><button class="btn btn-danger" onclick="if(confirm('Zerar progresso?'))resetDone()">🗑️ Reiniciar Progresso</button></div>
 </div>
 </div>
 
@@ -497,6 +499,36 @@ select.inp option{background:var(--s1)}
 </div></div>
 
 <!-- BACKUP REMINDER -->
+<div class="overlay" id="m-qr" style="z-index:400"><div class="modal">
+  <div class="modal-hdr"><span>📱 SINCRONIZAR VIA QR</span><button class="modal-close" onclick="closeM('m-qr')">✕</button></div>
+  <div id="qr-step1">
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:16px;line-height:1.6">Gere o QR Code neste device e escaneie no outro. Os dados são comprimidos e transferidos localmente — sem internet.</p>
+    <div class="sec-tabs" id="qr-what-tabs" style="margin-bottom:12px">
+      <button class="sec-tab active" onclick="selQRWhat('leads',this)">👥 Leads</button>
+      <button class="sec-tab" onclick="selQRWhat('all',this)">📦 Tudo</button>
+    </div>
+    <div id="qr-warn" style="font-size:11px;color:var(--yellow);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:8px 10px;margin-bottom:12px;display:none">⚠️ "Tudo" pode gerar QR muito grande. Recomendamos usar Exportar (.json) para sincronização completa.</div>
+    <button class="btn btn-primary" onclick="gerarQR()">📱 Gerar QR Code</button>
+  </div>
+  <div id="qr-step2" style="display:none;text-align:center">
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:12px">Escaneie com o outro device:</div>
+    <div id="qr-canvas-wrap" style="background:#fff;border-radius:12px;padding:16px;display:inline-block;margin-bottom:12px"></div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:12px">QR válido por 5 minutos · <button onclick="document.getElementById('qr-step2').style.display='none';document.getElementById('qr-step1').style.display='block'" style="background:transparent;border:none;color:var(--blue);cursor:pointer;font-size:11px">← Voltar</button></div>
+    <div style="background:var(--s2);border-radius:10px;padding:10px;font-size:11px;color:var(--txt3);margin-bottom:12px">
+      <strong style="color:var(--txt)">No outro device:</strong><br>
+      1. Abra o app → Config → Backup<br>
+      2. Clique "📱 Sincronizar via QR"<br>
+      3. Clique "📷 Escanear QR"
+    </div>
+    <button class="btn btn-ghost" onclick="abrirScanner()">📷 Escanear QR (neste device)</button>
+  </div>
+  <div id="qr-step3" style="display:none">
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:12px">Aponte a câmera para o QR Code do outro device:</p>
+    <video id="qr-video" style="width:100%;border-radius:10px;background:#000;max-height:250px" autoplay playsinline></video>
+    <div id="qr-scan-status" style="font-size:11px;color:var(--txt3);text-align:center;margin-top:8px;padding:8px">Aguardando QR Code...</div>
+    <button onclick="pararScanner()" class="btn btn-ghost" style="margin-top:8px">✕ Cancelar</button>
+  </div>
+</div></div>
 <div class="overlay" id="m-backup-lembrete" style="z-index:350"><div class="modal">
   <div class="modal-hdr"><span>📦 BACKUP SEMANAL</span><button class="modal-close" onclick="closeM('m-backup-lembrete');ls('lastBackup',Date.now())">✕</button></div>
   <div style="text-align:center;padding:10px 0 16px">
@@ -758,7 +790,15 @@ function renderFuHoje(){
   if(!due.length){el.innerHTML='';return}
   el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{const i=leads.indexOf(l),ov=l.fu<t;return`<div class="fu-today" id="fu-${l.id}"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1;cursor:pointer" onclick="openDetail(${i})"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button><button onclick="openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">💬</button><button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button></div>`}).join('');
 }
-function disFU(id){dfuSet.add(id);const el=document.getElementById('fu-'+id);if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(renderFuHoje,320)}}
+function disFU(id){
+  // Clear follow-up date from lead so it doesn't reappear
+  const i=leads.findIndex(l=>l.id===id);
+  if(i!==-1){leads[i].fu='';ls('leads',leads)}
+  dfuSet.add(id);
+  const el=document.getElementById('fu-'+id);
+  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(renderFuHoje,320)}
+  toast('✅ Follow-up dispensado');
+}
 
 function renderApptsHoje(){
   const el=document.getElementById('appts-hoje');if(!el)return;
@@ -979,7 +1019,18 @@ function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads'
 let msgI=null,selT=null;
 function openMsg(i){msgI=i;selT=null;const l=leads[i];document.getElementById('msg-info').textContent=l.name+' · '+l.product;document.getElementById('msg-fu').value=l.fu||'';document.getElementById('msg-prev-wrap').style.display='none';renderTplList();openM('m-msg')}
 function renderTplList(){const el=document.getElementById('tpl-list');if(!el)return;el.innerHTML=tpls.map(t=>`<div class="tpl-item${selT===t.id?' sel':''}" onclick="selTpl(${t.id})"><div class="tpl-name">${t.name}</div><div class="tpl-prev">${t.txt.substring(0,80)}${t.txt.length>80?'...':''}</div></div>`).join('')}
-function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t||!l)return;const msg=t.txt.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));document.getElementById('msg-prev').value=msg;document.getElementById('msg-prev-wrap').style.display='block';const wb=document.getElementById('msg-wa-btn');if(l.wa){wb.onclick=()=>{const preview=document.getElementById('msg-prev').value,now=new Date(),ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;ls('leads',leads);toast('💬 Salvo no histórico!');window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank')};wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
+function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t||!l)return;const msg=t.txt.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));document.getElementById('msg-prev').value=msg;document.getElementById('msg-prev-wrap').style.display='block';const wb=document.getElementById('msg-wa-btn');if(l.wa){wb.onclick=()=>{
+  const preview=document.getElementById('msg-prev').value;
+  const now=new Date();
+  const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;
+  // Clear overdue follow-up after sending message
+  if(leads[msgI].fu&&leads[msgI].fu<=td()){leads[msgI].fu=''}
+  ls('leads',leads);
+  renderHdr();
+  toast('💬 Salvo no histórico!');
+  window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank');
+};wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
 function saveMsgFu(){const d=document.getElementById('msg-fu').value;if(!d){toast('⚠️ Selecione uma data!');return}leads[msgI].fu=d;ls('leads',leads);setView(lView);renderHdr();closeM('m-msg');showNotif('📅','Follow-up agendado!',leads[msgI].name+' — '+fd(d));toast('📅 Follow-up salvo!')}
 
 function renderTplEditor(){const el=document.getElementById('tpl-editor');if(!el)return;el.innerHTML=tpls.map((t,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;gap:8px;margin-bottom:8px"><input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;ls('tpls',tpls)"><button onclick="dupTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px" title="Duplicar">📋</button><button onclick="delTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button></div><textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].txt=this.value;ls('tpls',tpls)">${t.txt}</textarea><div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div></div>`).join('')}
@@ -1758,6 +1809,175 @@ function checkBackupReminder(){
 function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);ls('lastBackup',Date.now());toast('📦 Exportado!')}
 function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
 function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
+// ════ QR CODE SYNC ════
+let qrWhat='leads', qrStream=null, qrScanning=false;
+
+function openQRSync(){
+  document.getElementById('qr-step1').style.display='block';
+  document.getElementById('qr-step2').style.display='none';
+  document.getElementById('qr-step3').style.display='none';
+  document.getElementById('qr-warn').style.display='none';
+  openM('m-qr');
+}
+
+function selQRWhat(v,el){
+  qrWhat=v;
+  document.querySelectorAll('#qr-what-tabs .sec-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('qr-warn').style.display=v==='all'?'block':'none';
+}
+
+function gerarQR(){
+  // Build compact data
+  let data;
+  if(qrWhat==='leads'){
+    data={v:1,t:'leads',d:leads};
+  } else {
+    data={v:1,t:'all',d:{leads,done,cfg,tpls,projetos,appts,favs}};
+  }
+  const json=JSON.stringify(data);
+
+  // Check size — QR can hold ~2953 bytes max reliably
+  if(json.length>2800){
+    if(qrWhat==='all'){
+      toast('⚠️ Dados muito grandes! Use Exportar (.json)');
+      return;
+    }
+    // Compress leads — only key fields
+    const slim=leads.map(l=>({id:l.id,name:l.name,product:l.product,valor:l.valor,pct:l.pct,wa:l.wa,stage:l.stage,fu:l.fu,status:l.status,avatar:l.avatar,hist:l.hist?.slice(-200)||''}));
+    data={v:1,t:'leads_slim',d:slim};
+  }
+
+  const jsonFinal=JSON.stringify(data);
+  if(jsonFinal.length>2800){
+    toast('⚠️ Muitos leads! Use Exportar (.json) para backup completo.');
+    return;
+  }
+
+  // Generate QR using qrcode-generator lib
+  const wrap=document.getElementById('qr-canvas-wrap');
+  wrap.innerHTML='<canvas id="qr-canvas"></canvas>';
+
+  // Use qrcode lib loaded from CDN
+  const script=document.createElement('script');
+  script.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  script.onload=()=>{
+    wrap.innerHTML='<div id="qr-div"></div>';
+    new QRCode(document.getElementById('qr-div'),{
+      text:jsonFinal,
+      width:220,height:220,
+      colorDark:'#000000',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+    document.getElementById('qr-step1').style.display='none';
+    document.getElementById('qr-step2').style.display='block';
+    // Auto expire after 5 min
+    setTimeout(()=>{if(document.getElementById('qr-step2').style.display!=='none'){wrap.innerHTML='<div style="padding:20px;color:#999;font-size:12px">QR expirado. Gere novamente.</div>'}},300000);
+  };
+  script.onerror=()=>toast('❌ Erro ao carregar biblioteca QR');
+  if(!document.querySelector('script[src*="qrcodejs"]'))document.head.appendChild(script);
+  else script.onload();
+}
+
+function abrirScanner(){
+  document.getElementById('qr-step2').style.display='none';
+  document.getElementById('qr-step3').style.display='block';
+  qrScanning=true;
+
+  // Load jsQR for scanning
+  const loadJsQR=()=>{
+    const script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js';
+    script.onload=iniciarCamera;
+    script.onerror=()=>toast('❌ Erro ao carregar scanner');
+    if(!document.querySelector('script[src*="jsQR"]'))document.head.appendChild(script);
+    else iniciarCamera();
+  };
+  loadJsQR();
+}
+
+function iniciarCamera(){
+  const video=document.getElementById('qr-video');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+    .then(stream=>{
+      qrStream=stream;
+      video.srcObject=stream;
+      video.play();
+      scanFrame();
+    })
+    .catch(()=>{
+      document.getElementById('qr-scan-status').textContent='❌ Câmera não disponível. Permita o acesso à câmera.';
+    });
+}
+
+function scanFrame(){
+  if(!qrScanning)return;
+  const video=document.getElementById('qr-video');
+  if(video.readyState===video.HAVE_ENOUGH_DATA){
+    const canvas=document.createElement('canvas');
+    canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+    try{
+      const code=jsQR(imageData.data,imageData.width,imageData.height,{inversionAttempts:'dontInvert'});
+      if(code){
+        pararScanner();
+        processarQRData(code.data);
+        return;
+      }
+    }catch(e){}
+    document.getElementById('qr-scan-status').textContent='🔍 Procurando QR Code...';
+  }
+  requestAnimationFrame(scanFrame);
+}
+
+function pararScanner(){
+  qrScanning=false;
+  if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null}
+  document.getElementById('qr-step3').style.display='none';
+  document.getElementById('qr-step1').style.display='block';
+}
+
+function processarQRData(raw){
+  try{
+    const data=JSON.parse(raw);
+    if(!data.v||!data.t||!data.d)throw new Error('QR inválido');
+
+    if(data.t==='leads'||data.t==='leads_slim'){
+      const novos=data.d;
+      let add=0,upd=0;
+      novos.forEach(nl=>{
+        const idx=leads.findIndex(l=>l.id===nl.id);
+        if(idx===-1){leads.push(nl);add++}
+        else{leads[idx]={...leads[idx],...nl};upd++}
+      });
+      ls('leads',leads);
+      renderAll();
+      closeM('m-qr');
+      showNotif('✅','Leads sincronizados!',`${add} adicionados · ${upd} atualizados`);
+
+    } else if(data.t==='all'){
+      const d=data.d;
+      if(d.leads){leads=d.leads;ls('leads',leads)}
+      if(d.done){done=d.done;ls('done',done)}
+      if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}
+      if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}
+      if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}
+      if(d.appts){appts=d.appts;ls('appts',appts)}
+      if(d.favs){favs=d.favs;ls('favs',favs)}
+      renderAll();
+      closeM('m-qr');
+      showNotif('✅','Dados sincronizados!','Todos os dados foram importados com sucesso');
+    }
+  }catch(e){
+    toast('❌ QR inválido ou corrompido');
+    document.getElementById('qr-scan-status').textContent='❌ QR inválido. Tente novamente.';
+    document.getElementById('qr-step3').style.display='none';
+    document.getElementById('qr-step1').style.display='block';
+  }
+}
+
 function renderAll(){renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
 checkBackupReminder();
