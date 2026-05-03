@@ -238,21 +238,6 @@ select.inp option{background:var(--s1)}
       <button onclick="openAddLead()" style="background:var(--acc);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Novo</button>
     </div>
   </div>
-  <!-- Search + Filter -->
-  <div style="display:flex;gap:8px;margin-bottom:10px">
-    <div style="flex:1;position:relative">
-      <input class="inp" id="lead-search" placeholder="🔍 Buscar lead..." oninput="renderLeads()" style="padding-left:12px;font-size:13px">
-    </div>
-    <select class="inp" id="lead-filter" onchange="renderLeads()" style="width:auto;flex-shrink:0;font-size:12px;padding:8px 10px">
-      <option value="">Todos</option>
-      <option value="hot">🔥 Quentes</option>
-      <option value="warm">🌡️ Mornos</option>
-      <option value="cold">❄️ Frios</option>
-      <option value="won">✅ Fechados</option>
-      <option value="overdue">🔴 Atrasados</option>
-      <option value="nofu">📅 Sem follow-up</option>
-    </select>
-  </div>
   <!-- BUSCA + FILTROS -->
   <div style="display:flex;gap:8px;margin-bottom:10px">
     <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
@@ -1828,7 +1813,6 @@ function selQRWhat(v,el){
 }
 
 function gerarQR(){
-  // Build compact data
   let data;
   if(qrWhat==='leads'){
     data={v:1,t:'leads',d:leads};
@@ -1837,32 +1821,20 @@ function gerarQR(){
   }
   const json=JSON.stringify(data);
 
-  // Check size — QR can hold ~2953 bytes max reliably
   if(json.length>2800){
-    if(qrWhat==='all'){
-      toast('⚠️ Dados muito grandes! Use Exportar (.json)');
-      return;
-    }
-    // Compress leads — only key fields
-    const slim=leads.map(l=>({id:l.id,name:l.name,product:l.product,valor:l.valor,pct:l.pct,wa:l.wa,stage:l.stage,fu:l.fu,status:l.status,avatar:l.avatar,hist:l.hist?.slice(-200)||''}));
+    if(qrWhat==='all'){toast('⚠️ Dados muito grandes! Use Exportar (.json)');return}
+    // Slim version — only key fields
+    const slim=leads.map(l=>({id:l.id,name:l.name,product:l.product,valor:l.valor,pct:l.pct,wa:l.wa,stage:l.stage,fu:l.fu,status:l.status,avatar:l.avatar,hist:(l.hist||'').slice(-150)}));
     data={v:1,t:'leads_slim',d:slim};
   }
 
   const jsonFinal=JSON.stringify(data);
-  if(jsonFinal.length>2800){
-    toast('⚠️ Muitos leads! Use Exportar (.json) para backup completo.');
-    return;
-  }
+  if(jsonFinal.length>2953){toast('⚠️ Muitos leads! Use Exportar (.json)');return}
 
-  // Generate QR using qrcode-generator lib
   const wrap=document.getElementById('qr-canvas-wrap');
-  wrap.innerHTML='<canvas id="qr-canvas"></canvas>';
+  wrap.innerHTML='<div id="qr-div"></div>';
 
-  // Use qrcode lib loaded from CDN
-  const script=document.createElement('script');
-  script.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-  script.onload=()=>{
-    wrap.innerHTML='<div id="qr-div"></div>';
+  try{
     new QRCode(document.getElementById('qr-div'),{
       text:jsonFinal,
       width:220,height:220,
@@ -1871,29 +1843,20 @@ function gerarQR(){
     });
     document.getElementById('qr-step1').style.display='none';
     document.getElementById('qr-step2').style.display='block';
-    // Auto expire after 5 min
-    setTimeout(()=>{if(document.getElementById('qr-step2').style.display!=='none'){wrap.innerHTML='<div style="padding:20px;color:#999;font-size:12px">QR expirado. Gere novamente.</div>'}},300000);
-  };
-  script.onerror=()=>toast('❌ Erro ao carregar biblioteca QR');
-  if(!document.querySelector('script[src*="qrcodejs"]'))document.head.appendChild(script);
-  else script.onload();
+    setTimeout(()=>{
+      if(document.getElementById('qr-step2').style.display!=='none')
+        wrap.innerHTML='<div style="padding:20px;color:#999;font-size:12px;text-align:center">QR expirado.<br>Gere novamente.</div>';
+    },300000);
+  }catch(e){
+    toast('❌ Erro ao gerar QR: '+e.message);
+  }
 }
 
 function abrirScanner(){
   document.getElementById('qr-step2').style.display='none';
   document.getElementById('qr-step3').style.display='block';
   qrScanning=true;
-
-  // Load jsQR for scanning
-  const loadJsQR=()=>{
-    const script=document.createElement('script');
-    script.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js';
-    script.onload=iniciarCamera;
-    script.onerror=()=>toast('❌ Erro ao carregar scanner');
-    if(!document.querySelector('script[src*="jsQR"]'))document.head.appendChild(script);
-    else iniciarCamera();
-  };
-  loadJsQR();
+  iniciarCamera();
 }
 
 function iniciarCamera(){
