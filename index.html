@@ -1303,49 +1303,101 @@ function delApresentacao(i){
 function openProjetosParaLead(li){
   apresLeadIdx=li;
   const l=leads[li];
-  document.getElementById('proj-lead-title').textContent='🏢 Projetos para '+l.name.split(' ')[0];
+  document.getElementById('proj-lead-title').textContent='🏢 '+l.name.split(' ')[0];
   const el=document.getElementById('proj-lead-list');
   if(!projetos.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:12px;text-align:center">Nenhum projeto cadastrado ainda.<br>Vá em Projetos para adicionar.</div>';
+    el.innerHTML=`<div style="text-align:center;padding:30px 20px;color:var(--txt3)"><div style="font-size:32px;margin-bottom:10px">🏢</div><div style="font-size:13px;font-weight:700;margin-bottom:6px">Nenhum projeto cadastrado</div><div style="font-size:11px">Vá em 🏢 Projetos para adicionar</div></div>`;
     openM('m-proj-lead');return;
   }
   el.innerHTML=projetos.map((p,pi)=>{
     const st=PROJ_STATUS[p.status]||PROJ_STATUS.pronto;
     const apres=p.apres||[];
-    return`<div style="background:var(--s2);border:1px solid var(--br);border-radius:12px;padding:13px;margin-bottom:10px">
-      <!-- Cabeçalho projeto -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    const nome1=l.name.split(' ')[0];
+    return`<div style="background:var(--s2);border:1px solid var(--br);border-radius:14px;margin-bottom:12px;overflow:hidden">
+      <!-- Header do projeto -->
+      <div style="padding:12px 14px;border-bottom:1px solid var(--br);display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:13px;font-weight:700">${p.name}</div>
-          <div style="font-size:10px;color:${st.c};margin-top:2px">${st.l}${p.entrega?' · '+p.entrega:''}${p.vmin?' · a partir de '+fk(Number(p.vmin)):''}</div>
+          <div style="font-size:13px;font-weight:800;margin-bottom:2px">${p.name}</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:${st.c}">${st.l}</span>
+            ${p.entrega?`<span style="font-size:10px;color:var(--txt3)">📅 ${p.entrega}</span>`:''}
+            ${p.vmin?`<span style="font-size:10px;color:var(--green);font-weight:700">${fk(Number(p.vmin))}+</span>`:''}
+          </div>
         </div>
+        ${p.rentab?`<div style="font-size:10px;color:var(--green);font-weight:700;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:6px;padding:3px 8px;text-align:right;max-width:100px">${p.rentab}</div>`:''}
       </div>
 
-      <!-- Ações rápidas -->
-      <div style="display:flex;gap:6px;margin-bottom:${apres.length?'10px':'0'}">
+      <!-- Ações PPT + Fluxo -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--br)">
         ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank"
-          style="flex:1;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow);border-radius:9px;padding:9px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px">
-          📊 Apresentação PPT</a>`:''}
-        <button onclick="openCalcFluxo(${pi})" style="flex:1;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">💳 Fluxo</button>
+          style="flex:1;padding:10px;text-align:center;text-decoration:none;font-size:11px;font-weight:700;color:var(--yellow);border-right:1px solid var(--br);display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(245,158,11,.05)">
+          📊 Apresentação PPT</a>`:
+          `<div style="flex:1;padding:10px;text-align:center;font-size:11px;color:var(--txt3);border-right:1px solid var(--br);display:flex;align-items:center;justify-content:center">📊 Sem PPT</div>`}
+        <button onclick="openCalcFluxo(${pi})" style="flex:1;padding:10px;border:none;background:rgba(34,197,94,.05);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:5px">💳 Calcular Fluxo</button>
       </div>
 
-      <!-- Apresentações de texto -->
-      ${apres.length?`
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:6px">📋 MENSAGENS PRONTAS</div>
-        ${apres.map((a,ai)=>`
-          <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--s3);border-radius:9px;margin-bottom:6px;border:1px solid var(--br)">
-            <div style="flex:1;min-width:0">
-              <div style="font-size:12px;font-weight:700;margin-bottom:2px">${a.nome}</div>
-              <div style="font-size:10px;color:var(--txt3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(a.txt||'').substring(0,50)}...</div>
-            </div>
-            <button onclick="enviarApresWA(${pi},${ai},${li})"
-              style="background:var(--wa);color:#fff;border:none;padding:8px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0">
-              📲 Enviar</button>
-          </div>`).join('')}
-      `:`<button onclick="closeM('m-proj-lead');openApresEdit(${pi})" style="width:100%;background:transparent;border:1px dashed var(--br);color:var(--txt3);border-radius:9px;padding:8px;font-size:11px;cursor:pointer;font-family:var(--f)">+ Criar mensagem para este projeto</button>`}
+      <!-- Mensagens prontas -->
+      <div style="padding:10px 14px">
+        ${apres.length?`
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:8px">💬 MENSAGENS PRONTAS (${apres.length})</div>
+          ${apres.map((a,ai)=>{
+            const prevTxt=(a.txt||a.texto||'').replace(/\[NOME\]/g,nome1);
+            const prevSlim=prevTxt.substring(0,60)+'...';
+            return`<div style="border:1px solid var(--br);border-radius:10px;margin-bottom:8px;overflow:hidden">
+              <div style="display:flex;align-items:center;padding:9px 12px;background:var(--s3);gap:8px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:700;color:var(--txt)">${a.nome}</div>
+                  <div style="font-size:10px;color:var(--txt3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${prevSlim}</div>
+                </div>
+                <button onclick="previewApres(${pi},${ai},${li})"
+                  style="background:transparent;border:1px solid var(--br);color:var(--txt2);padding:6px 10px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);flex-shrink:0">
+                  👁️ Ver</button>
+                <button onclick="enviarApresWA(${pi},${ai},${li})"
+                  style="background:var(--wa);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);flex-shrink:0">
+                  📲</button>
+              </div>
+            </div>`;
+          }).join('')}
+          <button onclick="closeM('m-proj-lead');openApresEdit(${pi})" style="width:100%;background:transparent;border:1px dashed var(--br);color:var(--txt3);border-radius:8px;padding:7px;font-size:11px;cursor:pointer;font-family:var(--f)">+ Adicionar mensagem</button>
+        `:`<button onclick="closeM('m-proj-lead');openApresEdit(${pi})" style="width:100%;background:rgba(255,107,43,.08);border:1px dashed rgba(255,107,43,.3);color:var(--acc);border-radius:9px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">✏️ Criar mensagem para ${p.name}</button>`}
+      </div>
     </div>`;
   }).join('');
   openM('m-proj-lead');
+}
+
+// Preview antes de enviar
+function previewApres(pi,ai,li){
+  const p=projetos[pi],l=leads[li];
+  const a=(p.apres||[])[ai];
+  if(!a)return;
+  const txt=(a.txt||a.texto||'').replace(/\[NOME\]/g,l.name.split(' ')[0]);
+  document.getElementById('apres-title').textContent='👁️ '+a.nome;
+  document.getElementById('apres-info').textContent=p.name+' → '+l.name.split(' ')[0];
+  document.getElementById('apres-prev').value=txt;
+  document.getElementById('apres-prev-wrap').style.display='block';
+  document.getElementById('apres-list').innerHTML='';
+  const waBtn=document.getElementById('apres-wa-btn');
+  if(l.wa){
+    waBtn.textContent='📲 Enviar WhatsApp';
+    waBtn.style.background='var(--wa)';
+    waBtn.onclick=()=>{
+      const msg=document.getElementById('apres-prev').value;
+      const now=new Date();
+      const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      leads[li].hist=(leads[li].hist||'')+`\n\n📤 [${ds}] — ${a.nome} (${p.name}):\n${msg}`;
+      ls('leads',leads);toast('💬 Salvo no histórico!');
+      window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(msg)}`,'_blank');
+    };
+    waBtn.style.opacity='1';
+  }else{
+    waBtn.textContent='📋 Copiar texto';
+    waBtn.style.background='var(--blue)';
+    waBtn.onclick=()=>{
+      navigator.clipboard.writeText(txt).then(()=>toast('✅ Copiado!')).catch(()=>toast('✅ Copiado!'));
+    };
+  }
+  openM('m-apres');
 }
 
 function enviarApresWA(pi,ai,li){
