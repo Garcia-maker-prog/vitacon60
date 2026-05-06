@@ -166,7 +166,7 @@ select.inp option{background:var(--s1)}
 .pipe-row:last-child{border:none}
 .toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 20px;border-radius:18px;font-weight:700;font-size:12px;z-index:999;transition:bottom .3s;white-space:nowrap;pointer-events:none}
 .toast.show{bottom:24px}
-.notif{position:fixed;top:-100px;left:50%;transform:translateX(-50%);max-width:500px;width:calc(100% - 20px);background:#1a1a2e;border:1px solid var(--acc);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:top .4s cubic-bezier(.34,1.56,.64,1)}
+.notif{position:fixed;top:-120px;left:50%;transform:translateX(-50%);max-width:500px;width:calc(100% - 20px);background:#1a1a2e;border:1px solid var(--acc);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;z-index:9000;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:top .4s cubic-bezier(.34,1.56,.64,1);pointer-events:all;cursor:pointer}
 .notif.show{top:10px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 </style>
@@ -189,7 +189,6 @@ select.inp option{background:var(--s1)}
     <button class="hdr-btn" onclick="openCalFull()">📆 Agenda</button>
     <button class="hdr-btn" onclick="openFoco()" style="background:rgba(255,107,43,.15);border-color:rgba(255,107,43,.4);color:var(--acc);font-weight:800">⚡ Foco</button>
     <button class="hdr-btn" onclick="openRelatorio()">📊 Relatório</button>
-    <button class="hdr-btn" onclick="goTab('favs',document.querySelector('[data-id=favs]'))">🔗 Links</button>
   </div>
 </div>
 <div class="tabs">
@@ -205,6 +204,8 @@ select.inp option{background:var(--s1)}
 <div class="content">
 <!-- HOJE -->
 <div class="page active" id="page-hoje">
+  <!-- PAINEL DO DIA -->
+  <div id="painel-dia"></div>
   <div id="appts-hoje"></div>
   <div id="fu-hoje"></div>
   <div class="week-nav"><button onclick="chgW(-1)">‹</button><div class="week-lbl" id="weekLbl">SEMANA 1</div><button onclick="chgW(1)">›</button></div>
@@ -329,7 +330,7 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">Status</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
   <div class="field"><label class="inp-lbl">WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-wa" placeholder="11999998888"></div>
   <div class="field"><label class="inp-lbl">Temperatura</label><select class="inp" id="lf-stage"><option value="hot">🔥 Quente</option><option value="warm">🌡️ Morno</option><option value="cold">❄️ Frio</option><option value="won">✅ Fechado — VENDA REALIZADA</option></select></div>
-  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl">📅 Follow-up</label><input class="inp" type="date" id="lf-fu"></div></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl">📅 Follow-up</label><div style="display:flex;gap:6px"><input class="inp" type="date" id="lf-fu" style="flex:1"><input class="inp" type="time" id="lf-fu-time" style="width:90px;flex-shrink:0"></div></div></div>
   <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-hist" placeholder="Cole conversas, objeções, interesses..."></textarea></div>
   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
   <button class="btn btn-danger" id="lead-del" onclick="delLead()" style="display:none">🗑️ Excluir Lead</button>
@@ -344,7 +345,7 @@ select.inp option{background:var(--s1)}
     <textarea class="inp" id="msg-prev" style="min-height:120px;margin-bottom:12px"></textarea>
     <div style="display:flex;gap:8px"><button class="btn btn-ghost" onclick="closeM('m-msg')" style="flex:1">Fechar</button><button class="btn" id="msg-wa-btn" style="flex:1;background:var(--wa);color:#fff">📲 WhatsApp</button></div>
   </div>
-  <div style="margin-top:12px"><label class="inp-lbl">📅 Agendar Follow-up</label><input class="inp" type="date" id="msg-fu" style="margin-bottom:8px"><button class="btn" onclick="saveMsgFu()" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);width:100%">📅 Salvar Follow-up</button></div>
+  <div style="margin-top:12px"><label class="inp-lbl">📅 Agendar Follow-up</label><div style="display:flex;gap:6px;margin-bottom:8px"><input class="inp" type="date" id="msg-fu" style="flex:1"><input class="inp" type="time" id="msg-fu-time" style="width:90px;flex-shrink:0"></div><button class="btn" onclick="saveMsgFu()" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.2);width:100%">📅 Salvar Follow-up</button></div>
 </div></div>
 
 <div class="overlay" id="m-detail"><div class="modal">
@@ -456,6 +457,41 @@ select.inp option{background:var(--s1)}
     <button class="sec-tab" onclick="focoFiltro('todos',this)">📋 Todos</button>
   </div>
   <div id="foco-list" style="overflow-y:auto;max-height:65vh"></div>
+</div></div>
+
+
+<!-- CONTEÚDO DO DIA -->
+<div class="overlay" id="m-conteudo" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span>✍️ CONTEÚDO DO DIA</span><button class="modal-close" onclick="closeM('m-conteudo')">✕</button></div>
+  <div id="conteudo-dia-info" style="background:var(--s2);border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;line-height:1.6"></div>
+  <div class="field"><label class="inp-lbl">Notícia ou tema do dia (opcional)</label>
+    <textarea class="inp" id="conteudo-noticia" placeholder="Ex: Selic pode cair nos próximos meses&#10;Lançamentos batem recorde em SP..." style="min-height:70px"></textarea>
+  </div>
+  <div class="field"><label class="inp-lbl">O que gerar</label>
+    <select class="inp" id="conteudo-tipo">
+      <option value="completo">🎯 Tudo: argumento + story + objeção</option>
+      <option value="argumento">💬 Argumento de venda</option>
+      <option value="story">📱 Story / Post para Instagram</option>
+      <option value="objecao">🛡️ Resposta para objeção</option>
+      <option value="script">📝 Script de abordagem para hoje</option>
+    </select>
+  </div>
+  <button class="btn" onclick="abrirConteudoDia()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;width:100%;margin-bottom:8px">🤖 Gerar com Claude.ai</button>
+  <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com contexto do dia. Gratuito.</p>
+</div></div>
+
+<!-- BANCO DE ARGUMENTOS -->
+<div class="overlay" id="m-args" style="z-index:300"><div class="modal">
+  <div class="modal-hdr"><span>💡 BANCO DE ARGUMENTOS</span><button class="modal-close" onclick="closeM('m-args')">✕</button></div>
+  <div class="sec-tabs" id="args-tabs" style="margin-bottom:12px">
+    <button class="sec-tab active" onclick="selArgCat('rentabilidade',this)">📊 Rentab.</button>
+    <button class="sec-tab" onclick="selArgCat('valorizacao',this)">📈 Valoriz.</button>
+    <button class="sec-tab" onclick="selArgCat('seguranca',this)">🛡️ Seg.</button>
+    <button class="sec-tab" onclick="selArgCat('escassez',this)">⏰ Escassez</button>
+    <button class="sec-tab" onclick="selArgCat('objecoes',this)">💬 Objeções</button>
+  </div>
+  <div id="args-list"></div>
+  <button class="btn-add" onclick="addArgumento()">+ Adicionar argumento</button>
 </div></div>
 
 <!-- NOTICIAS --><div class="modal">
@@ -969,7 +1005,7 @@ document.addEventListener('touchend',e=>{if(!tDId)return;const t=e.changedTouche
 
 let eiL=-1;
 function openAddLead(){eiL=-1;document.getElementById('lead-title').textContent='➕ NOVO LEAD';document.getElementById('lead-del').style.display='none';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});document.getElementById('lf-stage').value='hot';document.getElementById('comm-hint').textContent='';openM('m-lead')}
-function openEditLead(i){eiL=i;const l=leads[i];document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';document.getElementById('lead-del').style.display='block';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});document.getElementById('lf-stage').value=l.stage||'hot';updComm();openM('m-lead')}
+function openEditLead(i){eiL=i;const l=leads[i];document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';document.getElementById('lead-del').style.display='block';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});document.getElementById('lf-fu-time').value=l.fu_time||'';document.getElementById('lf-stage').value=l.stage||'hot';updComm();openM('m-lead')}
 function updComm(){const v=Number(document.getElementById('lf-valor').value)||0,p=Number(document.getElementById('lf-pct').value)||0,el=document.getElementById('comm-hint');if(v>0&&p>0)el.textContent='= '+brl(Math.round(v*p/100));else if(v>0)el.textContent='Sugestão 1,8%: '+brl(Math.round(v*0.018));else el.textContent=''}
 function saveLead(){
   const name=(document.getElementById('lf-name').value||'Lead').trim();
@@ -979,15 +1015,116 @@ function saveLead(){
   const dupWa=wa?leads.findIndex((l,i)=>i!==eiL&&l.wa&&l.wa===wa):-1;
   if(dupName!==-1){toast('⚠️ Já existe um lead com esse nome!');return}
   if(dupWa!==-1){toast('⚠️ Esse WhatsApp já está cadastrado em: '+leads[dupWa].name);return}
-  const l={id:eiL===-1?Date.now():(leads[eiL]?.id||Date.now()),name,product:document.getElementById('lf-product').value||'',valor:document.getElementById('lf-valor').value||'',pct:document.getElementById('lf-pct').value||'',status:document.getElementById('lf-status').value||'',wa,stage:document.getElementById('lf-stage').value,avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',fu:document.getElementById('lf-fu').value||'',hist:document.getElementById('lf-hist').value||''};
+  const l={id:eiL===-1?Date.now():(leads[eiL]?.id||Date.now()),name,product:document.getElementById('lf-product').value||'',valor:document.getElementById('lf-valor').value||'',pct:document.getElementById('lf-pct').value||'',status:document.getElementById('lf-status').value||'',wa,stage:document.getElementById('lf-stage').value,avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',fu:document.getElementById('lf-fu').value||'',fu_time:document.getElementById('lf-fu-time').value||'',hist:document.getElementById('lf-hist').value||''};
   if(eiL===-1)leads.push(l);else leads[eiL]=l;
   ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();
+  scheduleAlarms();
   toast(eiL===-1?'✅ Lead adicionado!':'✅ Lead atualizado!');
 }
 function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();toast('🗑️ Removido!')}
 
+// ════ ALARMES DE FOLLOW-UP ════
+let alarmTimers=[];
+function scheduleAlarms(){
+  alarmTimers.forEach(t=>clearTimeout(t));alarmTimers=[];
+  const now=Date.now();
+  leads.forEach((l,i)=>{
+    if(!l.fu||!l.fu_time||l.stage==='won')return;
+    const ms=new Date(l.fu+'T'+l.fu_time).getTime()-now;
+    if(ms>0&&ms<48*60*60*1000)alarmTimers.push(setTimeout(()=>dispararAlarme(i),ms));
+  });
+}
+function dispararAlarme(i){
+  try{
+    const l=leads[i];if(!l)return;
+
+    // Som
+    try{
+      const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      [[880,0,.15],[1100,.2,.15],[880,.4,.15],[1100,.6,.3]].forEach(([f,s,d])=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.frequency.value=f;g.gain.value=0.3;
+        o.start(ctx.currentTime+s);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+s+d);
+        o.stop(ctx.currentTime+s+d+.1);
+      });
+    }catch(e){}
+
+    // Monta mensagem — usa template compatível com o stage
+    const tplMap={hot:1,warm:1,cold:2,won:0};
+    const tplIdx=Math.min(tplMap[l.stage]||0,(tpls||[]).length-1);
+    const tpl=(tpls&&tpls.length>0)?tpls[Math.max(0,tplIdx)]:null;
+    let msg='';
+    if(tpl&&tpl.txt){
+      msg=(tpl.txt||'')
+        .replace(/\[NOME\]/g,(l.name||'').split(' ')[0]||'')
+        .replace(/\[PRODUTO\]/g,l.product||'imóvel')
+        .replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));
+    }
+
+    // Banner no app
+    const ni=document.getElementById('ni');
+    const nt=document.getElementById('nt');
+    const ns=document.getElementById('ns');
+    if(ni)ni.textContent='🔔';
+    if(nt)nt.textContent='Follow-up: '+l.name;
+    if(ns)ns.textContent=l.product||'Toque para enviar mensagem';
+
+    const notif=document.getElementById('notif');
+    if(notif){
+      notif.classList.add('show');
+      const existing=notif.querySelector('.alarm-wa-btn');
+      if(existing)existing.remove();
+      if(l.wa&&msg){
+        const btn=document.createElement('a');
+        btn.className='alarm-wa-btn';
+        btn.href='https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msg);
+        btn.target='_blank';
+        btn.style.cssText='background:#25D366;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0';
+        btn.textContent='📲 Enviar';
+        btn.onclick=function(){
+          try{
+            const now=new Date();
+            const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+            leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up automático:\n'+msg;
+            leads[i].fu='';leads[i].fu_time='';
+            ls('leads',leads);renderHdr();
+          }catch(e){}
+          setTimeout(()=>notif.classList.remove('show'),500);
+        };
+        const closeBtn=notif.querySelector('button');
+        if(closeBtn)notif.insertBefore(btn,closeBtn);
+        else notif.appendChild(btn);
+      }
+      setTimeout(()=>notif.classList.remove('show'),30000);
+    }
+
+    // Notificação do sistema (sem requireInteraction — não funciona no iOS)
+    try{
+      if(typeof Notification!=='undefined'&&Notification.permission==='granted'){
+        const n=new Notification('🔔 Follow-up: '+l.name,{
+          body:l.product||'Toque para abrir WhatsApp',
+          tag:'fu-'+l.id
+        });
+        if(l.wa&&msg){
+          n.onclick=function(){
+            try{window.focus();window.open('https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msg),'_blank')}catch(e){}
+            n.close();
+          };
+        }
+      }
+    }catch(e){}
+
+  }catch(e){console.log('Alarme erro:',e)}
+}
+function pedirPermissaoNotif(){
+  if('Notification' in window&&Notification.permission==='default')
+    Notification.requestPermission().then(p=>{if(p==='granted')toast('🔔 Notificações ativadas!');});
+}
+
 let msgI=null,selT=null;
-function openMsg(i){msgI=i;selT=null;const l=leads[i];document.getElementById('msg-info').textContent=l.name+' · '+l.product;document.getElementById('msg-fu').value=l.fu||'';document.getElementById('msg-prev-wrap').style.display='none';renderTplList();openM('m-msg')}
+function openMsg(i){msgI=i;selT=null;const l=leads[i];document.getElementById('msg-info').textContent=l.name+' · '+l.product;document.getElementById('msg-fu').value=l.fu||'';document.getElementById('msg-fu-time').value=l.fu_time||'';document.getElementById('msg-prev-wrap').style.display='none';renderTplList();openM('m-msg')}
 function renderTplList(){const el=document.getElementById('tpl-list');if(!el)return;el.innerHTML=tpls.map(t=>`<div class="tpl-item${selT===t.id?' sel':''}" onclick="selTpl(${t.id})"><div class="tpl-name">${t.name}</div><div class="tpl-prev">${t.txt.substring(0,80)}${t.txt.length>80?'...':''}</div></div>`).join('')}
 function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t||!l)return;const msg=t.txt.replace(/\[NOME\]/g,l.name.split(' ')[0]).replace(/\[PRODUTO\]/g,l.product||'imóvel').replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));document.getElementById('msg-prev').value=msg;document.getElementById('msg-prev-wrap').style.display='block';const wb=document.getElementById('msg-wa-btn');if(l.wa){wb.onclick=()=>{
   const preview=document.getElementById('msg-prev').value;
@@ -1001,7 +1138,18 @@ function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t|
   toast('💬 Salvo no histórico!');
   window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank');
 };wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
-function saveMsgFu(){const d=document.getElementById('msg-fu').value;if(!d){toast('⚠️ Selecione uma data!');return}leads[msgI].fu=d;ls('leads',leads);setView(lView);renderHdr();closeM('m-msg');showNotif('📅','Follow-up agendado!',leads[msgI].name+' — '+fd(d));toast('📅 Follow-up salvo!')}
+function saveMsgFu(){
+  const d=document.getElementById('msg-fu').value;
+  const t=document.getElementById('msg-fu-time').value||'';
+  if(!d){toast('⚠️ Selecione uma data!');return}
+  leads[msgI].fu=d;
+  leads[msgI].fu_time=t;
+  ls('leads',leads);
+  scheduleAlarms();
+  setView(lView);renderHdr();closeM('m-msg');
+  showNotif('📅','Follow-up agendado!',leads[msgI].name+' — '+fd(d)+(t?' às '+t:''));
+  toast('📅 Follow-up salvo!');
+}
 
 function renderTplEditor(){const el=document.getElementById('tpl-editor');if(!el)return;el.innerHTML=tpls.map((t,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:11px;margin-bottom:8px"><div style="display:flex;gap:8px;margin-bottom:8px"><input class="inp" style="flex:1;font-size:12px;font-weight:700;padding:6px 10px" value="${t.name.replace(/"/g,'&quot;')}" oninput="tpls[${i}].name=this.value;ls('tpls',tpls)"><button onclick="dupTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px" title="Duplicar">📋</button><button onclick="delTpl(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px">🗑️</button></div><textarea class="inp" style="min-height:80px;font-size:12px" oninput="tpls[${i}].txt=this.value;ls('tpls',tpls)">${t.txt}</textarea><div style="font-size:10px;color:var(--txt3);margin-top:5px">Variáveis: [NOME] [PRODUTO] [DATA]</div></div>`).join('')}
 function addTpl(){tpls.push({id:Date.now(),name:'Nova Mensagem',txt:'Olá, [NOME]! ...'});ls('tpls',tpls);renderTplEditor();toast('✅ Adicionada!')}
@@ -1470,6 +1618,125 @@ function selectApres(ai){
   // Scroll to preview
   document.getElementById('apres-prev').scrollIntoView({behavior:'smooth'});
 }
+// ════ PAINEL DO DIA ════
+const DIAS_SEMANA=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+const TEMA_DIA={
+  0:{tema:'Inspiração',icon:'💡',foco:'Revisar semana e se preparar',leitura:'Podcast, livro ou conteúdo motivacional',cor:'var(--purple)'},
+  1:{tema:'Mercado & Cenário',icon:'📊',foco:'Juros, economia, notícias',leitura:'InfoMoney · Valor Econômico · Exame',cor:'var(--blue)'},
+  2:{tema:'Investimento',icon:'💰',foco:'Rentabilidade, comparações, dados',leitura:'Me Poupe! · Suno Research',cor:'var(--green)'},
+  3:{tema:'Produto Vitacon',icon:'🏢',foco:'Diferenciais, localização, público',leitura:'Material Vitacon · Book dos projetos',cor:'var(--acc)'},
+  4:{tema:'Objeções',icon:'🛡️',foco:'"Tá caro" · "Vou pensar" · "Não é o momento"',leitura:'Banco de argumentos do app',cor:'var(--yellow)'},
+  5:{tema:'Conteúdo',icon:'📱',foco:'Criar posts, stories, vídeos',leitura:'Pilares: Autoridade · Lifestyle · Engajamento',cor:'var(--purple)'},
+  6:{tema:'Revisão Leve',icon:'🔄',foco:'Rever conteúdos da semana, ajustar discurso',leitura:'Anotações da semana',cor:'var(--txt2)'},
+};
+function renderPainelDia(){
+  const el=document.getElementById('painel-dia');if(!el)return;
+  const dow=new Date().getDay(),hora=new Date().getHours();
+  const tema=TEMA_DIA[dow];
+  const periodo=hora<12?{icon:'🌅',label:'Manhã',dica:'Atualização + repertório (15-20 min)'}:hora<17?{icon:'☀️',label:'Meio do dia',dica:'Conceito de vendas + argumentos (10-15 min)'}:{icon:'🌙',label:'Noite',dica:'Aplicação: argumento + story + objeção (20-30 min)'};
+  el.innerHTML=`<div style="background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid ${tema.cor}44;border-left:3px solid ${tema.cor};border-radius:12px;padding:14px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:${tema.cor};margin-bottom:3px">${periodo.icon} ${periodo.label}</div>
+        <div style="font-family:var(--d);font-size:18px;letter-spacing:1px">${tema.icon} ${tema.tema}</div>
+      </div>
+      <button onclick="openConteudoDia()" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:8px 14px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap">✍️ Gerar</button>
+    </div>
+    <div style="font-size:11px;color:var(--txt2);margin-bottom:5px">🎯 <strong>Foco:</strong> ${tema.foco}</div>
+    <div style="font-size:11px;color:var(--txt3);margin-bottom:10px">📖 <strong>Leitura:</strong> ${tema.leitura}</div>
+    <div style="font-size:10px;color:var(--txt3);background:var(--s3);border-radius:7px;padding:6px 10px;margin-bottom:10px">${periodo.dica}</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="openM('m-args')" style="flex:1;background:rgba(255,107,43,.1);border:1px solid rgba(255,107,43,.2);color:var(--acc);border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">💡 Argumentos</button>
+      <button onclick="openM('m-news')" style="flex:1;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--blue);border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📰 Notícias</button>
+    </div>
+  </div>`;
+}
+function openConteudoDia(){
+  const dow=new Date().getDay(),hora=new Date().getHours();
+  const tema=TEMA_DIA[dow];
+  const periodo=hora<12?'manhã':hora<17?'meio do dia':'noite';
+  document.getElementById('conteudo-dia-info').innerHTML=`<div style="font-size:13px;font-weight:700;margin-bottom:4px">${tema.icon} ${tema.tema}</div><div style="font-size:11px;color:var(--txt3)">${DIAS_SEMANA[dow].charAt(0).toUpperCase()+DIAS_SEMANA[dow].slice(1)} · ${periodo} · Foco: ${tema.foco}</div>`;
+  document.getElementById('conteudo-noticia').value='';
+  document.getElementById('conteudo-tipo').value='completo';
+  openM('m-conteudo');
+}
+function abrirConteudoDia(){
+  const dow=new Date().getDay(),hora=new Date().getHours();
+  const tema=TEMA_DIA[dow];
+  const periodo=hora<12?'manhã':hora<17?'meio do dia':'noite';
+  const noticia=(document.getElementById('conteudo-noticia')?.value||'').trim();
+  const tipo=document.getElementById('conteudo-tipo')?.value||'completo';
+  const tipoMap={
+    completo:'Gere as 3 entregas: 1) Um argumento de venda poderoso. 2) Uma sugestão de story/post para Instagram com legenda pronta. 3) Uma resposta para a objeção mais comum do tema.',
+    argumento:'Crie 3 argumentos de venda diferentes, do mais simples ao mais elaborado, para usar hoje em conversas.',
+    story:'Crie 3 opções de story/post para Instagram. Para cada um: texto completo, sugestão de visual e hashtags.',
+    objecao:'Liste as 3 objeções mais comuns do tema e crie respostas naturais e persuasivas para cada uma.',
+    script:'Crie um script completo de abordagem para hoje: como iniciar, apresentar o tema, conduzir para o produto e propor próximo passo.',
+  };
+  const prompt=`Você é coach de vendas especializado em imóveis de alto padrão em SP. Estou treinando meu repertório diário como corretor Vitacon.\n\nCONTEXTO DO DIA:\n- Dia: ${DIAS_SEMANA[dow]}\n- Período: ${periodo}\n- Tema: ${tema.tema} — ${tema.foco}\n${noticia?`- Notícia/tema específico: "${noticia}"\n`:''}\nPERFIL:\n- Corretor Vitacon, especialista em studios para investimento em SP\n- Cliente ideal: investidor 35-55 anos, busca rentabilidade + segurança\n- Produto: studios compactos em regiões prime, gestão Housi/Airbnb, 12-14% ao ano\n\nTAREFA:\n${tipoMap[tipo]}\n\nSeja direto, prático e com linguagem natural de corretor.`;
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  closeM('m-conteudo');
+}
+
+// ════ BANCO DE ARGUMENTOS ════
+const ARGS_DEFAULT={
+  rentabilidade:[
+    {titulo:'Retorno vs Renda Fixa',curto:'Studio Vitacon: 12-14% ao ano. CDI hoje: ~11%. E o imóvel ainda valoriza.',completo:'Enquanto a renda fixa paga hoje em torno de 11% ao ano e perde para a inflação no longo prazo, um studio Vitacon bem localizado gera 12 a 14% de rentabilidade líquida com a gestão Housi. É o melhor dos dois mundos: renda de tijolo com liquidez de investimento.'},
+    {titulo:'O imóvel se paga sozinho',curto:'Com 72% de ocupação o imóvel cobre as parcelas e ainda sobra.',completo:'Nossos empreendimentos têm taxa de ocupação média de 72-80% via Housi. Com essa ocupação, a renda gerada cobre o financiamento e ainda gera caixa positivo. O investidor entra com 30% e o próprio imóvel paga os outros 70%.'},
+    {titulo:'Renda passiva imediata',curto:'Comprou pronto? Já começa a rentabilizar no mês seguinte.',completo:'Nos studios prontos com decoração Vitacon, a unidade entra no pool de locação em até 30 dias. O investidor começa a receber rendimentos no mês seguinte à compra, sem se preocupar com nada — a Housi cuida de tudo.'},
+  ],
+  valorizacao:[
+    {titulo:'Valorização durante obras',curto:'Quem entra na planta valoriza 25-40% antes de entregar.',completo:'Nos lançamentos Vitacon, o investidor que entra na planta com 30% chega na entrega com um imóvel 25-40% mais valorizado. Você compra pelo preço de hoje e recebe pelo preço de amanhã.'},
+    {titulo:'Localização que não deprecia',curto:'Jardins, Itaim, Pinheiros — regiões que nunca perdem valor em SP.',completo:'Vitacon só constrói em regiões consolidadas de São Paulo, próximas a metrô e grandes geradores de demanda. Essas localizações nunca desvalorizam historicamente — mesmo em crises o preço por m² sobe ou se mantém.'},
+  ],
+  seguranca:[
+    {titulo:'Tijolo é o ativo mais seguro',curto:'Imóvel não quebra, não some, não é hackeado. É real.',completo:'Em qualquer cenário econômico — inflação, crise, queda da bolsa — o imóvel físico permanece. Você tem a escritura, tem o bem. É o ativo que atravessa gerações.'},
+    {titulo:'Contrato garante locação Airbnb',curto:'Somos a única incorporadora que garante em contrato a locação no Airbnb.',completo:'Diferente de qualquer concorrente, a Vitacon garante em contrato que sua unidade pode ser locada no Airbnb. O investidor tem segurança jurídica para a estratégia que vai usar.'},
+  ],
+  escassez:[
+    {titulo:'Estoque limitado por design',curto:'São poucos apartamentos por andar. Quando vende, vende.',completo:'Os empreendimentos Vitacon são compactos por concepção: menos unidades, mais qualidade. O estoque esgota rápido. Quem espera confirmar paga mais caro ou perde a unidade.'},
+    {titulo:'Janela do lançamento',curto:'O melhor preço é sempre no lançamento. Depois só sobe.',completo:'O preço de tabela sobe 8-15% entre o lançamento e a entrega. Quem entra no pré-lançamento trava o menor preço e já chega na entrega com valorização garantida.'},
+  ],
+  objecoes:[
+    {titulo:'"Tá caro"',curto:'Caro comparado com o quê? Com renda fixa que paga menos e não valoriza?',completo:'"Caro" é sempre relativo a uma alternativa. Se a alternativa é renda fixa, o imóvel paga mais e ainda valoriza. Se a alternativa é esperar, o preço sobe. O que parece caro hoje vai parecer barato em 3 anos.'},
+    {titulo:'"Vou pensar"',curto:'"Claro! O que falta pra você se sentir confortável pra decidir?"',completo:'Quando o cliente diz "vou pensar", existe uma objeção não dita. A resposta certa é perguntar: "O que falta pra você se sentir seguro pra seguir?" Isso abre a conversa real.'},
+    {titulo:'"Não é o momento"',curto:'"O momento ideal pra investir sempre foi quando todo mundo achava que não era."',completo:'Momento ideal não existe. Quem esperou 2015 comprar em 2018, quem esperou 2018 comprar em 2020 — e o imóvel dobrou de valor. O melhor momento é quando você tem acesso ao produto que quer.'},
+    {titulo:'"Vou esperar os juros cair"',curto:'"É exatamente por isso que investidores entram antes. Queda de juros = valorização do imóvel."',completo:'Quando os juros caem, mais gente compra e o preço sobe. Quem entrou antes da queda já está com o imóvel valorizado. Esperar os juros cair para comprar é o mesmo que esperar o ingresso ficar mais caro.'},
+  ],
+};
+let argsCat='rentabilidade';
+let argumentos=lg('argumentos',null);
+if(!argumentos){argumentos=JSON.parse(JSON.stringify(ARGS_DEFAULT));ls('argumentos',argumentos)}
+
+function selArgCat(cat,el){argsCat=cat;document.querySelectorAll('#args-tabs .sec-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderArgs()}
+function renderArgs(){
+  const el=document.getElementById('args-list');if(!el)return;
+  const lista=argumentos[argsCat]||[];
+  if(!lista.length){el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px">Nenhum argumento ainda.<br>Clique em + Adicionar.</div>`;return}
+  el.innerHTML=lista.map((a,i)=>`<div style="background:var(--s2);border:1px solid var(--br);border-radius:11px;padding:13px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:800">${a.titulo}</div>
+      <button onclick="delArgumento('${argsCat}',${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">🗑️</button>
+    </div>
+    <div style="font-size:12px;color:var(--acc);font-weight:600;margin-bottom:8px;background:rgba(255,107,43,.08);border-radius:7px;padding:7px 10px">"${a.curto}"</div>
+    <div style="font-size:11px;color:var(--txt2);line-height:1.6;margin-bottom:10px">${a.completo}</div>
+    <div style="display:flex;gap:6px">
+      <button onclick="copiarArg('${argsCat}',${i},'curto')" style="flex:1;background:var(--s3);border:1px solid var(--br);color:var(--txt);border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Curto</button>
+      <button onclick="copiarArg('${argsCat}',${i},'completo')" style="flex:1;background:var(--acc);color:#fff;border:none;border-radius:8px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Completo</button>
+    </div>
+  </div>`).join('');
+}
+function copiarArg(cat,i,tipo){const a=(argumentos[cat]||[])[i];if(!a)return;const txt=tipo==='curto'?a.curto:a.completo;navigator.clipboard.writeText(txt).then(()=>toast('✅ Copiado!')).catch(()=>toast('✅ Copiado!'))}
+function addArgumento(){
+  const titulo=prompt('Título do argumento:');if(!titulo)return;
+  const curto=prompt('Versão curta (1 frase):');if(!curto)return;
+  const completo=prompt('Versão completa:');if(!completo)return;
+  if(!argumentos[argsCat])argumentos[argsCat]=[];
+  argumentos[argsCat].push({titulo,curto,completo});
+  ls('argumentos',argumentos);renderArgs();toast('✅ Argumento adicionado!');
+}
+function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].splice(i,1);ls('argumentos',argumentos);renderArgs();toast('🗑️ Removido!')}
+
 // ════ BUSCA E FILTRO DE LEADS ════
 let leadSearchTerm='',leadFilterStage='all';
 function filterLeads(){leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();leadFilterStage=document.getElementById('lead-filter')?.value||'all';renderLeads();renderReport()}
@@ -1856,8 +2123,8 @@ function checkBackupReminder(){
     setTimeout(()=>showNotif('📦','Backup semanal pendente!','Config → Exportar para não perder dados'),4000);
 }
 
-function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);ls('lastBackup',Date.now());toast('📦 Exportado!')}
-function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
+function doExport(){const d={leads,weeks,done,cfg,tpls,workouts,meals,favs,appts,projetos,argumentos,start:startDay};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='plano60dias_flavio.json';a.click();URL.revokeObjectURL(u);ls('lastBackup',Date.now());toast('📦 Exportado!')}
+function doImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d.leads){leads=d.leads;ls('leads',leads)}if(d.weeks){weeks=d.weeks;ls('weeks',weeks)}if(d.done){done=d.done;ls('done',done)}if(d.cfg){cfg=d.cfg;ls('cfg',cfg)}if(d.tpls){tpls=d.tpls;ls('tpls',tpls)}if(d.workouts){workouts=d.workouts;ls('wo',workouts)}if(d.meals){meals=d.meals;ls('meals',meals)}if(d.favs){favs=d.favs;ls('favs',favs)}if(d.appts){appts=d.appts;ls('appts',appts)}if(d.projetos){projetos=d.projetos;ls('projetos',projetos)}if(d.argumentos){argumentos=d.argumentos;ls('argumentos',argumentos)}renderAll();toast('✅ Importado!')}catch{toast('❌ Arquivo inválido!')}};r.readAsText(f)}
 function resetDone(){done={};ls('done',done);renderTasks();toast('🔄 Reiniciado!')}
 // ════ QR CODE SYNC ════
 let qrWhat='leads', qrStream=null, qrScanning=false;
@@ -2006,8 +2273,10 @@ function processarQRData(raw){
   }
 }
 
-function renderAll(){renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
+function renderAll(){renderPainelDia();renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
+scheduleAlarms();
+pedirPermissaoNotif();
 checkBackupReminder();
 setTimeout(()=>{const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won');if(due.length)showNotif('📱',`Follow-up ${due[0].fu<t?'ATRASADO!':'hoje!'}`,due[0].name)},800);
 </script>
