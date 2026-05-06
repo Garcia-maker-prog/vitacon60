@@ -494,9 +494,33 @@ select.inp option{background:var(--s1)}
   <button class="btn-add" onclick="addArgumento()">+ Adicionar argumento</button>
 </div></div>
 
-<!-- NOTICIAS --><div class="modal">
+
+<!-- NOTICIAS -->
+<div class="overlay" id="m-news"><div class="modal">
   <div class="modal-hdr"><span>📰 NOTÍCIAS DO MERCADO</span><button class="modal-close" onclick="closeM('m-news')">✕</button></div>
-  <p style="font-size:11px;color:var(--txt3);margin-bottom:12px">Escolha um tema ou digite sua própria busca. A IA buscará as últimas notícias relevantes.</p>
+
+  <!-- Links de leitura -->
+  <div style="margin-bottom:14px">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--txt3);margin-bottom:8px">📖 LEITURAS DO DIA</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <a href="https://infomoney.com.br" target="_blank" style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--s2);border:1px solid var(--br);border-radius:9px;text-decoration:none;color:var(--txt)">
+        <span style="font-size:16px">📊</span><div><div style="font-size:11px;font-weight:700">InfoMoney</div><div style="font-size:9px;color:var(--txt3)">Mercado & Economia</div></div>
+      </a>
+      <a href="https://exame.com" target="_blank" style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--s2);border:1px solid var(--br);border-radius:9px;text-decoration:none;color:var(--txt)">
+        <span style="font-size:16px">📰</span><div><div style="font-size:11px;font-weight:700">Exame</div><div style="font-size:9px;color:var(--txt3)">Negócios & Finanças</div></div>
+      </a>
+      <a href="https://valor.globo.com" target="_blank" style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--s2);border:1px solid var(--br);border-radius:9px;text-decoration:none;color:var(--txt)">
+        <span style="font-size:16px">📈</span><div><div style="font-size:11px;font-weight:700">Valor Econômico</div><div style="font-size:9px;color:var(--txt3)">Economia & Imóveis</div></div>
+      </a>
+      <a href="https://sunoresearch.com.br" target="_blank" style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--s2);border:1px solid var(--br);border-radius:9px;text-decoration:none;color:var(--txt)">
+        <span style="font-size:16px">🔍</span><div><div style="font-size:11px;font-weight:700">Suno Research</div><div style="font-size:9px;color:var(--txt3)">FIIs & Investimentos</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div style="height:1px;background:var(--br);margin-bottom:14px"></div>
+
+  <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">Ou deixe o Claude buscar e analisar as notícias para você:</p>
   <div class="field"><label class="inp-lbl">Tema rápido</label>
     <select class="inp" id="news-topic" onchange="document.getElementById('news-custom').value=''">
       <option value="imob">🏢 Mercado Imobiliário SP</option>
@@ -509,11 +533,11 @@ select.inp option{background:var(--s1)}
   </div>
   <div class="field">
     <label class="inp-lbl">— ou busca personalizada —</label>
-    <textarea class="inp" id="news-custom" placeholder="Ex: Impacto da Selic nos studios de SP em 2025&#10;Lançamentos Vitacon no segundo semestre&#10;Rendimento Airbnb no Itaim Bibi..." style="min-height:80px" oninput="if(this.value.trim())document.getElementById('news-topic').value=''"></textarea>
+    <textarea class="inp" id="news-custom" placeholder="Ex: Impacto da Selic nos studios de SP em 2025&#10;Rendimento Airbnb no Itaim Bibi..." style="min-height:70px" oninput="if(this.value.trim())document.getElementById('news-topic').value=''"></textarea>
   </div>
   <button class="btn" onclick="openClaudeNews()" style="background:linear-gradient(135deg,#3b82f6,#06b6d4);color:#fff;width:100%;margin-bottom:8px">🔍 Buscar no Claude.ai</button>
   <p style="font-size:10px;color:var(--txt3);text-align:center">Abre o Claude com a busca configurada. Gratuito.</p>
-</div></div>
+</div></div></div>
 
 <div class="overlay" id="m-cal" style="z-index:200"><div class="modal">
   <div class="modal-hdr"><span>📆 AGENDA</span><button class="modal-close" onclick="closeM('m-cal')">✕</button></div>
