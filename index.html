@@ -245,7 +245,7 @@ select.inp option{background:var(--s1)}
       <span style="color:var(--txt3);font-size:14px">🔍</span>
       <input id="lead-search" class="inp" placeholder="Buscar lead..." style="border:none;background:transparent;padding:9px 0;font-size:13px" oninput="filterLeads()">
     </div>
-    <select id="lead-filter" class="inp" style="width:auto;padding:8px 10px;font-size:11px" onchange="filterLeads()">
+    <select id="lead-filter" class="inp" style="width:auto;padding:8px 10px;font-size:11px" onchange="setFiltroLeads(this.value)">
       <option value="all">Todos</option>
       <option value="hot">🔥 Quentes</option>
       <option value="warm">🌡️ Mornos</option>
@@ -851,8 +851,54 @@ function renderFuHoje(){
   const el=document.getElementById('fu-hoje');if(!el)return;
   const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won'&&!dfuSet.has(l.id));
   if(!due.length){el.innerHTML='';return}
-  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{const i=leads.indexOf(l),ov=l.fu<t;return`<div class="fu-today" id="fu-${l.id}"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1;cursor:pointer" onclick="openDetail(${i})"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button><button onclick="openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">💬</button><button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button></div>`}).join('');
+  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{const i=leads.indexOf(l),ov=l.fu<t;return`<div class="fu-today" id="fu-${l.id}"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1;cursor:pointer" onclick="openDetail(${i})"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button><button onclick="abrirIAFollowUp(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">🤖 IA</button><button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button></div>`}).join('');
 }
+function abrirIAFollowUp(i){
+  const l=leads[i];if(!l)return;
+  const s=scr(l),comm=gc(l);
+  const ov=l.fu&&l.fu<td();
+  const waLink=l.wa?`https://wa.me/55${l.wa}`:'';
+
+  const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise este lead e gere UMA mensagem de WhatsApp personalizada para enviar agora.
+
+═══ LEAD ═══
+Nome: ${l.name}
+Produto: ${l.product||'não informado'}
+Valor: ${l.valor?brl(l.valor):'não informado'}${comm?' → comissão potencial: '+brl(comm):''}
+Status: ${l.status||'não informado'}
+Temperatura: ${l.stage==='hot'?'🔥 QUENTE':l.stage==='warm'?'🌡️ MORNO':l.stage==='cold'?'❄️ FRIO':'✅ FECHADO'}
+Score: ${s}/100
+Follow-up: ${l.fu?fd(l.fu)+(ov?' — ATRASADO':''):'não agendado'}
+
+═══ HISTÓRICO COMPLETO ═══
+${l.hist||'Sem histórico registrado.'}
+
+═══ TAREFA ═══
+1. Leia TODO o histórico — entenda onde está o relacionamento, o que foi dito, o tom
+2. Identifique: última interação, interesse demonstrado, objeções levantadas
+3. Crie UMA mensagem de WhatsApp para enviar AGORA — personalizada ao contexto real
+4. Máximo 5 linhas curtas. Natural. Sem parecer robô. Sem "Olá, tudo bem?" genérico
+5. Use o primeiro nome: ${l.name.split(' ')[0]}
+6. A mensagem deve dar continuidade natural ao histórico — não recomeçar do zero
+
+Formato de resposta:
+📊 ANÁLISE (2 linhas)
+[o que entendeu do histórico e qual é a abordagem certa agora]
+
+💬 MENSAGEM PRONTA PARA ENVIAR
+[a mensagem aqui — pronta para copiar]`;
+
+
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  if(l.wa){
+    setTimeout(()=>{
+      if(confirm('Abrir WhatsApp de '+l.name.split(' ')[0]+'?\n\nCopie a mensagem do Claude e cole no WhatsApp.')){
+        window.open('https://wa.me/55'+l.wa,'_blank');
+      }
+    },1800);
+  }
+}
+
 function disFU(id){
   // Clear follow-up date from lead so it doesn't reappear
   const i=leads.findIndex(l=>l.id===id);
@@ -1763,7 +1809,18 @@ function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].spli
 
 // ════ BUSCA E FILTRO DE LEADS ════
 let leadSearchTerm='',leadFilterStage='all';
-function filterLeads(){leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();leadFilterStage=document.getElementById('lead-filter')?.value||'all';renderLeads();renderReport()}
+function filterLeads(){
+  leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();
+  leadFilterStage=document.getElementById('lead-filter')?.value||'all';
+  renderLeads();
+}
+function setFiltroLeads(filtro){
+  leadFilterStage=filtro;
+  const sel=document.getElementById('lead-filter');
+  if(sel)sel.value=filtro;
+  goTab('vendas',document.querySelector('[data-id=vendas]'));
+  setTimeout(renderLeads,50);
+}
 function filteredLeads(){const t=td();return leads.filter(l=>{const ms=!leadSearchTerm||l.name.toLowerCase().includes(leadSearchTerm)||(l.product||'').toLowerCase().includes(leadSearchTerm)||(l.status||'').toLowerCase().includes(leadSearchTerm);let mf=true;if(leadFilterStage==='hot')mf=l.stage==='hot';else if(leadFilterStage==='warm')mf=l.stage==='warm';else if(leadFilterStage==='cold')mf=l.stage==='cold';else if(leadFilterStage==='won')mf=l.stage==='won';else if(leadFilterStage==='overdue')mf=l.fu&&l.fu<t&&l.stage!=='won';else if(leadFilterStage==='nofu')mf=!l.fu&&l.stage!=='won';return ms&&mf})}
 
 // ════ DIAS SEM CONTATO ════
@@ -1970,8 +2027,8 @@ function openRelatorio(){
     </div>
     <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:10px">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">⚡ ALERTAS</div>
-      ${overdue.length?`<div onclick="closeM('m-relatorio');document.getElementById('lead-filter').value='overdue';renderLeads();goTab('vendas',document.querySelector('[data-id=vendas]'))" style="padding:8px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:8px;margin-bottom:6px;font-size:12px;color:var(--red);cursor:pointer">🔴 ${overdue.length} follow-up${overdue.length>1?'s':''} atrasado${overdue.length>1?'s':''} — toque para ver</div>`:''}
-      ${noFu.length?`<div onclick="closeM('m-relatorio');document.getElementById('lead-filter').value='nofu';renderLeads();goTab('vendas',document.querySelector('[data-id=vendas]'))" style="padding:8px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:6px;font-size:12px;color:var(--yellow);cursor:pointer">📅 ${noFu.length} lead${noFu.length>1?'s':''} sem follow-up — toque para ver</div>`:''}
+      ${overdue.length?`<div onclick="closeM('m-relatorio');setFiltroLeads('overdue')" style="padding:10px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:9px;margin-bottom:6px;font-size:12px;color:var(--red);cursor:pointer">🔴 ${overdue.length} follow-up${overdue.length>1?'s':''} atrasado${overdue.length>1?'s':''} — toque para ver</div>`:''}
+      ${noFu.length?`<div onclick="closeM('m-relatorio');setFiltroLeads('nofu')" style="padding:10px 12px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:9px;margin-bottom:6px;font-size:12px;color:var(--yellow);cursor:pointer">📅 ${noFu.length} lead${noFu.length>1?'s':''} sem follow-up — toque para ver</div>`:''}
       ${!overdue.length&&!noFu.length?`<div style="font-size:12px;color:var(--green);padding:4px 0">✅ Tudo em dia!</div>`:''}
     </div>
     <div style="background:var(--s2);border-radius:12px;padding:14px">
