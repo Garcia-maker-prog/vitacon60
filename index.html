@@ -1815,11 +1815,15 @@ function filterLeads(){
   renderLeads();
 }
 function setFiltroLeads(filtro){
+  // Close any open modals
+  document.querySelectorAll('.overlay.open').forEach(m=>m.classList.remove('open'));
   leadFilterStage=filtro;
   const sel=document.getElementById('lead-filter');
   if(sel)sel.value=filtro;
   goTab('vendas',document.querySelector('[data-id=vendas]'));
-  setTimeout(renderLeads,50);
+  setTimeout(renderLeads,80);
+  const labels={hot:'🔥 Quentes',warm:'🌡️ Mornos',cold:'❄️ Frios',won:'✅ Fechados',overdue:'🔴 Atrasados',nofu:'📅 Sem follow-up'};
+  toast((labels[filtro]||filtro)+' — '+filteredLeads().length+' leads');
 }
 function filteredLeads(){const t=td();return leads.filter(l=>{const ms=!leadSearchTerm||l.name.toLowerCase().includes(leadSearchTerm)||(l.product||'').toLowerCase().includes(leadSearchTerm)||(l.status||'').toLowerCase().includes(leadSearchTerm);let mf=true;if(leadFilterStage==='hot')mf=l.stage==='hot';else if(leadFilterStage==='warm')mf=l.stage==='warm';else if(leadFilterStage==='cold')mf=l.stage==='cold';else if(leadFilterStage==='won')mf=l.stage==='won';else if(leadFilterStage==='overdue')mf=l.fu&&l.fu<t&&l.stage!=='won';else if(leadFilterStage==='nofu')mf=!l.fu&&l.stage!=='won';return ms&&mf})}
 
@@ -1839,17 +1843,17 @@ function renderReport(){
   const vgvH=leads.filter(l=>l.stage==='hot').reduce((s,l)=>s+(Number(l.valor)||0),0);
   el.style.display='block';
   el.innerHTML=`<div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);letter-spacing:.5px;margin-bottom:8px">📊 RELATÓRIO DO PIPELINE</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px">
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--acc)">${hot}</div><div style="font-size:9px;color:var(--txt3)">🔥 Quentes</div></div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--yellow)">${warm}</div><div style="font-size:9px;color:var(--txt3)">🌡️ Mornos</div></div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--blue)">${cold}</div><div style="font-size:9px;color:var(--txt3)">❄️ Frios</div></div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:7px"><div style="font-family:var(--d);font-size:18px;color:var(--green)">${won}</div><div style="font-size:9px;color:var(--txt3)">✅ Fechados</div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px">
+      <div onclick="setFiltroLeads('hot')" style="text-align:center;background:var(--s3);border-radius:8px;padding:7px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.borderColor='var(--acc)'" onmouseout="this.style.borderColor='transparent'"><div style="font-family:var(--d);font-size:18px;color:var(--acc)">${hot}</div><div style="font-size:9px;color:var(--txt3)">🔥 Quentes</div></div>
+      <div onclick="setFiltroLeads('warm')" style="text-align:center;background:var(--s3);border-radius:8px;padding:7px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.borderColor='var(--yellow)'" onmouseout="this.style.borderColor='transparent'"><div style="font-family:var(--d);font-size:18px;color:var(--yellow)">${warm}</div><div style="font-size:9px;color:var(--txt3)">🌡️ Mornos</div></div>
+      <div onclick="setFiltroLeads('cold')" style="text-align:center;background:var(--s3);border-radius:8px;padding:7px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='transparent'"><div style="font-family:var(--d);font-size:18px;color:var(--blue)">${cold}</div><div style="font-size:9px;color:var(--txt3)">❄️ Frios</div></div>
+      <div onclick="setFiltroLeads('won')" style="text-align:center;background:var(--s3);border-radius:8px;padding:7px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='transparent'"><div style="font-family:var(--d);font-size:18px;color:var(--green)">${won}</div><div style="font-size:9px;color:var(--txt3)">✅ Fechados</div></div>
     </div>
     <div style="display:flex;gap:5px;flex-wrap:wrap">
-      ${overdue?`<span style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">🔴 ${overdue} atrasados</span>`:''}
-      ${noFu?`<span style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.2);color:var(--yellow);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">📅 ${noFu} sem follow-up</span>`:''}
-      ${sc7?`<span style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">⚠️ ${sc7} sem contato +7d</span>`:''}
-      <span style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);color:var(--purple);border-radius:7px;padding:5px 10px;font-size:10px;font-weight:700">VGV Quentes: ${fk(vgvH)}</span>
+      ${overdue?`<button onclick="setFiltroLeads('overdue')" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:7px;padding:6px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">🔴 ${overdue} atrasados</button>`:''}
+      ${noFu?`<button onclick="setFiltroLeads('nofu')" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--yellow);border-radius:7px;padding:6px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">📅 ${noFu} sem follow-up</button>`:''}
+      ${sc7?`<button onclick="setFiltroLeads('overdue')" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:7px;padding:6px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">⚠️ ${sc7} sem contato +7d</button>`:''}
+      <span style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);color:var(--purple);border-radius:7px;padding:6px 11px;font-size:10px;font-weight:700">VGV Quentes: ${fk(vgvH)}</span>
     </div>`;
 }
 
