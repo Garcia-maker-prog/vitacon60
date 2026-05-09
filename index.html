@@ -882,12 +882,85 @@ function renderFuHoje(){
   }).join('');
 }
 
+function agendarProximoFU(i){
+  // Agenda para o dia seguinte útil às 09:00
+  const now=new Date();
+  now.setDate(now.getDate()+1);
+  if(now.getDay()===0)now.setDate(now.getDate()+1); // pula domingo
+  const novaData=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  leads[i].fu=novaData;
+  leads[i].fu_time='09:00';
+  leads[i].fu_msg=''; // limpa mensagem usada — nova será gerada
+  ls('leads',leads);
+  scheduleAlarms();
+
+  // Abre Claude para gerar a próxima mensagem com base no histórico atualizado
+  const l=leads[i];
+  const s=scr(l),comm=gc(l);
+  const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
+  const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Acabei de enviar uma mensagem para este lead. Analise o histórico completo e crie a PRÓXIMA mensagem de follow-up para enviar em ${fd(novaData)}.
+
+═══ LEAD ═══
+Nome: ${l.name}
+Produto: ${l.product||'não informado'}
+Valor: ${l.valor?brl(l.valor):'não informado'}${comm?' → comissão potencial: '+brl(comm):''}
+Status: ${l.status||'não informado'}
+Temperatura: ${stageLabel[l.stage]||l.stage}
+Próximo follow-up: ${fd(novaData)} às 09:00
+
+═══ HISTÓRICO COMPLETO (incluindo mensagem que acabo de enviar) ═══
+${l.hist||'Sem histórico.'}
+
+═══ TAREFA ═══
+1. Leia TODO o histórico — entenda a evolução do relacionamento
+2. Identifique onde o lead está no processo de decisão
+3. Crie UMA mensagem de WhatsApp para enviar em ${fd(novaData)}
+4. A mensagem deve dar continuidade natural — não repetir o que já foi dito
+5. Máximo 5 linhas. Natural. Direto. Primeiro nome: ${l.name.split(' ')[0]}
+6. Pense no próximo passo lógico: avançar, apresentar, tirar dúvida ou criar urgência
+
+Formato:
+📊 ANÁLISE (1 linha — onde está o lead e qual é a estratégia)
+[análise]
+
+💬 PRÓXIMA MENSAGEM
+[mensagem aqui — pronta para copiar e salvar no campo de follow-up]`;
+
+  // Notificação com botão para abrir Claude
+  setTimeout(()=>{
+    const ni=document.getElementById('ni');
+    const nt=document.getElementById('nt');
+    const ns=document.getElementById('ns');
+    if(ni)ni.textContent='🤖';
+    if(nt)nt.textContent='Gerando próxima mensagem...';
+    if(ns)ns.textContent=l.name.split(' ')[0]+' · follow-up '+fd(novaData);
+    const notif=document.getElementById('notif');
+    if(notif){
+      notif.classList.add('show');
+      const existing=notif.querySelector('.alarm-wa-btn');
+      if(existing)existing.remove();
+      const btn=document.createElement('button');
+      btn.textContent='🤖 Abrir';
+      btn.className='alarm-wa-btn';
+      btn.style.cssText='background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0';
+      btn.onclick=function(){
+        window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+        notif.classList.remove('show');
+        // Reabre o lead para colar a mensagem
+        setTimeout(()=>{openEditLead(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"')},800);
+      };
+      const closeBtn=notif.querySelector('button');
+      if(closeBtn)notif.insertBefore(btn,closeBtn);
+      setTimeout(()=>notif.classList.remove('show'),20000);
+    }
+  },500);
+}
+
 function registrarEnvioFU(i){
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado (mensagem preparada):\n'+(leads[i].fu_msg||'');
-  leads[i].fu='';leads[i].fu_time='';
-  ls('leads',leads);
+  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado:\n'+(leads[i].fu_msg||'');
+  agendarProximoFU(i);
   setTimeout(()=>{renderHdr();renderFuHoje()},300);
 }
 function abrirIAFollowUp(i){
@@ -1350,7 +1423,7 @@ function dispararAlarme(i){
             const now=new Date();
             const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
             leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up automático:\n'+msg;
-            leads[i].fu='';leads[i].fu_time='';
+            agendarProximoFU(i);
             ls('leads',leads);renderHdr();
           }catch(e){}
           setTimeout(()=>notif.classList.remove('show'),500);
@@ -1393,11 +1466,10 @@ function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t|
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;
-  // Clear overdue follow-up after sending message
-  if(leads[msgI].fu&&leads[msgI].fu<=td()){leads[msgI].fu=''}
+  agendarProximoFU(msgI);
   ls('leads',leads);
   renderHdr();
-  toast('💬 Salvo no histórico!');
+  toast('💬 Enviado! Próximo follow-up agendado ✅');
   window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank');
 };wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
 function saveMsgFu(){
@@ -1815,12 +1887,13 @@ function enviarApresWA(pi,ai,li){
     openM('m-apres');
     return;
   }
-  // Save to history
+  // Save to history and schedule next FU
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   leads[li].hist=(leads[li].hist||'')+`\n\n📤 [${ds}] — ${a.nome} (${p.name}):\n${txt}`;
+  agendarProximoFU(li);
   ls('leads',leads);
-  toast('💬 Salvo no histórico!');
+  toast('💬 Enviado! Próximo follow-up agendado ✅');
   window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(txt)}`,'_blank');
 }
 
@@ -2144,13 +2217,11 @@ function renderFoco(){
 
 function regAcaoFoco(i,tipo){
   if(tipo==='nota'){closeM('m-foco');openNotaRapida(i);return}
-  // Registra contato no histórico quando clica WA direto
   const now=new Date();
-  const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  leads[i].hist=(leads[i].hist||'')+`\n\n📲 [${ds}]: Contato via WhatsApp (Modo Foco)`;
-  if(leads[i].fu&&leads[i].fu<=td())leads[i].fu='';
-  ls('leads',leads);
-  renderFuHoje();renderHdr();
+  const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  leads[i].hist=(leads[i].hist||'')+'\n\n📲 ['+ds+']: Contato via WhatsApp';
+  agendarProximoFU(i);
+  renderHdr();
 }
 
 
