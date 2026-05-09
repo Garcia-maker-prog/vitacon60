@@ -330,8 +330,19 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">Status</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
   <div class="field"><label class="inp-lbl">WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-wa" placeholder="11999998888"></div>
   <div class="field"><label class="inp-lbl">Temperatura</label><select class="inp" id="lf-stage"><option value="hot">🔥 Quente</option><option value="warm">🌡️ Morno</option><option value="cold">❄️ Frio</option><option value="won">✅ Fechado — VENDA REALIZADA</option></select></div>
-  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl">📅 Follow-up</label><div style="display:flex;gap:6px"><input class="inp" type="date" id="lf-fu" style="flex:1"><input class="inp" type="time" id="lf-fu-time" style="width:90px;flex-shrink:0"></div></div></div>
-  <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-hist" placeholder="Cole conversas, objeções, interesses..."></textarea></div>
+  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl" id="lf-fu-lbl" style="color:var(--acc)">📅 Follow-up <span style="color:var(--red)">*</span></label><div style="display:flex;gap:6px"><input class="inp" type="date" id="lf-fu" style="flex:1;border-color:var(--acc)" oninput="document.getElementById('lf-fu').style.borderColor=this.value?'var(--br)':'var(--acc)'"><input class="inp" type="time" id="lf-fu-time" style="width:90px;flex-shrink:0"></div></div></div>
+  <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-hist" placeholder="Cole a conversa do WhatsApp, objeções, interesses..." style="min-height:100px"></textarea></div>
+
+  <!-- Campo mensagem preparada pela IA -->
+  <div class="field" id="lf-msg-wrap">
+    <label class="inp-lbl" style="display:flex;align-items:center;justify-content:space-between">
+      <span>💬 Mensagem do follow-up</span>
+      <button onclick="gerarMsgIALead()" type="button" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">🤖 Gerar com IA</button>
+    </label>
+    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a mensagem gerada pela IA para usar no follow-up..." style="min-height:80px"></textarea>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Ao chegar na data, o app abrirá o WhatsApp com esta mensagem pronta.</div>
+  </div>
+
   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
   <button class="btn btn-danger" id="lead-del" onclick="delLead()" style="display:none">🗑️ Excluir Lead</button>
 </div></div>
@@ -1074,24 +1085,177 @@ document.addEventListener('touchmove',e=>{if(!tDId||!tClone)return;e.preventDefa
 document.addEventListener('touchend',e=>{if(!tDId)return;const t=e.changedTouches[0],el=document.elementFromPoint(t.clientX,t.clientY),col=el?.closest('.kanban-col');if(col){const stage=col.id.replace('kcol-',''),i=leads.findIndex(l=>l.id===tDId);if(i!==-1&&leads[i].stage!==stage){leads[i].stage=stage;ls('leads',leads);const sn={hot:'🔥 Quente',warm:'🌡️ Morno',cold:'❄️ Frio',won:'✅ Fechado'};toast(`${leads[i].name} → ${sn[stage]}`);if(stage==='won')setTimeout(()=>showNotif('🏆','Venda fechada!',leads[i].name+' — '+brl(gc(leads[i]))),300)}}if(tClone){tClone.remove();tClone=null}document.querySelectorAll('.kanban-col').forEach(c=>c.classList.remove('drag-over'));const card=document.getElementById('kcard-'+tDId);if(card)card.style.opacity='1';tDId=null;renderKanban();renderHdr()});
 
 let eiL=-1;
-function openAddLead(){eiL=-1;document.getElementById('lead-title').textContent='➕ NOVO LEAD';document.getElementById('lead-del').style.display='none';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});document.getElementById('lf-stage').value='hot';document.getElementById('comm-hint').textContent='';openM('m-lead')}
-function openEditLead(i){eiL=i;const l=leads[i];document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';document.getElementById('lead-del').style.display='block';['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});document.getElementById('lf-fu-time').value=l.fu_time||'';document.getElementById('lf-stage').value=l.stage||'hot';updComm();openM('m-lead')}
+function openAddLead(){
+  eiL=-1;
+  document.getElementById('lead-title').textContent='➕ NOVO LEAD';
+  document.getElementById('lead-del').style.display='none';
+  ['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});
+  document.getElementById('lf-fu-time').value='';
+  document.getElementById('lf-fu-msg').value='';
+  document.getElementById('lf-fu').style.borderColor='var(--acc)';
+  document.getElementById('lf-stage').value='hot';
+  document.getElementById('comm-hint').textContent='';
+  openM('m-lead');
+}
+function openEditLead(i){
+  eiL=i;const l=leads[i];
+  document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';
+  document.getElementById('lead-del').style.display='block';
+  ['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});
+  document.getElementById('lf-fu-time').value=l.fu_time||'';
+  document.getElementById('lf-fu-msg').value=l.fu_msg||'';
+  document.getElementById('lf-fu').style.borderColor=l.fu?'var(--br)':'var(--acc)';
+  document.getElementById('lf-stage').value=l.stage||'hot';
+  updComm();openM('m-lead');
+}
 function updComm(){const v=Number(document.getElementById('lf-valor').value)||0,p=Number(document.getElementById('lf-pct').value)||0,el=document.getElementById('comm-hint');if(v>0&&p>0)el.textContent='= '+brl(Math.round(v*p/100));else if(v>0)el.textContent='Sugestão 1,8%: '+brl(Math.round(v*0.018));else el.textContent=''}
+
 function saveLead(){
   const name=(document.getElementById('lf-name').value||'Lead').trim();
   const wa=(document.getElementById('lf-wa').value||'').replace(/\D/g,'');
-  // Check duplicate — same name or same WhatsApp (excluding current lead being edited)
+  const fu=document.getElementById('lf-fu').value||'';
+  const hist=document.getElementById('lf-hist').value||'';
+  const isNew=eiL===-1;
+
+  // Validação duplicata
   const dupName=leads.findIndex((l,i)=>i!==eiL&&l.name.trim().toLowerCase()===name.toLowerCase());
   const dupWa=wa?leads.findIndex((l,i)=>i!==eiL&&l.wa&&l.wa===wa):-1;
   if(dupName!==-1){toast('⚠️ Já existe um lead com esse nome!');return}
   if(dupWa!==-1){toast('⚠️ Esse WhatsApp já está cadastrado em: '+leads[dupWa].name);return}
-  const l={id:eiL===-1?Date.now():(leads[eiL]?.id||Date.now()),name,product:document.getElementById('lf-product').value||'',valor:document.getElementById('lf-valor').value||'',pct:document.getElementById('lf-pct').value||'',status:document.getElementById('lf-status').value||'',wa,stage:document.getElementById('lf-stage').value,avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',fu:document.getElementById('lf-fu').value||'',fu_time:document.getElementById('lf-fu-time').value||'',hist:document.getElementById('lf-hist').value||''};
-  if(eiL===-1)leads.push(l);else leads[eiL]=l;
-  ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();
+
+  // Follow-up obrigatório para leads novos com histórico
+  if(isNew&&!fu&&hist.trim().length>10){
+    document.getElementById('lf-fu').style.borderColor='var(--red)';
+    document.getElementById('lf-fu').focus();
+    toast('⚠️ Agende o follow-up antes de salvar!');
+    showNotif('📅','Follow-up obrigatório','Todo lead com histórico precisa de um follow-up agendado');
+    return;
+  }
+
+  const l={
+    id:isNew?Date.now():(leads[eiL]?.id||Date.now()),
+    name,
+    product:document.getElementById('lf-product').value||'',
+    valor:document.getElementById('lf-valor').value||'',
+    pct:document.getElementById('lf-pct').value||'',
+    status:document.getElementById('lf-status').value||'',
+    wa,
+    stage:document.getElementById('lf-stage').value,
+    avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',
+    fu,
+    fu_time:document.getElementById('lf-fu-time').value||'',
+    fu_msg:document.getElementById('lf-fu-msg').value||'',
+    hist,
+  };
+
+  if(isNew)leads.push(l);else leads[eiL]=l;
+  ls('leads',leads);
+  closeM('m-lead');
+  setView(lView);renderHdr();
   scheduleAlarms();
-  toast(eiL===-1?'✅ Lead adicionado!':'✅ Lead atualizado!');
+  toast(isNew?'✅ Lead adicionado!':'✅ Lead atualizado!');
+
+  // Após salvar lead novo com histórico e sem mensagem preparada → oferece IA
+  if(isNew&&hist.trim().length>10&&!l.fu_msg){
+    const idx=leads.length-1;
+    setTimeout(()=>{
+      showNotif('🤖','Quer gerar a mensagem de follow-up?','Toque para a IA analisar o histórico e criar a mensagem');
+      // Replace close button with action
+      const notif=document.getElementById('notif');
+      if(notif){
+        const existing=notif.querySelector('.alarm-wa-btn');
+        if(existing)existing.remove();
+        const btn=document.createElement('button');
+        btn.textContent='🤖 Gerar';
+        btn.style.cssText='background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0';
+        btn.className='alarm-wa-btn';
+        btn.onclick=()=>{
+          notif.classList.remove('show');
+          gerarMsgIALeadIdx(idx);
+        };
+        const closeBtn=notif.querySelector('button');
+        if(closeBtn)notif.insertBefore(btn,closeBtn);
+      }
+    },600);
+  }
 }
 function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();toast('🗑️ Removido!')}
+
+// ════ IA NO CADASTRO ════
+function gerarMsgIALead(){
+  // Called from inside the form — uses current form values
+  const name=(document.getElementById('lf-name').value||'').trim();
+  const hist=(document.getElementById('lf-hist').value||'').trim();
+  const product=document.getElementById('lf-product').value||'';
+  const fu=document.getElementById('lf-fu').value||'';
+  const stage=document.getElementById('lf-stage').value||'hot';
+  if(!hist){toast('⚠️ Preencha o histórico primeiro!');return}
+  const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
+  const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise o histórico deste lead e crie UMA mensagem de WhatsApp para o follow-up agendado.
+
+═══ LEAD ═══
+Nome: ${name||'não informado'}
+Produto: ${product||'não informado'}
+Temperatura: ${stageLabel[stage]||stage}
+Follow-up agendado: ${fu?fd(fu):'não definido'}
+
+═══ HISTÓRICO / CONVERSA ═══
+${hist}
+
+═══ TAREFA ═══
+1. Leia o histórico completo — entenda o contexto, interesse e tom da conversa
+2. Crie UMA mensagem de WhatsApp para enviar no dia do follow-up
+3. A mensagem deve dar continuidade natural ao histórico, não recomeçar do zero
+4. Máximo 5 linhas. Natural. Sem parecer robô
+5. Use o primeiro nome: ${name.split(' ')[0]||'[Nome]'}
+
+Formato:
+📊 CONTEXTO (1 linha)
+[o que entendeu]
+
+💬 MENSAGEM PARA COPIAR
+[mensagem aqui]`;
+
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  toast('🤖 Claude aberto! Cole a mensagem no campo abaixo.');
+}
+
+function gerarMsgIALeadIdx(i){
+  // Called after save — uses saved lead
+  const l=leads[i];if(!l)return;
+  const s=scr(l),comm=gc(l);
+  const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
+  const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise o histórico deste lead e crie UMA mensagem de WhatsApp para o follow-up agendado.
+
+═══ LEAD ═══
+Nome: ${l.name}
+Produto: ${l.product||'não informado'}
+Valor: ${l.valor?brl(l.valor):'não informado'}${comm?' → comissão potencial: '+brl(comm):''}
+Status: ${l.status||'não informado'}
+Temperatura: ${stageLabel[l.stage]||l.stage}
+Follow-up: ${l.fu?fd(l.fu)+(l.fu_time?' às '+l.fu_time:''):'não agendado'}
+
+═══ HISTÓRICO COMPLETO ═══
+${l.hist||'Sem histórico.'}
+
+═══ TAREFA ═══
+1. Leia TODO o histórico — entenda contexto, interesse, tom e objeções
+2. Crie UMA mensagem para enviar no dia do follow-up
+3. Continuidade natural ao histórico, não recomeçar do zero
+4. Máximo 5 linhas. Natural. Direto
+5. Primeiro nome: ${l.name.split(' ')[0]}
+
+Formato:
+📊 CONTEXTO (1 linha)
+[o que entendeu]
+
+💬 MENSAGEM PARA COPIAR
+[mensagem aqui — pronta para colar no campo de mensagem do lead]`;
+
+  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+  // After Claude opens, open the lead for editing so user can paste the message
+  setTimeout(()=>{openEditLead(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"');},1000);
+}
 
 // ════ ALARMES DE FOLLOW-UP ════
 let alarmTimers=[];
@@ -1121,16 +1285,18 @@ function dispararAlarme(i){
       });
     }catch(e){}
 
-    // Monta mensagem — usa template compatível com o stage
-    const tplMap={hot:1,warm:1,cold:2,won:0};
-    const tplIdx=Math.min(tplMap[l.stage]||0,(tpls||[]).length-1);
-    const tpl=(tpls&&tpls.length>0)?tpls[Math.max(0,tplIdx)]:null;
-    let msg='';
-    if(tpl&&tpl.txt){
-      msg=(tpl.txt||'')
-        .replace(/\[NOME\]/g,(l.name||'').split(' ')[0]||'')
-        .replace(/\[PRODUTO\]/g,l.product||'imóvel')
-        .replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));
+    // Monta mensagem — usa fu_msg preparada pela IA se disponível
+    let msg=l.fu_msg||'';
+    if(!msg){
+      const tplMap={hot:1,warm:1,cold:2,won:0};
+      const tplIdx=Math.min(tplMap[l.stage]||0,(tpls||[]).length-1);
+      const tpl=(tpls&&tpls.length>0)?tpls[Math.max(0,tplIdx)]:null;
+      if(tpl&&tpl.txt){
+        msg=(tpl.txt||'')
+          .replace(/\[NOME\]/g,(l.name||'').split(' ')[0]||'')
+          .replace(/\[PRODUTO\]/g,l.product||'imóvel')
+          .replace(/\[DATA\]/g,fd(new Date(Date.now()+2*86400000).toISOString().split('T')[0]));
+      }
     }
 
     // Banner no app
