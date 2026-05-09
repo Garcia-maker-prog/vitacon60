@@ -862,7 +862,33 @@ function renderFuHoje(){
   const el=document.getElementById('fu-hoje');if(!el)return;
   const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won'&&!dfuSet.has(l.id));
   if(!due.length){el.innerHTML='';return}
-  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{const i=leads.indexOf(l),ov=l.fu<t;return`<div class="fu-today" id="fu-${l.id}"><div style="font-size:20px">${ov?'🔴':'🟡'}</div><div style="flex:1;cursor:pointer" onclick="openDetail(${i})"><div style="font-size:13px;font-weight:700">${l.name}</div><div style="font-size:11px;color:var(--txt3)">${l.product} · ${ov?'Atrasado!':'Hoje!'}</div></div><button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button><button onclick="abrirIAFollowUp(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">🤖 IA</button><button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button></div>`}).join('');
+  el.innerHTML='<div class="grp">⚡ FOLLOW-UPS PENDENTES</div>'+due.map(l=>{
+    const i=leads.indexOf(l),ov=l.fu<t;
+    const temMsg=!!(l.fu_msg&&l.fu_msg.trim());
+    // Botão de ação: WA com mensagem pronta se tiver fu_msg, senão IA
+    const btnAcao=temMsg&&l.wa
+      ?`<a href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank" onclick="registrarEnvioFU(${i})" style="background:var(--wa);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px;text-decoration:none">📲 WA</a>`
+      :`<button onclick="abrirIAFollowUp(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">🤖 IA</button>`;
+    return`<div class="fu-today" id="fu-${l.id}">
+      <div style="font-size:20px">${ov?'🔴':'🟡'}</div>
+      <div style="flex:1;cursor:pointer" onclick="openDetail(${i})">
+        <div style="font-size:13px;font-weight:700">${l.name}</div>
+        <div style="font-size:11px;color:var(--txt3)">${l.product||''}${l.product?' · ':''}${ov?'Atrasado!':'Hoje!'}${temMsg?' · 💬 msg pronta':''}</div>
+      </div>
+      <button onclick="openDetail(${i})" style="background:var(--s3);color:var(--txt);border:1px solid var(--br);padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">👁️</button>
+      ${btnAcao}
+      <button onclick="disFU(${l.id})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:4px">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function registrarEnvioFU(i){
+  const now=new Date();
+  const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado (mensagem preparada):\n'+(leads[i].fu_msg||'');
+  leads[i].fu='';leads[i].fu_time='';
+  ls('leads',leads);
+  setTimeout(()=>{renderHdr();renderFuHoje()},300);
 }
 function abrirIAFollowUp(i){
   const l=leads[i];if(!l)return;
