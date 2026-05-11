@@ -194,7 +194,7 @@ select.inp option{background:var(--s1)}
 <div class="tabs">
   <button class="tab active" data-id="hoje" onclick="goTab('hoje',this)"><span>🎯</span>Hoje</button>
   <button class="tab" data-id="vendas" onclick="goTab('vendas',this)"><span>💰</span>Vendas</button>
-  <button class="tab" data-id="insta" onclick="goTab('insta',this)"><span>📱</span>Insta</button>
+  <button class="tab" data-id="insta" onclick="goTab('insta',this)"><span>🤝</span>Mídia</button>
   <button class="tab" data-id="treino" onclick="goTab('treino',this)"><span>💪</span>Treino</button>
   <button class="tab" data-id="nutri" onclick="goTab('nutri',this)"><span>🥗</span>Nutri</button>
   <button class="tab" data-id="projetos" onclick="goTab('projetos',this)"><span>🏢</span>Projetos</button>
@@ -210,7 +210,7 @@ select.inp option{background:var(--s1)}
   <div id="fu-hoje"></div>
   <div class="week-nav"><button onclick="chgW(-1)">‹</button><div class="week-lbl" id="weekLbl">SEMANA 1</div><button onclick="chgW(1)">›</button></div>
   <div class="grp">💰 VENDAS & LEADS</div><div id="t-vendas"></div>
-  <div class="grp">📱 INSTAGRAM</div><div id="t-insta"></div>
+  <div class="grp">🤝 MÍDIA SOCIAL — PARCEIROS</div><div id="t-insta"></div>
   <div class="grp">💪 TREINO</div><div id="t-treino"></div>
   <div class="grp">🥗 ALIMENTAÇÃO</div><div id="t-nutri"></div>
 </div>
@@ -262,13 +262,54 @@ select.inp option{background:var(--s1)}
   <div id="leads-cal" style="display:none"></div>
   <div class="grp">✅ TAREFAS DE VENDAS</div><div id="all-vendas"></div>
 </div>
-<!-- INSTA -->
+<!-- MÍDIA SOCIAL -->
 <div class="page" id="page-insta">
-  <div class="card"><div class="card-title">📱 @<span id="igHandle">flavio.vitacon</span></div><div id="ig-metrics"></div></div>
-  <div class="grp">🎯 PILARES DE CONTEÚDO</div>
-  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">AUTORIDADE (40%)</div><div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Por que SP é a melhor cidade para investir em imóveis compactos?</div></div><div class="ci"><div class="ci-tag">📊 CARROSSEL</div><div class="ci-txt">Alugar vs Comprar em 2025 — os números reais</div></div><div class="ci"><div class="ci-tag">🎬 REEL</div><div class="ci-txt">Quanto rende um studio Vitacon alugado no Airbnb?</div></div></div>
-  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">LIFESTYLE (35%)</div><div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">🎬 REEL</div><div class="ci-txt">Um dia na vida de um corretor de alto padrão em SP</div></div><div class="ci" style="border-left-color:var(--blue)"><div class="ci-tag" style="color:var(--blue)">📸 FOTO</div><div class="ci-txt">Visita a obra + look profissional no canteiro Vitacon</div></div></div>
-  <div class="card"><div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">ENGAJAMENTO (25%)</div><div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">📊 ENQUETE</div><div class="ci-txt">Studio vs 2 quartos — você prefere morar sozinho?</div></div><div class="ci" style="border-left-color:var(--green)"><div class="ci-tag" style="color:var(--green)">💬 STORIES</div><div class="ci-txt">Quiz: Quanto vale esse imóvel?</div></div></div>
+  <!-- Painel diário de prospecção -->
+  <div style="background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid rgba(168,85,247,.3);border-left:3px solid var(--purple);border-radius:12px;padding:14px;margin-bottom:12px">
+    <div style="font-family:var(--d);font-size:16px;letter-spacing:1px;margin-bottom:6px">🤝 MISSÃO DIÁRIA</div>
+    <div style="font-size:12px;color:var(--txt2);line-height:1.7;margin-bottom:10px">Buscar influenciadores e parceiros que possam indicar investidores para studios Vitacon. Foco: creators de finanças, lifestyle SP, investimentos e imóveis.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <a href="https://www.instagram.com/explore/search/" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d);border-radius:9px;text-decoration:none;color:#fff">
+        <span style="font-size:18px">📸</span><div><div style="font-size:11px;font-weight:700">Instagram</div><div style="font-size:9px;opacity:.8">Buscar influenciadores</div></div>
+      </a>
+      <a href="https://www.facebook.com/search/top/?q=investimento+imóveis+SP" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px;background:linear-gradient(135deg,#1877f2,#166fe5);border-radius:9px;text-decoration:none;color:#fff">
+        <span style="font-size:18px">👥</span><div><div style="font-size:11px;font-weight:700">Facebook</div><div style="font-size:9px;opacity:.8">Grupos e perfis</div></div>
+      </a>
+      <a href="https://www.linkedin.com/search/results/people/?keywords=investimento%20imóveis%20São%20Paulo" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px;background:linear-gradient(135deg,#0077b5,#005885);border-radius:9px;text-decoration:none;color:#fff">
+        <span style="font-size:18px">💼</span><div><div style="font-size:11px;font-weight:700">LinkedIn</div><div style="font-size:9px;opacity:.8">Perfis profissionais</div></div>
+      </a>
+      <a href="https://www.google.com/search?q=influenciadores+investimento+imóveis+São+Paulo" target="_blank" style="display:flex;align-items:center;gap:8px;padding:10px;background:linear-gradient(135deg,#4285f4,#34a853);border-radius:9px;text-decoration:none;color:#fff">
+        <span style="font-size:18px">🔍</span><div><div style="font-size:11px;font-weight:700">Google</div><div style="font-size:9px;opacity:.8">Busca ampla</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- O que buscar -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">🎯 O QUE BUSCAR</div>
+    <div style="font-size:11px;color:var(--txt2);line-height:1.8">
+      <div style="padding:6px 0;border-bottom:1px solid var(--br)">📊 <strong>Finanças e investimentos</strong> — creators que falam sobre renda passiva, FIIs, carteira de investimentos</div>
+      <div style="padding:6px 0;border-bottom:1px solid var(--br)">🏙️ <strong>Lifestyle SP</strong> — perfis sobre vida em São Paulo, gastronomia, entretenimento, alto padrão</div>
+      <div style="padding:6px 0;border-bottom:1px solid var(--br)">🏢 <strong>Imóveis e arquitetura</strong> — decoradores, arquitetos, home staging com audiência investidora</div>
+      <div style="padding:6px 0">💼 <strong>Empreendedorismo</strong> — coaches, empresários, consultores com perfil de investidor</div>
+    </div>
+  </div>
+
+  <!-- Script de abordagem -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">💬 SCRIPT DE ABORDAGEM</div>
+    <div style="background:var(--s3);border-radius:9px;padding:12px;font-size:11px;color:var(--txt2);line-height:1.8;margin-bottom:8px">
+      "Olá [Nome]! Sou o Flávio, corretor especializado em studios para investimento em SP. Acompanho seu conteúdo e acredito que temos muita sinergia — meus clientes são exatamente o perfil que acompanha você. Posso apresentar uma oportunidade de parceria? Tenho comissão de indicação e material pronto."
+    </div>
+    <button onclick="copiarScript()" style="width:100%;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--purple);border-radius:8px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Copiar script</button>
+  </div>
+
+  <!-- Registro de contatos -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="grp" style="margin:0">📋 PARCEIROS CONTATADOS</div>
+    <button onclick="addParceiro()" style="background:var(--purple);color:#fff;border:none;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Adicionar</button>
+  </div>
+  <div id="parceiros-list"></div>
 </div>
 <!-- TREINO -->
 <div class="page" id="page-treino">
@@ -306,13 +347,13 @@ select.inp option{background:var(--s1)}
 <!-- CONFIG -->
 <div class="page" id="page-config">
   <div class="card"><div class="card-title">🎯 METAS</div><div class="field"><label class="inp-lbl">Meta comissão (R$)</label><input class="inp" type="number" id="cMetaComm" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta vendas (unidades)</label><input class="inp" type="number" id="cMetaV" oninput="saveCfg()"></div></div>
-  <div class="card"><div class="card-title">📱 INSTAGRAM</div><div class="field"><label class="inp-lbl">Handle (@)</label><input class="inp" type="text" id="cHandle" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Seguidores atuais</label><input class="inp" type="number" id="cFollowers" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Reels publicados</label><input class="inp" type="number" id="cReels" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Posts no feed</label><input class="inp" type="number" id="cPosts" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Leads via Instagram</label><input class="inp" type="number" id="cIgLeads" oninput="saveCfg()"></div></div>
+  <div class="card"><div class="card-title">🤝 MÍDIA SOCIAL</div><div class="field"><label class="inp-lbl">Handle (@)</label><input class="inp" type="text" id="cHandle" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Seguidores atuais</label><input class="inp" type="number" id="cFollowers" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Reels publicados</label><input class="inp" type="number" id="cReels" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Posts no feed</label><input class="inp" type="number" id="cPosts" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Leads via Instagram</label><input class="inp" type="number" id="cIgLeads" oninput="saveCfg()"></div></div>
   <div class="card"><div class="card-title">💪 FÍSICO & NUTRIÇÃO</div><div class="field"><label class="inp-lbl">Treinos feitos</label><input class="inp" type="number" id="cTreinos" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Corridas feitas</label><input class="inp" type="number" id="cCorridas" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta kcal/dia</label><input class="inp" type="number" id="cKcal" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta proteína/dia (g)</label><input class="inp" type="number" id="cProt" oninput="saveCfg()"></div><div class="field"><label class="inp-lbl">Meta carbs/dia (g)</label><input class="inp" type="number" id="cCarbs" oninput="saveCfg()"></div></div>
   <div class="card"><div class="card-title">✏️ MENSAGENS PRONTAS</div><div id="tpl-editor"></div><button class="btn-add" onclick="addTpl()">+ Adicionar mensagem</button></div>
   <div class="card">
     <div class="card-title">✅ TAREFAS DIÁRIAS</div>
     <div class="sec-tabs" id="week-tabs"></div>
-    <div class="sec-tabs" id="sec-tabs-cfg"><button class="sec-tab active" onclick="selSec('vendas',this)">💰 Vendas</button><button class="sec-tab" onclick="selSec('insta',this)">📱 Insta</button><button class="sec-tab" onclick="selSec('treino',this)">💪 Treino</button><button class="sec-tab" onclick="selSec('nutri',this)">🥗 Nutri</button></div>
+    <div class="sec-tabs" id="sec-tabs-cfg"><button class="sec-tab active" onclick="selSec('vendas',this)">💰 Vendas</button><button class="sec-tab" onclick="selSec('insta',this)">🤝 Mídia</button><button class="sec-tab" onclick="selSec('treino',this)">💪 Treino</button><button class="sec-tab" onclick="selSec('nutri',this)">🥗 Nutri</button></div>
     <div id="task-editor"></div>
     <button class="btn-add" onclick="addTaskCfg()">+ Adicionar tarefa</button>
   </div>
@@ -791,11 +832,11 @@ const DWO=[{id:1,name:"SEGUNDA — FULL BODY A",type:"MUSCULAÇÃO",exs:[["Agach
 const DML=[{id:1,icon:"☀️",name:"CAFÉ DA MANHÃ",kcal:"~620 kcal",items:[["Ovos mexidos (3)","21g prot"],["Aveia com banana","45g carbs"],["Café preto","foco"]]},{id:2,icon:"🥤",name:"PRÉ-TREINO",kcal:"~380 kcal",items:[["Whey (30g)","24g prot"],["Batata doce (150g)","30g carbs"],["Creatina (5g)","performance"]]},{id:3,icon:"🍗",name:"ALMOÇO",kcal:"~780 kcal",items:[["Frango grelhado (200g)","46g prot"],["Arroz integral (150g)","40g carbs"],["Feijão (100g)","8g prot"],["Salada + azeite","gordura boa"]]},{id:4,icon:"🥛",name:"PÓS-TREINO",kcal:"~420 kcal",items:[["Whey (30g)","24g prot"],["Banana + mel","35g carbs"]]},{id:5,icon:"🌙",name:"JANTAR",kcal:"~600 kcal",items:[["Salmão/Atum (200g)","40g prot"],["Batata doce/quinoa","30g carbs"],["Brócolis refogado","fibras"]]}];
 const DFAVS=[{id:1,name:"Vitacon",url:"https://vitacon.com.br",icon:"🏢"},{id:2,name:"Instagram",url:"https://instagram.com",icon:"📱"},{id:3,name:"WhatsApp Web",url:"https://web.whatsapp.com",icon:"💬"},{id:4,name:"ZAP Imóveis",url:"https://zapimoveis.com.br",icon:"🔍"},{id:5,name:"Claude IA",url:"https://claude.ai",icon:"🤖"}];
 const DWKS=[
-  {label:"SEMANA 1 — DIAS 1-7",vendas:[{t:"Listar leads ativos com status",s:"CRM — mapeamento inicial",tag:"📋 CRM"},{t:"Mensagem personalizada para 5 leads",s:"WhatsApp + email com proposta",tag:"📱 Contato"},{t:"Montar apresentação padrão Vitacon",s:"Studio, One e Private",tag:"📊 Apresentação"},{t:"Agendar 2 reuniões com leads quentes",s:"Presencial ou vídeo",tag:"📅 Reunião"}],insta:[{t:"Otimizar bio com CTA claro",s:"Corretor Vitacon SP | Invista no futuro",tag:"✍️ Perfil"},{t:"Reel: Por que investir em imóveis em SP",s:"30s, CTA + hashtags",tag:"🎬 Reel"},{t:"Foto profissional no feed",s:"Sua missão como corretor",tag:"📸 Feed"},{t:"10 stories: bastidores do dia",s:"Obra, reunião, café",tag:"📲 Stories"}],treino:[{t:"Full Body A — Segunda",s:"Agachamento, Supino, Remada",tag:"💪 Musculação"},{t:"Corrida 20 min — Terça",s:"Ritmo leve",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Leg Press, Puxada",tag:"💪 Musculação"},{t:"Corrida 25 min — Sábado",s:"Progressão semanal",tag:"🏃 Cardio"}],nutri:[{t:"Meal prep da semana",s:"Frango, batata doce, arroz",tag:"🍗 Prep"},{t:"Comprar Whey + Creatina",s:"Suplementação base",tag:"💊 Suplemento"},{t:"3L de água por dia",s:"3 refis diários",tag:"💧 Água"}]},
-  {label:"SEMANA 2 — DIAS 8-14",vendas:[{t:"Follow-up com todos os leads",s:"Ligação + conteúdo útil",tag:"📞 Follow-up"},{t:"Realizar 2 reuniões agendadas",s:"Apresentar proposta",tag:"🤝 Reunião"},{t:"Proposta formal em PDF",s:"Simulação de rendimento",tag:"📄 Proposta"},{t:"Prospectar 3 novos leads",s:"DMs + stories com CTA",tag:"🔍 Prospecção"}],insta:[{t:"Reel: Um dia na vida corretor",s:"Bastidores reais",tag:"🎬 Reel"},{t:"Carrossel: Vitacon vs concorrentes",s:"5 slides + CTA",tag:"📊 Carrossel"},{t:"Reel: Studio no Airbnb rende quanto?",s:"Números reais",tag:"🎬 Reel"},{t:"15 stories com votações",s:"Engajamento ativa algoritmo",tag:"📲 Stories"}],treino:[{t:"Full Body A +5% carga",s:"Overload progressivo",tag:"💪 Progressão"},{t:"Corrida 25 min",s:"+5 min vs semana anterior",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Foco em execução",tag:"💪 Técnica"},{t:"Corrida 30 min — Sábado",s:"Zona aeróbica",tag:"🏃 Cardio"}],nutri:[{t:"Variar: salmão 2x",s:"Substituir frango",tag:"🍗 Variação"},{t:"Registrar peso e medidas",s:"Foto de progresso",tag:"📏 Medição"},{t:"Água 3,5L/dia",s:"+500ml vs semana",tag:"💧 Água"}]},
-  {label:"SEMANAS 3-4 — INTENSIDADE",vendas:[{t:"1ª venda até dia 28",s:"Foco nos leads quentes",tag:"🏆 Meta"},{t:"Script de fechamento",s:"Objeções + respostas",tag:"📝 Script"},{t:"LinkedIn + indicações",s:"5 novos contatos/semana",tag:"🔍 Prospecção"},{t:"Kit digital",s:"Vídeo + proposta link",tag:"📱 Digital"}],insta:[{t:"3 Reels por semana",s:"Produção em lote",tag:"🎬 Volume"},{t:"Live: dúvidas investimento",s:"30 min — gera leads",tag:"📡 Live"},{t:"Responder 100% DMs",s:"Algoritmo ama engajamento",tag:"💬 Engajamento"},{t:"Marcar @vitaconoficial",s:"Chance de repost",tag:"🤝 Collab"}],treino:[{t:"75-80% da carga",s:"Descanso 60 segundos",tag:"💪 Intensidade"},{t:"35 min com tiros",s:"1 min rápido + 2 leve",tag:"🏃 Intervalado"},{t:"4 dias sem faltar",s:"Consistência",tag:"✅ Consistência"}],nutri:[{t:"Ajustar calorias",s:"+200 kcal se ganho lento",tag:"📊 Ajuste"},{t:"Legumes variados",s:"Micronutrientes = recuperação",tag:"🥦 Micro"}]},
-  {label:"SEMANAS 5-6 — FORÇA",vendas:[{t:"3 vendas até dia 42",s:"Comissão ~R$35k",tag:"🏆 Meta"},{t:"Indicações com bônus",s:"Cliente = novo lead",tag:"🎁 Indicação"},{t:"2 apresentações presenciais",s:"Showroom Vitacon",tag:"🏢 Presencial"}],insta:[{t:"Dobrar aposta nos Reels top",s:"Repetir formato viral",tag:"📊 Analytics"},{t:"Depoimento de cliente",s:"Prova social",tag:"⭐ Social"},{t:"Reel storytelling pessoal",s:"Alto engajamento",tag:"🎬 Story"}],treino:[{t:"85-90% da carga",s:"4-6 reps base",tag:"💪 Força"},{t:"Corridas 40-45 min",s:"Aeróbico + anaeróbico",tag:"🏃 Resistência"}],nutri:[{t:"Proteína >175g/dia",s:"Recuperação muscular",tag:"🥩 Proteína"},{t:"Carb up pós treino pesado",s:"Carboidratos extras",tag:"⚡ Carb Up"}]},
-  {label:"SEMANAS 7-8 — SPRINT FINAL",vendas:[{t:"META: 6 vendas + R$70k",s:"Sprint final",tag:"🏆 META"},{t:"Ligar para todos leads",s:"Urgência: últimas unidades",tag:"⚡ Urgência"},{t:"Relatório 60 dias",s:"Base para próximo ciclo",tag:"📊 Relatório"}],insta:[{t:"Meta 2.000-5.000 seguidores",s:"Análise final",tag:"📈 Meta"},{t:"Reel: 60 dias de transformação",s:"Resultado + bastidores",tag:"🎬 Final"},{t:"Criar destaques no perfil",s:"Imóveis, resultados, eu",tag:"📁 Highlights"}],treino:[{t:"Semana 7: carga máxima",s:"Testar limite",tag:"💪 Peak"},{t:"Semana 8: deload 60%",s:"Recuperação",tag:"♻️ Deload"},{t:"Foto de progresso final",s:"Comparar com dia 1",tag:"📸 Progresso"}],nutri:[{t:"Manter padrão",s:"Consistência = resultado",tag:"✅ Manter"},{t:"Refeição livre semana 8",s:"Recompensa merecida",tag:"🎉 Recompensa"}]},
+  {label:"SEMANA 1 — DIAS 1-7",vendas:[{t:"Listar leads ativos com status",s:"CRM — mapeamento inicial",tag:"📋 CRM"},{t:"Mensagem personalizada para 5 leads",s:"WhatsApp + email com proposta",tag:"📱 Contato"},{t:"Montar apresentação padrão Vitacon",s:"Studio, One e Private",tag:"📊 Apresentação"},{t:"Agendar 2 reuniões com leads quentes",s:"Presencial ou vídeo",tag:"📅 Reunião"}],insta:[{t:"Buscar 5 influenciadores no Instagram",s:"Finanças, lifestyle SP, imóveis",tag:"📸 Insta"},{t:"Buscar 3 perfis no Facebook",s:"Grupos de investimento SP",tag:"👥 Facebook"},{t:"Anotar melhores perfis encontrados",s:"Nome, nicho, seguidores",tag:"📋 Registro"}],treino:[{t:"Full Body A — Segunda",s:"Agachamento, Supino, Remada",tag:"💪 Musculação"},{t:"Corrida 20 min — Terça",s:"Ritmo leve",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Leg Press, Puxada",tag:"💪 Musculação"},{t:"Corrida 25 min — Sábado",s:"Progressão semanal",tag:"🏃 Cardio"}],nutri:[{t:"Meal prep da semana",s:"Frango, batata doce, arroz",tag:"🍗 Prep"},{t:"Comprar Whey + Creatina",s:"Suplementação base",tag:"💊 Suplemento"},{t:"3L de água por dia",s:"3 refis diários",tag:"💧 Água"}]},
+  {label:"SEMANA 2 — DIAS 8-14",vendas:[{t:"Follow-up com todos os leads",s:"Ligação + conteúdo útil",tag:"📞 Follow-up"},{t:"Realizar 2 reuniões agendadas",s:"Apresentar proposta",tag:"🤝 Reunião"},{t:"Proposta formal em PDF",s:"Simulação de rendimento",tag:"📄 Proposta"},{t:"Prospectar 3 novos leads",s:"DMs + stories com CTA",tag:"🔍 Prospecção"}],insta:[{t:"Buscar 5 perfis no LinkedIn",s:"Coaches, empresários, consultores SP",tag:"💼 LinkedIn"},{t:"Enviar 3 abordagens de parceria",s:"Script personalizado por nicho",tag:"💬 Abordagem"},{t:"Follow-up nos contatos anteriores",s:"Verificar respostas",tag:"🔄 Follow-up"}],treino:[{t:"Full Body A +5% carga",s:"Overload progressivo",tag:"💪 Progressão"},{t:"Corrida 25 min",s:"+5 min vs semana anterior",tag:"🏃 Cardio"},{t:"Full Body B — Quinta",s:"Foco em execução",tag:"💪 Técnica"},{t:"Corrida 30 min — Sábado",s:"Zona aeróbica",tag:"🏃 Cardio"}],nutri:[{t:"Variar: salmão 2x",s:"Substituir frango",tag:"🍗 Variação"},{t:"Registrar peso e medidas",s:"Foto de progresso",tag:"📏 Medição"},{t:"Água 3,5L/dia",s:"+500ml vs semana",tag:"💧 Água"}]},
+  {label:"SEMANAS 3-4 — INTENSIDADE",vendas:[{t:"1ª venda até dia 28",s:"Foco nos leads quentes",tag:"🏆 Meta"},{t:"Script de fechamento",s:"Objeções + respostas",tag:"📝 Script"},{t:"LinkedIn + indicações",s:"5 novos contatos/semana",tag:"🔍 Prospecção"},{t:"Kit digital",s:"Vídeo + proposta link",tag:"📱 Digital"}],insta:[{t:"Google: criadores de conteúdo SP",s:"Renda passiva, FIIs, imóveis",tag:"🔍 Google"},{t:"YouTube: canais de finanças SP",s:"Buscar criadores com perfil investidor",tag:"▶️ YouTube"},{t:"10 novos contatos acumulados",s:"Meta de prospecção",tag:"🏆 Meta"}],treino:[{t:"75-80% da carga",s:"Descanso 60 segundos",tag:"💪 Intensidade"},{t:"35 min com tiros",s:"1 min rápido + 2 leve",tag:"🏃 Intervalado"},{t:"4 dias sem faltar",s:"Consistência",tag:"✅ Consistência"}],nutri:[{t:"Ajustar calorias",s:"+200 kcal se ganho lento",tag:"📊 Ajuste"},{t:"Legumes variados",s:"Micronutrientes = recuperação",tag:"🥦 Micro"}]},
+  {label:"SEMANAS 5-6 — FORÇA",vendas:[{t:"3 vendas até dia 42",s:"Comissão ~R$35k",tag:"🏆 Meta"},{t:"Indicações com bônus",s:"Cliente = novo lead",tag:"🎁 Indicação"},{t:"2 apresentações presenciais",s:"Showroom Vitacon",tag:"🏢 Presencial"}],insta:[{t:"Follow-up com todos sem resposta",s:"Segunda tentativa com outro ângulo",tag:"🔄 Follow-up"},{t:"Converter 1 parceiro confirmado",s:"Proposta formal de comissão",tag:"🤝 Parceria"},{t:"20 contatos acumulados",s:"Meta da terceira semana",tag:"🏆 Meta"}],treino:[{t:"85-90% da carga",s:"4-6 reps base",tag:"💪 Força"},{t:"Corridas 40-45 min",s:"Aeróbico + anaeróbico",tag:"🏃 Resistência"}],nutri:[{t:"Proteína >175g/dia",s:"Recuperação muscular",tag:"🥩 Proteína"},{t:"Carb up pós treino pesado",s:"Carboidratos extras",tag:"⚡ Carb Up"}]},
+  {label:"SEMANAS 7-8 — SPRINT FINAL",vendas:[{t:"META: 6 vendas + R$70k",s:"Sprint final",tag:"🏆 META"},{t:"Ligar para todos leads",s:"Urgência: últimas unidades",tag:"⚡ Urgência"},{t:"Relatório 60 dias",s:"Base para próximo ciclo",tag:"📊 Relatório"}],insta:[{t:"30 contatos total em 60 dias",s:"Meta final de prospecção",tag:"🏆 Meta"},{t:"Fechar 2 parcerias ativas",s:"Com material e comissão definida",tag:"✅ Fechamento"},{t:"Avaliar resultados e parceiros",s:"Quem trouxe leads? Quem não engajou?",tag:"📊 Análise"}],treino:[{t:"Semana 7: carga máxima",s:"Testar limite",tag:"💪 Peak"},{t:"Semana 8: deload 60%",s:"Recuperação",tag:"♻️ Deload"},{t:"Foto de progresso final",s:"Comparar com dia 1",tag:"📸 Progresso"}],nutri:[{t:"Manter padrão",s:"Consistência = resultado",tag:"✅ Manter"},{t:"Refeição livre semana 8",s:"Recompensa merecida",tag:"🎉 Recompensa"}]},
 ];
 const DC={metaComm:70000,metaV:6,handle:'flavio.vitacon',followers:0,reels:0,posts:0,igLeads:0,treinos:0,corridas:0,kcal:2800,prot:180,carbs:300};
 
@@ -2088,16 +2129,92 @@ function selectApres(ai){
   // Scroll to preview
   document.getElementById('apres-prev').scrollIntoView({behavior:'smooth'});
 }
-// ════ PAINEL DO DIA ════
+// ════ PARCEIROS / MÍDIA SOCIAL ════
+let parceiros=lg('parceiros',[]);
+
+function renderParceiros(){
+  const el=document.getElementById('parceiros-list');if(!el)return;
+  if(!parceiros.length){
+    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px;background:var(--s2);border-radius:10px">Nenhum parceiro registrado ainda.<br>Toque em + Adicionar para começar.</div>`;
+    return;
+  }
+  const statusC={Contatado:'var(--yellow)',Respondeu:'var(--blue)',Parceiro:'var(--green)',Descartado:'var(--txt3)'};
+  el.innerHTML=parceiros.map((p,i)=>`
+    <div style="background:var(--s2);border:1px solid var(--br);border-radius:11px;padding:12px;margin-bottom:8px;border-left:3px solid ${statusC[p.status]||'var(--purple)'}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${p.nome}</div>
+          <div style="font-size:10px;color:var(--txt3);margin-top:2px">${p.rede} · ${p.nicho||''}${p.seguidores?' · '+p.seguidores+' seguidores':''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:9px;font-weight:700;color:${statusC[p.status]||'var(--purple)'};background:rgba(168,85,247,.1);padding:2px 7px;border-radius:5px">${p.status||'Contatado'}</span>
+          <button onclick="editParceiro(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">✏️</button>
+          <button onclick="delParceiro(${i})" style="background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:14px">🗑️</button>
+        </div>
+      </div>
+      ${p.perfil?`<a href="${p.perfil}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none">🔗 Ver perfil</a>`:''}
+      ${p.obs?`<div style="font-size:11px;color:var(--txt2);margin-top:6px;padding:6px 8px;background:var(--s3);border-radius:6px">${p.obs}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        ${p.wa?`<a href="https://wa.me/55${p.wa}" target="_blank" style="flex:1;background:var(--wa);color:#fff;border-radius:7px;padding:6px;text-align:center;text-decoration:none;font-size:11px;font-weight:700">📲 WhatsApp</a>`:''}
+        <button onclick="copiarScriptPara('${p.nome.split(' ')[0]}')" style="flex:1;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--purple);border-radius:7px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Script</button>
+      </div>
+    </div>`).join('');
+}
+
+function addParceiro(){
+  const nome=prompt('Nome / @ do parceiro:');if(!nome)return;
+  const rede=prompt('Rede social (Instagram, LinkedIn, Facebook, Google):') ||'Instagram';
+  const nicho=prompt('Nicho (ex: finanças, lifestyle SP, imóveis):') ||'';
+  const seguidores=prompt('Seguidores (ex: 10k, 50k):') ||'';
+  const perfil=prompt('Link do perfil (opcional):') ||'';
+  const obs=prompt('Observações (opcional):') ||'';
+  parceiros.push({nome,rede,nicho,seguidores,perfil,obs,wa:'',status:'Contatado',data:td()});
+  ls('parceiros',parceiros);
+  renderParceiros();
+  toast('✅ Parceiro adicionado!');
+}
+
+function editParceiro(i){
+  const p=parceiros[i];
+  const status=prompt('Status (Contatado / Respondeu / Parceiro / Descartado):',p.status||'Contatado');
+  if(status)p.status=status;
+  const obs=prompt('Observações:',p.obs||'');
+  p.obs=obs||'';
+  const wa=prompt('WhatsApp (só números, sem +55):',p.wa||'');
+  p.wa=wa||'';
+  ls('parceiros',parceiros);
+  renderParceiros();
+  toast('✅ Atualizado!');
+}
+
+function delParceiro(i){
+  if(!confirm('Remover parceiro?'))return;
+  parceiros.splice(i,1);
+  ls('parceiros',parceiros);
+  renderParceiros();
+  toast('🗑️ Removido!');
+}
+
+function copiarScript(){
+  const txt='Olá [Nome]! Sou o Flávio, corretor especializado em studios para investimento em SP. Acompanho seu conteúdo e acredito que temos muita sinergia — meus clientes são exatamente o perfil que acompanha você. Posso apresentar uma oportunidade de parceria? Tenho comissão de indicação e material pronto.';
+  navigator.clipboard.writeText(txt).then(()=>toast('✅ Script copiado!')).catch(()=>toast('✅ Copiado!'));
+}
+
+function copiarScriptPara(nome){
+  const txt=`Olá ${nome}! Sou o Flávio, corretor especializado em studios para investimento em SP. Acompanho seu conteúdo e acredito que temos muita sinergia — meus clientes são exatamente o perfil que acompanha você. Posso apresentar uma oportunidade de parceria? Tenho comissão de indicação e material pronto.`;
+  navigator.clipboard.writeText(txt).then(()=>toast('✅ Script copiado para '+nome+'!')).catch(()=>toast('✅ Copiado!'));
+}
+
+
 const DIAS_SEMANA=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
 const TEMA_DIA={
-  0:{tema:'Inspiração',icon:'💡',foco:'Revisar semana e se preparar',leitura:'Podcast, livro ou conteúdo motivacional',cor:'var(--purple)'},
-  1:{tema:'Mercado & Cenário',icon:'📊',foco:'Juros, economia, notícias',leitura:'InfoMoney · Valor Econômico · Exame',cor:'var(--blue)'},
-  2:{tema:'Investimento',icon:'💰',foco:'Rentabilidade, comparações, dados',leitura:'Me Poupe! · Suno Research',cor:'var(--green)'},
-  3:{tema:'Produto Vitacon',icon:'🏢',foco:'Diferenciais, localização, público',leitura:'Material Vitacon · Book dos projetos',cor:'var(--acc)'},
-  4:{tema:'Objeções',icon:'🛡️',foco:'"Tá caro" · "Vou pensar" · "Não é o momento"',leitura:'Banco de argumentos do app',cor:'var(--yellow)'},
-  5:{tema:'Conteúdo',icon:'📱',foco:'Criar posts, stories, vídeos',leitura:'Pilares: Autoridade · Lifestyle · Engajamento',cor:'var(--purple)'},
-  6:{tema:'Revisão Leve',icon:'🔄',foco:'Rever conteúdos da semana, ajustar discurso',leitura:'Anotações da semana',cor:'var(--txt2)'},
+  0:{tema:'Revisão & Planejamento',icon:'📋',foco:'Revisar parceiros da semana e planejar abordagens',leitura:'Lista de parceiros · anotações da semana',cor:'var(--purple)'},
+  1:{tema:'Instagram & Facebook',icon:'📸',foco:'Buscar influenciadores de finanças e lifestyle SP',leitura:'Instagram Explore · Facebook grupos de investimento',cor:'#e1306c'},
+  2:{tema:'LinkedIn',icon:'💼',foco:'Prospectar perfis profissionais — coaches, empresários, consultores',leitura:'LinkedIn busca: investimento imóveis São Paulo',cor:'#0077b5'},
+  3:{tema:'Google & YouTube',icon:'🔍',foco:'Buscar criadores de conteúdo sobre renda passiva e imóveis',leitura:'Google · YouTube creators de finanças SP',cor:'var(--blue)'},
+  4:{tema:'Follow-up Parceiros',icon:'🤝',foco:'Retomar contato com parceiros que ainda não responderam',leitura:'Lista de parceiros · status de cada um',cor:'var(--green)'},
+  5:{tema:'Abordagem & Fechamento',icon:'💬',foco:'Enviar proposta formal de parceria para os mais promissores',leitura:'Script de parceria · material Vitacon',cor:'var(--yellow)'},
+  6:{tema:'Análise & Descanso',icon:'📊',foco:'Contar contatos feitos na semana e ajustar estratégia',leitura:'Lista de parceiros · métricas da semana',cor:'var(--txt2)'},
 };
 function renderPainelDia(){
   const el=document.getElementById('painel-dia');if(!el)return;
@@ -2761,11 +2878,20 @@ function processarQRData(raw){
   }
 }
 
-function renderAll(){renderPainelDia();renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
+function renderAll(){renderPainelDia();renderParceiros();renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
 scheduleAlarms();
 pedirPermissaoNotif();
 checkBackupReminder();
+// Academia 10h — agendar para hoje se não existir
+(function(){
+  const t=td();
+  const jaExiste=appts.some(a=>a.date===t&&a.title==='🏋️ Academia');
+  if(!jaExiste){
+    appts.push({id:Date.now(),title:'🏋️ Academia',date:t,time:'10:00',local:'Academia',notes:'Treino diário'});
+    ls('appts',appts);
+  }
+})();
 setTimeout(()=>{const t=td(),due=leads.filter(l=>l.fu&&l.fu<=t&&l.stage!=='won');if(due.length)showNotif('📱',`Follow-up ${due[0].fu<t?'ATRASADO!':'hoje!'}`,due[0].name)},800);
 </script>
 </body>
