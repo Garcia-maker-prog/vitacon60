@@ -327,10 +327,49 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">Produto</label><input class="inp" id="lf-product" placeholder="Ex: Vitacon Studio 32m²"></div>
   <div class="field"><label class="inp-lbl">Valor (R$)</label><input class="inp" type="number" id="lf-valor" placeholder="450000" oninput="updComm()"></div>
   <div class="field"><label class="inp-lbl">Comissão (%)</label><input class="inp" type="number" step="0.1" id="lf-pct" placeholder="1.8" oninput="updComm()"><div id="comm-hint" style="font-size:11px;color:var(--green);margin-top:4px;min-height:16px"></div></div>
-  <div class="field"><label class="inp-lbl">Status</label><input class="inp" id="lf-status" placeholder="Ex: Apresentação enviada"></div>
+  <div class="field"><label class="inp-lbl">📍 Etapa</label>
+    <select class="inp" id="lf-status" onchange="document.getElementById('lf-motivo-wrap').style.display=this.value==='Perdido'?'block':'none'">
+      <option value="Primeiro Contato">📞 Primeiro Contato</option>
+      <option value="Qualificado">✅ Qualificado — respondeu e tem interesse</option>
+      <option value="Apresentação Enviada">📄 Apresentação Enviada</option>
+      <option value="Proposta">💰 Proposta — em análise</option>
+      <option value="Negociação">🤝 Negociação — próximo de fechar</option>
+      <option value="Sem Resposta">🔕 Sem Resposta — tentativas sem retorno</option>
+      <option value="Perdido">❌ Perdido</option>
+    </select>
+  </div>
+  <div class="field" id="lf-motivo-wrap" style="display:none"><label class="inp-lbl">Motivo da perda</label>
+    <select class="inp" id="lf-motivo">
+      <option value="">Selecione...</option>
+      <option value="Preço alto">💸 Preço alto</option>
+      <option value="Não é o momento">⏰ Não é o momento</option>
+      <option value="Escolheu concorrente">🏢 Escolheu concorrente</option>
+      <option value="Sem resposta">🔕 Sem resposta — desistiu</option>
+      <option value="Perfil não compatível">❌ Perfil não compatível</option>
+      <option value="Financiamento negado">🏦 Financiamento negado</option>
+      <option value="Outro">📝 Outro</option>
+    </select>
+  </div>
+  <div class="field"><label class="inp-lbl">🎯 Interesse principal</label>
+    <select class="inp" id="lf-interesse">
+      <option value="">Não definido</option>
+      <option value="Renda">💰 Renda — aluguel e rentabilidade</option>
+      <option value="Valorização">📈 Valorização — ganho de capital</option>
+      <option value="Moradia">🏠 Moradia — para morar</option>
+      <option value="Short Stay">🛎️ Short Stay — Airbnb</option>
+      <option value="Diversificação">📊 Diversificação de carteira</option>
+    </select>
+  </div>
   <div class="field"><label class="inp-lbl">WhatsApp (DDD+número)</label><input class="inp" type="tel" id="lf-wa" placeholder="11999998888"></div>
-  <div class="field"><label class="inp-lbl">Temperatura</label><select class="inp" id="lf-stage"><option value="hot">🔥 Quente</option><option value="warm">🌡️ Morno</option><option value="cold">❄️ Frio</option><option value="won">✅ Fechado — VENDA REALIZADA</option></select></div>
-  <div class="g2" style="gap:10px;margin-bottom:12px"><div><label class="inp-lbl">Avatar</label><input class="inp" id="lf-avatar" placeholder="A" maxlength="4"></div><div><label class="inp-lbl" id="lf-fu-lbl" style="color:var(--acc)">📅 Follow-up <span style="color:var(--red)">*</span></label><div style="display:flex;gap:6px"><input class="inp" type="date" id="lf-fu" style="flex:1;border-color:var(--acc)" oninput="document.getElementById('lf-fu').style.borderColor=this.value?'var(--br)':'var(--acc)'"><input class="inp" type="time" id="lf-fu-time" style="width:90px;flex-shrink:0"></div></div></div>
+  <div class="field"><label class="inp-lbl">Temperatura</label>
+    <select class="inp" id="lf-stage">
+      <option value="hot">🔥 Quente</option>
+      <option value="warm">🌡️ Morno</option>
+      <option value="cold">❄️ Frio</option>
+      <option value="won">✅ Fechado — VENDA REALIZADA</option>
+    </select>
+  </div>
+  <div class="field"><label class="inp-lbl" style="color:var(--acc)">📅 Follow-up <span style="color:var(--red)">*</span></label><div style="display:flex;gap:6px"><input class="inp" type="date" id="lf-fu" style="flex:1;border-color:var(--acc)" oninput="this.style.borderColor=this.value?'var(--br)':'var(--acc)'"><input class="inp" type="time" id="lf-fu-time" style="width:90px;flex-shrink:0"></div></div>
   <div class="field"><label class="inp-lbl">📝 Histórico / Notas</label><textarea class="inp" id="lf-hist" placeholder="Cole a conversa do WhatsApp, objeções, interesses..." style="min-height:100px"></textarea></div>
 
   <!-- Campo mensagem preparada pela IA -->
@@ -775,9 +814,40 @@ const GR=[["#ff6b2b","#f59e0b"],["#3b82f6","#06b6d4"],["#22c55e","#06b6d4"],["#a
 const gbg=i=>`linear-gradient(135deg,${GR[i%GR.length][0]},${GR[i%GR.length][1]})`;
 const SS={hot:{bg:"rgba(255,107,43,.15)",c:"#ff6b2b",l:"🔥 QUENTE"},warm:{bg:"rgba(245,158,11,.12)",c:"#f59e0b",l:"🌡️ MORNO"},cold:{bg:"rgba(59,130,246,.1)",c:"#3b82f6",l:"❄️ FRIO"},won:{bg:"rgba(34,197,94,.12)",c:"#22c55e",l:"✅ FECHADO"}};
 
-function scr(l){if(l.stage==='won')return 100;let s=l.stage==='hot'?40:l.stage==='warm'?20:5;if(l.valor&&Number(l.valor)>0)s+=15;if(l.wa)s+=10;if(l.hist&&l.hist.length>30)s+=15;if(l.fu){s+=l.fu>=td()?20:-10}if(l.status&&l.status.length>5)s+=10;return Math.min(99,Math.max(5,s))}
+function scr(l){
+  if(l.stage==='won')return 100;
+  let s=l.stage==='hot'?40:l.stage==='warm'?20:5;
+  if(l.valor&&Number(l.valor)>0)s+=10;
+  if(l.wa)s+=10;
+  if(l.hist&&l.hist.length>50)s+=10;
+  if(l.fu){s+=l.fu>=td()?15:-15}
+  const etapaBonus={Qualificado:10,'Apresentação Enviada':15,Proposta:20,Negociação:25,'Primeiro Contato':0,'Sem Resposta':-10,Perdido:-30};
+  s+=(etapaBonus[l.status]||0);
+  const tent=l.tentativas||0;
+  if(tent>=5)s-=15;else if(tent>=3)s-=5;
+  if(l.interesse)s+=5;
+  return Math.min(99,Math.max(1,s));
+}
 function scc(s){return s>=70?'var(--green)':s>=40?'var(--yellow)':'var(--acc)'}
-function nxt(l){if(l.stage==='won')return'🏆 Venda fechada! Peça indicação.';if(l.stage==='hot'){if(!l.fu)return'📅 Agende follow-up para hoje ou amanhã';const t=td();if(l.fu<t)return'🔴 Follow-up atrasado! Ligue agora.';if(l.fu===t)return'🟡 Follow-up hoje — entre em contato!';return'✅ Follow-up agendado. Prepare proposta.'}if(l.stage==='warm')return'📄 Envie proposta formal com simulação de rendimento';return'💬 Use mensagem de reaquecimento'}
+function nxt(l){
+  if(l.stage==='won')return'🏆 Venda fechada! Peça indicação.';
+  const etapa=l.status||'',tent=l.tentativas||0;
+  if(etapa==='Perdido')return'❌ Lead perdido — motivo: '+(l.motivo||'não registrado');
+  if(etapa==='Sem Resposta'&&tent>=5)return'⚠️ '+tent+' tentativas sem resposta. Considere arquivar ou mudar abordagem';
+  if(etapa==='Negociação')return'🤝 Em negociação — acompanhe e proponha fechamento';
+  if(etapa==='Proposta')return'💰 Proposta enviada — tire dúvidas e crie urgência';
+  if(etapa==='Apresentação Enviada')return'📄 Apresentação enviada — faça follow-up para feedback';
+  if(etapa==='Qualificado')return'✅ Qualificado — envie apresentação personalizada';
+  if(l.stage==='hot'){
+    if(!l.fu)return'📅 Agende follow-up para hoje ou amanhã';
+    const t=td();
+    if(l.fu<t)return'🔴 Follow-up atrasado! Ligue agora.';
+    if(l.fu===t)return'🟡 Follow-up hoje — entre em contato!';
+    return'✅ Follow-up agendado'+(l.interesse?' — foco em '+l.interesse:'');
+  }
+  if(l.stage==='warm')return'📄 Qualifique o interesse e envie apresentação';
+  return'💬 Reaquecimento'+(tent>=3?' — tente abordagem diferente':'');
+}
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
 function showNotif(icon,t,s){document.getElementById('ni').textContent=icon;document.getElementById('nt').textContent=t;document.getElementById('ns').textContent=s;const n=document.getElementById('notif');n.classList.add('show');setTimeout(()=>n.classList.remove('show'),5000)}
@@ -904,27 +974,30 @@ function agendarProximoFU(i){
 Nome: ${l.name}
 Produto: ${l.product||'não informado'}
 Valor: ${l.valor?brl(l.valor):'não informado'}${comm?' → comissão potencial: '+brl(comm):''}
-Status: ${l.status||'não informado'}
+Etapa: ${l.status||'Primeiro Contato'}
 Temperatura: ${stageLabel[l.stage]||l.stage}
+Interesse principal: ${l.interesse||'não definido'}
+Tentativas de contato: ${l.tentativas||0}
 Próximo follow-up: ${fd(novaData)} às 09:00
 
 ═══ HISTÓRICO COMPLETO (incluindo mensagem que acabo de enviar) ═══
 ${l.hist||'Sem histórico.'}
 
 ═══ TAREFA ═══
-1. Leia TODO o histórico — entenda a evolução do relacionamento
-2. Identifique onde o lead está no processo de decisão
-3. Crie UMA mensagem de WhatsApp para enviar em ${fd(novaData)}
-4. A mensagem deve dar continuidade natural — não repetir o que já foi dito
+1. Leia TODO o histórico — entenda a evolução real do relacionamento
+2. Considere as ${l.tentativas||0} tentativas já feitas — ajuste o tom e a abordagem
+3. Crie UMA mensagem para enviar em ${fd(novaData)} que avance a etapa "${l.status||'Primeiro Contato'}"
+4. Foco no interesse declarado: ${l.interesse||'não definido'}
 5. Máximo 5 linhas. Natural. Direto. Primeiro nome: ${l.name.split(' ')[0]}
-6. Pense no próximo passo lógico: avançar, apresentar, tirar dúvida ou criar urgência
+6. Não repita o que já foi dito — dê continuidade real à conversa
 
-Formato:
-📊 ANÁLISE (1 linha — onde está o lead e qual é a estratégia)
-[análise]
+Formato da resposta — siga EXATAMENTE:
 
-💬 PRÓXIMA MENSAGEM
-[mensagem aqui — pronta para copiar e salvar no campo de follow-up]`;
+CONTEXTO: [análise em 1 linha — onde está o lead, estratégia para esta etapa]
+
+---
+[apenas a mensagem aqui, pronta para copiar e colar no WhatsApp]
+---`;
 
   // Notificação com botão para abrir Claude
   setTimeout(()=>{
@@ -960,6 +1033,7 @@ function registrarEnvioFU(i){
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado:\n'+(leads[i].fu_msg||'');
+  leads[i].tentativas=(leads[i].tentativas||0)+1;
   agendarProximoFU(i);
   setTimeout(()=>{renderHdr();renderFuHoje()},300);
 }
@@ -1169,27 +1243,45 @@ function renderLeads(){const el=document.getElementById('leads-list');if(!el)ret
 function lCard(l,i){
   const ss=SS[l.stage]||SS.cold,t=td(),fo=l.fu&&l.fu<t&&l.stage!=='won',ft=l.fu&&l.fu===t&&l.stage!=='won',comm=gc(l),s=scr(l);
   const dias=diasSemContato(l);
-  const diasTag=dias!==null&&dias>3&&l.stage!=='won'?`<span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 5px;border-radius:5px;margin-left:5px">${dias}d</span>`:'';
+  const tent=l.tentativas||0;
+  const diasTag=dias!==null&&dias>3&&l.stage!=='won'?`<span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 5px;border-radius:5px;margin-left:4px">${dias}d</span>`:'';
+  const tentTag=tent>=5?`<span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 5px;border-radius:5px;margin-left:4px">⚠️${tent} tent.</span>`:tent>=3?`<span style="font-size:9px;background:rgba(245,158,11,.12);color:var(--yellow);padding:2px 5px;border-radius:5px;margin-left:4px">${tent} tent.</span>`:'';
+  const etapaColor={'Negociação':'var(--green)','Proposta':'var(--yellow)','Apresentação Enviada':'var(--blue)','Qualificado':'var(--acc)','Sem Resposta':'var(--red)','Perdido':'var(--txt3)'};
+  const temMsg=!!(l.fu_msg&&l.fu_msg.trim());
   return`<div class="lead-card">
     <div class="lead-top">
-      <div class="lead-av" style="background:${gbg(i)}">${l.avatar||l.name[0]||'?'}</div>
+      <div class="lead-av" style="background:${gbg(i)}">${l.name[0]||'?'}</div>
       <div class="lead-info">
-        <div class="lead-name">${l.name}${diasTag}</div>
-        <div class="lead-sub">${l.product}${l.status?' · '+l.status:''}</div>
+        <div class="lead-name">${l.name}${diasTag}${tentTag}</div>
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:2px">
+          ${l.status?`<span style="font-size:9px;font-weight:700;color:${etapaColor[l.status]||'var(--txt3)'};background:rgba(255,255,255,.05);padding:1px 6px;border-radius:4px">${l.status}</span>`:''}
+          ${l.interesse?`<span style="font-size:9px;color:var(--txt3);background:rgba(255,255,255,.05);padding:1px 6px;border-radius:4px">${l.interesse}</span>`:''}
+        </div>
+        <div class="lead-sub">${l.product||''}</div>
         ${l.valor?`<div class="lead-comm">💰 ${brl(l.valor)}${comm?` <span style="color:var(--yellow);font-size:10px">→ ${l.pct}% = ${brl(comm)}</span>`:''}</div>`:''}
       </div>
       <div class="stage-badge" style="background:${ss.bg};color:${ss.c}">${ss.l}</div>
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div><div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:10px;color:var(--txt3)">⚡ Próximo passo</div>
+      <div style="font-size:10px;font-weight:700;color:${scc(s)}">Score: ${s}/100</div>
+    </div>
     <div class="step-box" style="color:${scc(s)}">${nxt(l)}</div>
-    ${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}"><span>${fo?'🔴':ft?'🟡':'📅'}</span><span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span></div>`:''}
+    ${l.fu&&l.stage!=='won'?`<div class="fu-bar" style="background:${fo?'rgba(239,68,68,.08)':ft?'rgba(255,107,43,.08)':'rgba(245,158,11,.08)'};border:1px solid ${fo?'rgba(239,68,68,.2)':ft?'rgba(255,107,43,.2)':'rgba(245,158,11,.2)'};color:${fo?'var(--red)':ft?'var(--acc)':'var(--yellow)'}">
+      <span>${fo?'🔴':ft?'🟡':'📅'}</span>
+      <span>${fo?'Atrasado!':ft?'Hoje!':'Follow-up:'} ${fd(l.fu)}</span>
+      ${temMsg?`<span style="font-size:9px;background:rgba(37,211,102,.15);color:var(--wa);padding:1px 6px;border-radius:4px;margin-left:auto">💬 msg pronta</span>`:''}
+    </div>`:''}
     <div class="lead-btns">
-      ${l.wa?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`:`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}
+      ${temMsg&&l.wa
+        ?`<a class="btn-wa" href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank" onclick="registrarEnvioFU(${i})">📲 Enviar</a>`
+        :l.wa
+        ?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`
+        :`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}
       <button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button>
       <button class="btn-icon" onclick="openDetail(${i})">👁️</button>
-      <button class="btn-icon" onclick="openNota(${i})" title="Nota rápida" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)">📝</button>
+      <button class="btn-icon" onclick="openNota(${i})" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)">📝</button>
       <button class="btn-icon" onclick="openEditLead(${i})">✏️</button>
-      <button class="btn-icon" onclick="openAI(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);border:none;color:#fff">🤖</button>
     </div>
   </div>`;
 }
@@ -1218,11 +1310,15 @@ function openAddLead(){
   eiL=-1;
   document.getElementById('lead-title').textContent='➕ NOVO LEAD';
   document.getElementById('lead-del').style.display='none';
-  ['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});
+  ['name','product','valor','pct','wa','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=''});
   document.getElementById('lf-fu-time').value='';
   document.getElementById('lf-fu-msg').value='';
   document.getElementById('lf-fu').style.borderColor='var(--acc)';
   document.getElementById('lf-stage').value='hot';
+  document.getElementById('lf-status').value='Primeiro Contato';
+  document.getElementById('lf-interesse').value='';
+  document.getElementById('lf-motivo').value='';
+  document.getElementById('lf-motivo-wrap').style.display='none';
   document.getElementById('comm-hint').textContent='';
   openM('m-lead');
 }
@@ -1230,11 +1326,16 @@ function openEditLead(i){
   eiL=i;const l=leads[i];
   document.getElementById('lead-title').textContent='✏️ EDITAR LEAD';
   document.getElementById('lead-del').style.display='block';
-  ['name','product','valor','pct','status','wa','avatar','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});
+  ['name','product','valor','pct','wa','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});
   document.getElementById('lf-fu-time').value=l.fu_time||'';
   document.getElementById('lf-fu-msg').value=l.fu_msg||'';
   document.getElementById('lf-fu').style.borderColor=l.fu?'var(--br)':'var(--acc)';
   document.getElementById('lf-stage').value=l.stage||'hot';
+  document.getElementById('lf-status').value=l.status||'Primeiro Contato';
+  document.getElementById('lf-interesse').value=l.interesse||'';
+  document.getElementById('lf-motivo').value=l.motivo||'';
+  const isPerdido=l.status==='Perdido';
+  document.getElementById('lf-motivo-wrap').style.display=isPerdido?'block':'none';
   updComm();openM('m-lead');
 }
 function updComm(){const v=Number(document.getElementById('lf-valor').value)||0,p=Number(document.getElementById('lf-pct').value)||0,el=document.getElementById('comm-hint');if(v>0&&p>0)el.textContent='= '+brl(Math.round(v*p/100));else if(v>0)el.textContent='Sugestão 1,8%: '+brl(Math.round(v*0.018));else el.textContent=''}
@@ -1261,20 +1362,22 @@ function saveLead(){
     return;
   }
 
+  const status=document.getElementById('lf-status').value||'Primeiro Contato';
+  const interesse=document.getElementById('lf-interesse').value||'';
+  const motivo=status==='Perdido'?(document.getElementById('lf-motivo').value||''):'';
+  const avatar=name[0]?.toUpperCase()||'?';
+
   const l={
     id:isNew?Date.now():(leads[eiL]?.id||Date.now()),
-    name,
-    product:document.getElementById('lf-product').value||'',
+    name, product:document.getElementById('lf-product').value||'',
     valor:document.getElementById('lf-valor').value||'',
     pct:document.getElementById('lf-pct').value||'',
-    status:document.getElementById('lf-status').value||'',
-    wa,
-    stage:document.getElementById('lf-stage').value,
-    avatar:document.getElementById('lf-avatar').value||name[0]?.toUpperCase()||'?',
-    fu,
-    fu_time:document.getElementById('lf-fu-time').value||'',
+    status, interesse, motivo, avatar,
+    wa, stage:document.getElementById('lf-stage').value,
+    fu, fu_time:document.getElementById('lf-fu-time').value||'',
     fu_msg:document.getElementById('lf-fu-msg').value||'',
     hist,
+    tentativas:isNew?0:(leads[eiL]?.tentativas||0),
   };
 
   if(isNew)leads.push(l);else leads[eiL]=l;
@@ -1338,12 +1441,13 @@ ${hist}
 4. Máximo 5 linhas. Natural. Sem parecer robô
 5. Use o primeiro nome: ${name.split(' ')[0]||'[Nome]'}
 
-Formato:
-📊 CONTEXTO (1 linha)
-[o que entendeu]
+Formato da resposta — siga EXATAMENTE:
 
-💬 MENSAGEM PARA COPIAR
-[mensagem aqui]`;
+CONTEXTO: [o que entendeu em 1 linha]
+
+---
+[apenas a mensagem aqui, sem título, sem explicação, pronta para copiar e colar no WhatsApp]
+---`;
 
   window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
   toast('🤖 Claude aberto! Cole a mensagem no campo abaixo.');
@@ -1374,12 +1478,13 @@ ${l.hist||'Sem histórico.'}
 4. Máximo 5 linhas. Natural. Direto
 5. Primeiro nome: ${l.name.split(' ')[0]}
 
-Formato:
-📊 CONTEXTO (1 linha)
-[o que entendeu]
+Formato da resposta — siga EXATAMENTE:
 
-💬 MENSAGEM PARA COPIAR
-[mensagem aqui — pronta para colar no campo de mensagem do lead]`;
+CONTEXTO: [o que entendeu em 1 linha]
+
+---
+[apenas a mensagem aqui, sem título, sem explicação, pronta para copiar e colar no WhatsApp]
+---`;
 
   window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
   // After Claude opens, open the lead for editing so user can paste the message
