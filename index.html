@@ -422,8 +422,8 @@ select.inp option{background:var(--s1)}
       <span>💬 Mensagem do follow-up</span>
       <button onclick="gerarMsgIALead()" type="button" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">🤖 Gerar com IA</button>
     </label>
-    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a mensagem gerada pela IA para usar no follow-up..." style="min-height:80px"></textarea>
-    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Ao chegar na data, o app abrirá o WhatsApp com esta mensagem pronta.</div>
+    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a mensagem gerada pela IA — o app extrai automaticamente só o texto da mensagem..." style="min-height:80px" onpaste="extrairMsgIA(event,this)"></textarea>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">💡 Cole a resposta completa do Claude — o app extrai só a mensagem automaticamente.</div>
   </div>
 
   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
@@ -2348,6 +2348,30 @@ function enviarWA(i, msg=''){
 }
 
 let leadSearchTerm='',leadFilterStage='all';
+// ════ EXTRATOR DE MENSAGEM DA IA ════
+function extrairMsgIA(e,campo){
+  e.preventDefault();
+  const raw=(e.clipboardData||window.clipboardData).getData('text');
+  let msg=raw;
+  // Extrai entre --- delimiters
+  const match=raw.match(/---\n?([\s\S]*?)\n?---/);
+  if(match&&match[1]){
+    msg=match[1].trim();
+  } else {
+    // Sem delimiters — remove linhas de contexto
+    const lines=raw.split('\n');
+    const start=lines.findIndex(l=>
+      !l.startsWith('CONTEXTO:')&&
+      !l.startsWith('📊')&&
+      !l.match(/^[-─═✦◆]+$/)&&
+      l.trim().length>0
+    );
+    if(start>0)msg=lines.slice(start).join('\n').trim();
+  }
+  campo.value=msg;
+  toast('✅ Mensagem extraída!');
+}
+
 function filterLeads(){
   leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();
   leadFilterStage=document.getElementById('lead-filter')?.value||'all';
