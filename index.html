@@ -1076,7 +1076,7 @@ function registrarEnvioFU(i){
   leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado:\n'+(leads[i].fu_msg||'');
   leads[i].tentativas=(leads[i].tentativas||0)+1;
   agendarProximoFU(i);
-  setTimeout(()=>{renderHdr();renderFuHoje()},300);
+  setTimeout(()=>{renderHdr();renderFuHoje();renderReport()},300);
 }
 function abrirIAFollowUp(i){
   const l=leads[i];if(!l)return;
@@ -1130,7 +1130,7 @@ function disFU(id){
   if(i!==-1){leads[i].fu='';ls('leads',leads)}
   dfuSet.add(id);
   const el=document.getElementById('fu-'+id);
-  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(renderFuHoje,320)}
+  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>{renderFuHoje();renderReport();renderLeads()},320)}
   toast('✅ Follow-up dispensado');
 }
 
@@ -1423,7 +1423,7 @@ function saveLead(){
   if(isNew)leads.push(l);else leads[eiL]=l;
   ls('leads',leads);
   closeM('m-lead');
-  setView(lView);renderHdr();
+  setView(lView);renderHdr();renderReport();
   scheduleAlarms();
   toast(isNew?'✅ Lead adicionado!':'✅ Lead atualizado!');
 
@@ -1451,7 +1451,7 @@ function saveLead(){
     },600);
   }
 }
-function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();toast('🗑️ Removido!')}
+function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads',leads);closeM('m-lead');setView(lView);renderHdr();renderReport();toast('🗑️ Removido!')}
 
 // ════ IA NO CADASTRO ════
 function gerarMsgIALead(){
@@ -2337,7 +2337,7 @@ function enviarWA(i, msg=''){
   const url=msgReal?`https://wa.me/55${l.wa}?text=${encodeURIComponent(msgReal)}`:`https://wa.me/55${l.wa}`;
   window.open(url,'_blank');
   if(msgReal)agendarProximoFU(i);
-  setTimeout(()=>{renderHdr();renderFuHoje();renderLeads()},400);
+  setTimeout(()=>{renderHdr();renderFuHoje();renderLeads();renderReport()},400);
 }
 
 let leadSearchTerm='',leadFilterStage='all';
@@ -2898,6 +2898,8 @@ renderAll();
 scheduleAlarms();
 pedirPermissaoNotif();
 checkBackupReminder();
+// Auto-refresh pipeline report every 60s
+setInterval(()=>{renderReport();renderFuHoje();renderHdr()},60000);
 // Academia 10h — agendar para hoje se não existir
 (function(){
   const t=td();
