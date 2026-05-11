@@ -978,7 +978,7 @@ function renderFuHoje(){
     const temMsg=!!(l.fu_msg&&l.fu_msg.trim());
     // Botão de ação: WA com mensagem pronta se tiver fu_msg, senão IA
     const btnAcao=temMsg&&l.wa
-      ?`<a href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank" onclick="registrarEnvioFU(${i})" style="background:var(--wa);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px;text-decoration:none">📲 WA</a>`
+      ?`<button onclick="enviarWA(${i},leads[${i}].fu_msg)" style="background:var(--wa);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">📲 WA</button>`
       :`<button onclick="abrirIAFollowUp(${i})" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:5px 9px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f);margin-right:4px">🤖 IA</button>`;
     return`<div class="fu-today" id="fu-${l.id}">
       <div style="font-size:20px">${ov?'🔴':'🟡'}</div>
@@ -1242,14 +1242,13 @@ function calDayOpen(ds){
         </div>
         <div style="display:flex;gap:6px;padding:0 12px 12px">
           ${temMsg&&l.wa
-            ?`<a href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank"
-              onclick="closeM('m-day');registrarEnvioFU(${li})"
-              style="flex:2;background:var(--wa);color:#fff;border-radius:8px;padding:8px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px">
-              📲 Enviar mensagem</a>`
+            ?`<button onclick="closeM('m-day');enviarWA(${li},leads[${li}].fu_msg)"
+              style="flex:2;background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">
+              📲 Enviar mensagem</button>`
             :l.wa
-            ?`<a href="https://wa.me/55${l.wa}" target="_blank"
-              style="flex:1;background:var(--wa);color:#fff;border-radius:8px;padding:8px;text-align:center;text-decoration:none;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">
-              📲 WA</a>
+            ?`<button onclick="enviarWA(${li})"
+              style="flex:1;background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">
+              📲 WA</button>
              <button onclick="closeM('m-day');abrirIAFollowUp(${li})"
               style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;border-radius:8px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">
               🤖 IA</button>`
@@ -1315,9 +1314,9 @@ function lCard(l,i){
     </div>`:''}
     <div class="lead-btns">
       ${temMsg&&l.wa
-        ?`<a class="btn-wa" href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank" onclick="registrarEnvioFU(${i})">📲 Enviar</a>`
+        ?`<button class="btn-wa" onclick="enviarWA(${i},leads[${i}].fu_msg)">📲 Enviar</button>`
         :l.wa
-        ?`<a class="btn-wa" href="https://wa.me/55${l.wa}" target="_blank">📲 WA</a>`
+        ?`<button class="btn-wa" onclick="enviarWA(${i})">📲 WA</button>`
         :`<button class="btn-wa" onclick="openEditLead(${i})" style="opacity:.6">📲 Add WA</button>`}
       <button class="btn-msg" onclick="openMsg(${i})">💬 Msg</button>
       <button class="btn-icon" onclick="openDetail(${i})">👁️</button>
@@ -2324,7 +2323,23 @@ function addArgumento(){
 }
 function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].splice(i,1);ls('argumentos',argumentos);renderArgs();toast('🗑️ Removido!')}
 
-// ════ BUSCA E FILTRO DE LEADS ════
+// ════ ENVIO WA COM HISTÓRICO SEMPRE ════
+function enviarWA(i, msg=''){
+  const l=leads[i];if(!l||!l.wa)return;
+  const now=new Date();
+  const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const msgReal=msg||l.fu_msg||'';
+  if(msgReal){
+    leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Mensagem enviada:\n'+msgReal;
+    leads[i].tentativas=(leads[i].tentativas||0)+1;
+    ls('leads',leads);
+  }
+  const url=msgReal?`https://wa.me/55${l.wa}?text=${encodeURIComponent(msgReal)}`:`https://wa.me/55${l.wa}`;
+  window.open(url,'_blank');
+  if(msgReal)agendarProximoFU(i);
+  setTimeout(()=>{renderHdr();renderFuHoje();renderLeads()},400);
+}
+
 let leadSearchTerm='',leadFilterStage='all';
 function filterLeads(){
   leadSearchTerm=(document.getElementById('lead-search')?.value||'').toLowerCase();
@@ -2443,13 +2458,13 @@ function renderFoco(){
       <!-- Ações — 1 toque -->
       <div style="display:flex;gap:6px">
         ${l.wa&&l.fu_msg
-          ?`<a href="https://wa.me/55${l.wa}?text=${encodeURIComponent(l.fu_msg)}" target="_blank" onclick="registrarEnvioFU(${i})"
-            style="flex:2;background:var(--wa);color:#fff;border:none;border-radius:9px;padding:9px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px">
-            📲 Enviar mensagem preparada</a>`
+          ?`<button onclick="enviarWA(${i},leads[${i}].fu_msg)"
+            style="flex:2;background:var(--wa);color:#fff;border:none;border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">
+            📲 Enviar mensagem preparada</button>`
           :l.wa
-          ?`<a href="https://wa.me/55${l.wa}" target="_blank" onclick="regAcaoFoco(${i},'wa')"
-            style="flex:1;background:var(--wa);color:#fff;border:none;border-radius:9px;padding:9px;text-align:center;text-decoration:none;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px">
-            📲 WhatsApp</a>`
+          ?`<button onclick="enviarWA(${i})"
+            style="flex:1;background:var(--wa);color:#fff;border:none;border-radius:9px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">
+            📲 WhatsApp</button>`
           :`<button onclick="closeM('m-foco');openEditLead(${i})"
             style="flex:1;background:var(--s3);border:1px dashed var(--br);color:var(--txt3);border-radius:9px;padding:9px;font-size:12px;cursor:pointer;font-family:var(--f)">
             ⚠️ Sem WA</button>`}
