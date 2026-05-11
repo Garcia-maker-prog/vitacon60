@@ -1423,7 +1423,7 @@ function saveLead(){
   if(isNew)leads.push(l);else leads[eiL]=l;
   ls('leads',leads);
   closeM('m-lead');
-  setView(lView);renderHdr();renderReport();
+  setView(lView);renderHdr();renderReport();renderFuHoje();
   scheduleAlarms();
   toast(isNew?'✅ Lead adicionado!':'✅ Lead atualizado!');
 
@@ -2488,7 +2488,7 @@ function regAcaoFoco(i,tipo){
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   leads[i].hist=(leads[i].hist||'')+'\n\n📲 ['+ds+']: Contato via WhatsApp';
   agendarProximoFU(i);
-  renderHdr();
+  renderHdr();renderFuHoje();renderReport();
 }
 
 
@@ -2893,13 +2893,13 @@ function processarQRData(raw){
   }
 }
 
-function renderAll(){renderPainelDia();renderParceiros();renderTasks();setView('list');renderHdr();renderReport();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
+function renderAll(){renderPainelDia();renderParceiros();renderTasks();setView('list');renderHdr();renderReport();renderFuHoje();renderApptsHoje();renderWorkouts();renderMeals();renderFavs();renderProjetos();loadCfg();renderWeekTabs();renderTE();renderTplEditor()}
 renderAll();
 scheduleAlarms();
 pedirPermissaoNotif();
 checkBackupReminder();
 // Auto-refresh pipeline report every 60s
-setInterval(()=>{renderReport();renderFuHoje();renderHdr()},60000);
+setInterval(()=>{renderReport();renderFuHoje();renderApptsHoje();renderHdr()},60000);
 // Academia 10h — agendar para hoje se não existir
 (function(){
   const t=td();
