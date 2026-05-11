@@ -422,8 +422,9 @@ select.inp option{background:var(--s1)}
       <span>💬 Mensagem do follow-up</span>
       <button onclick="gerarMsgIALead()" type="button" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">🤖 Gerar com IA</button>
     </label>
-    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a mensagem gerada pela IA — o app extrai automaticamente só o texto da mensagem..." style="min-height:80px" onpaste="extrairMsgIA(event,this)"></textarea>
-    <div style="font-size:10px;color:var(--txt3);margin-top:4px">💡 Cole a resposta completa do Claude — o app extrai só a mensagem automaticamente.</div>
+    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a resposta completa do Claude e toque em Extrair..." style="min-height:80px"></textarea>
+    <button type="button" onclick="extrairMsgIABtn()" style="width:100%;margin-top:6px;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">✂️ Extrair só a mensagem</button>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole a resposta completa do Claude acima, depois toque em Extrair.</div>
   </div>
 
   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
@@ -1035,13 +1036,12 @@ ${l.hist||'Sem histórico.'}
 5. Máximo 5 linhas. Natural. Direto. Primeiro nome: ${l.name.split(' ')[0]}
 6. Não repita o que já foi dito — dê continuidade real à conversa
 
-Formato da resposta — siga EXATAMENTE:
+FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
-CONTEXTO: [análise em 1 linha — onde está o lead, estratégia para esta etapa]
-
----
-[apenas a mensagem aqui, pronta para copiar e colar no WhatsApp]
----`;
+CONTEXTO: [sua análise em 1 linha]
+MENSAGEM_INICIO
+[apenas a mensagem aqui, sem título, pronta para WhatsApp]
+MENSAGEM_FIM`;
 
   // Notificação com botão para abrir Claude
   setTimeout(()=>{
@@ -1488,13 +1488,12 @@ ${hist}
 4. Máximo 5 linhas. Natural. Sem parecer robô
 5. Use o primeiro nome: ${name.split(' ')[0]||'[Nome]'}
 
-Formato da resposta — siga EXATAMENTE:
+FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
-CONTEXTO: [o que entendeu em 1 linha]
-
----
-[apenas a mensagem aqui, sem título, sem explicação, pronta para copiar e colar no WhatsApp]
----`;
+CONTEXTO: [sua análise em 1 linha]
+MENSAGEM_INICIO
+[apenas a mensagem aqui, sem título, pronta para WhatsApp]
+MENSAGEM_FIM`;
 
   window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
   toast('🤖 Claude aberto! Cole a mensagem no campo abaixo.');
@@ -1525,13 +1524,12 @@ ${l.hist||'Sem histórico.'}
 4. Máximo 5 linhas. Natural. Direto
 5. Primeiro nome: ${l.name.split(' ')[0]}
 
-Formato da resposta — siga EXATAMENTE:
+FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
-CONTEXTO: [o que entendeu em 1 linha]
-
----
-[apenas a mensagem aqui, sem título, sem explicação, pronta para copiar e colar no WhatsApp]
----`;
+CONTEXTO: [sua análise em 1 linha]
+MENSAGEM_INICIO
+[apenas a mensagem aqui, sem título, pronta para WhatsApp]
+MENSAGEM_FIM`;
 
   window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
   // After Claude opens, open the lead for editing so user can paste the message
@@ -2352,24 +2350,48 @@ let leadSearchTerm='',leadFilterStage='all';
 function extrairMsgIA(e,campo){
   e.preventDefault();
   const raw=(e.clipboardData||window.clipboardData).getData('text');
-  let msg=raw;
-  // Extrai entre --- delimiters
-  const match=raw.match(/---\n?([\s\S]*?)\n?---/);
-  if(match&&match[1]){
-    msg=match[1].trim();
-  } else {
-    // Sem delimiters — remove linhas de contexto
-    const lines=raw.split('\n');
-    const start=lines.findIndex(l=>
-      !l.startsWith('CONTEXTO:')&&
-      !l.startsWith('📊')&&
-      !l.match(/^[-─═✦◆]+$/)&&
-      l.trim().length>0
-    );
-    if(start>0)msg=lines.slice(start).join('\n').trim();
+  extrairTexto(raw,campo);
+}
+function extrairMsgIABtn(){
+  const campo=document.getElementById('lf-fu-msg');
+  if(!campo)return;
+  extrairTexto(campo.value,campo);
+}
+function extrairTexto(raw,campo){
+  if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
+
+  // 1. Tenta extrair entre MENSAGEM_INICIO / MENSAGEM_FIM
+  const match=raw.match(/MENSAGEM_INICIO\s*\n([\s\S]*?)\nMENSAGEM_FIM/);
+  if(match&&match[1]&&match[1].trim()){
+    campo.value=match[1].trim();
+    toast('✅ Mensagem extraída!');return;
   }
-  campo.value=msg;
-  toast('✅ Mensagem extraída!');
+
+  // 2. Tenta extrair entre --- delimiters (fallback)
+  const match2=raw.match(/---+\s*\n([\s\S]*?)\n\s*---+/);
+  if(match2&&match2[1]&&match2[1].trim()){
+    campo.value=match2[1].trim();
+    toast('✅ Mensagem extraída!');return;
+  }
+
+  // 3. Remove linhas de contexto do início
+  const lines=raw.split('\n');
+  const skip=lines.findIndex(l=>{
+    const t=l.trim();
+    return t.length>0&&
+      !t.startsWith('CONTEXTO')&&
+      !t.startsWith('FORMATO')&&
+      !t.startsWith('MENSAGEM')&&
+      !t.startsWith('📊')&&
+      !t.match(/^[-─═✦◆*]+$/)&&
+      !t.match(/^(contexto|análise|analise|context):/i);
+  });
+  if(skip>0){
+    campo.value=lines.slice(skip).join('\n').trim();
+    toast('✅ Contexto removido!');return;
+  }
+
+  toast('ℹ️ Texto mantido como está');
 }
 
 function filterLeads(){
