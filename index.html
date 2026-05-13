@@ -758,7 +758,11 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">🔗 Link Book/Tabela</label><input class="inp" type="url" id="pj-link" placeholder="https://..."></div>
   <div class="field"><label class="inp-lbl">📊 Link Apresentação (.pptx)</label>
     <input class="inp" type="text" id="pj-pptx" placeholder="Ex: vitacon-jardins.pptx">
-    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole só o nome do arquivo (ex: jardins.pptx) ou o link completo. Faça upload no GitHub primeiro.</div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole só o nome do arquivo ou o link completo.</div>
+  </div>
+  <div class="field"><label class="inp-lbl">📄 Link Apresentação PDF</label>
+    <input class="inp" type="url" id="pj-pdf" placeholder="https://drive.google.com/...">
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Link do Google Drive ou qualquer URL do PDF.</div>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:8px">
     <button class="btn btn-ghost" onclick="closeM('m-proj')" style="flex:1">Cancelar</button>
@@ -1766,6 +1770,7 @@ function renderProjetos(){
         <button onclick="openCalcFluxo(${i})" class="btn-icon" style="background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)">💳</button>
         <button onclick="openApresEdit(${i})" class="btn-icon" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue)">📋</button>
         ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--yellow)" title="Baixar apresentação PPT">📊</a>`:''}
+        ${p.pdf?`<a href="${p.pdf}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444" title="Apresentação PDF">📄</a>`:''}
         ${p.link?`<a href="${p.link}" target="_blank" class="btn-icon" style="text-decoration:none;display:flex;align-items:center;justify-content:center">🔗</a>`:''}
       </div>
     </div>`;
@@ -1776,7 +1781,7 @@ function openAddProjeto(){
   eiProj=-1;
   document.getElementById('proj-title').textContent='🏢 NOVO PROJETO';
   document.getElementById('proj-del').style.display='none';
-  ['pj-name','pj-end','pj-entrega','pj-vmin','pj-vmax','pj-metro','pj-comm','pj-dif','pj-fluxo','pj-rentab','pj-local','pj-notas','pj-link'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  ['pj-name','pj-end','pj-entrega','pj-vmin','pj-vmax','pj-metro','pj-comm','pj-dif','pj-fluxo','pj-rentab','pj-local','pj-notas','pj-link','pj-pdf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
   document.getElementById('pj-status').value='prelancamento';
   openM('m-proj');
 }
@@ -1800,6 +1805,7 @@ function openEditProjeto(i){
   document.getElementById('pj-notas').value=p.notas||'';
   document.getElementById('pj-link').value=p.link||'';
   document.getElementById('pj-pptx').value=p.pptx||'';
+  document.getElementById('pj-pdf').value=p.pdf||'';
   openM('m-proj');
 }
 
@@ -1821,6 +1827,7 @@ function saveProjeto(){
     notas:document.getElementById('pj-notas').value||'',
     link:document.getElementById('pj-link').value||'',
     pptx:document.getElementById('pj-pptx').value||'',
+    pdf:document.getElementById('pj-pdf').value||'',
   };
   if(eiProj===-1)projetos.push(p);else projetos[eiProj]=p;
   ls('projetos',projetos);closeM('m-proj');renderProjetos();
@@ -1853,6 +1860,7 @@ function openDetailProjeto(i){
     ${row('📝','Notas',p.notas)}
     ${p.link?`<div style="padding:8px 0"><a href="${p.link}" target="_blank" style="color:var(--blue);font-size:12px">🔗 Ver Book/Tabela completa</a></div>`:''}
     ${p.pptx?`<div style="padding:8px 0"><a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank" style="color:var(--yellow);font-size:12px;font-weight:700">📊 Abrir Apresentação PowerPoint</a></div>`:''}
+    ${p.pdf?`<div style="padding:8px 0"><a href="${p.pdf}" target="_blank" style="color:#ef4444;font-size:12px;font-weight:700">📄 Abrir Apresentação PDF</a></div>`:''}
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="closeM('m-proj-detail');openEditProjeto(${i})" class="btn btn-ghost" style="flex:1">✏️ Editar</button>
       <button onclick="closeM('m-proj-detail');openAIProjeto(${i})" class="btn" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff">🤖 IA</button>
@@ -1978,8 +1986,11 @@ function openProjetosParaLead(li){
       <div style="display:flex;gap:0;border-bottom:1px solid var(--br)">
         ${p.pptx?`<a href="${p.pptx.startsWith('http')?p.pptx:'https://garcia-maker-prog.github.io/vitacon60/'+p.pptx}" target="_blank"
           style="flex:1;padding:10px;text-align:center;text-decoration:none;font-size:11px;font-weight:700;color:var(--yellow);border-right:1px solid var(--br);display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(245,158,11,.05)">
-          📊 Apresentação PPT</a>`:
+          📊 PPT</a>`:
           `<div style="flex:1;padding:10px;text-align:center;font-size:11px;color:var(--txt3);border-right:1px solid var(--br);display:flex;align-items:center;justify-content:center">📊 Sem PPT</div>`}
+        ${p.pdf?`<a href="${p.pdf}" target="_blank"
+          style="flex:1;padding:10px;text-align:center;text-decoration:none;font-size:11px;font-weight:700;color:#ef4444;border-right:1px solid var(--br);display:flex;align-items:center;justify-content:center;gap:5px;background:rgba(239,68,68,.05)">
+          📄 PDF</a>`:''}
         <button onclick="openCalcFluxo(${pi})" style="flex:1;padding:10px;border:none;background:rgba(34,197,94,.05);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:5px">💳 Calcular Fluxo</button>
       </div>
 
