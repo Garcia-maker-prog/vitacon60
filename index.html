@@ -2368,20 +2368,31 @@ function extrairMsgIABtn(){
   if(!campo)return;
   extrairTexto(campo.value,campo);
 }
+function limparEmojis(txt){
+  // Remove caracteres problemáticos que viram ? no Windows
+  return txt
+    .replace(/[\u{1F300}-\u{1F9FF}]/gu,'')  // emojis
+    .replace(/[\u{2600}-\u{26FF}]/gu,'')     // símbolos
+    .replace(/[\u{2700}-\u{27BF}]/gu,'')     // dingbats
+    .replace(/[\u{FE00}-\u{FEFF}]/gu,'')     // variation selectors
+    .replace(/  +/g,' ')                      // espaços duplos
+    .trim();
+}
+
 function extrairTexto(raw,campo){
   if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
 
   // 1. Tenta extrair entre MENSAGEM_INICIO / MENSAGEM_FIM
   const match=raw.match(/MENSAGEM_INICIO\s*\n([\s\S]*?)\nMENSAGEM_FIM/);
   if(match&&match[1]&&match[1].trim()){
-    campo.value=match[1].trim();
+    campo.value=limparEmojis(match[1].trim());
     toast('✅ Mensagem extraída!');return;
   }
 
-  // 2. Tenta extrair entre --- delimiters (fallback)
+  // 2. Tenta extrair entre --- delimiters
   const match2=raw.match(/---+\s*\n([\s\S]*?)\n\s*---+/);
   if(match2&&match2[1]&&match2[1].trim()){
-    campo.value=match2[1].trim();
+    campo.value=limparEmojis(match2[1].trim());
     toast('✅ Mensagem extraída!');return;
   }
 
@@ -2398,11 +2409,12 @@ function extrairTexto(raw,campo){
       !t.match(/^(contexto|análise|analise|context):/i);
   });
   if(skip>0){
-    campo.value=lines.slice(skip).join('\n').trim();
+    campo.value=limparEmojis(lines.slice(skip).join('\n').trim());
     toast('✅ Contexto removido!');return;
   }
 
-  toast('ℹ️ Texto mantido como está');
+  campo.value=limparEmojis(raw.trim());
+  toast('ℹ️ Texto limpo aplicado');
 }
 
 function filterLeads(){
