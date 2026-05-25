@@ -187,6 +187,7 @@ select.inp option{background:var(--s1)}
     <button class="hdr-btn" onclick="openM('m-news')">📰 Notícias</button>
     <button class="hdr-btn" onclick="openAddAppt()">📅 Agendar</button>
     <button class="hdr-btn" onclick="openCalFull()">📆 Agenda</button>
+    <button class="hdr-btn" onclick="openM('m-disparo')" style="background:rgba(37,211,102,.15);border-color:rgba(37,211,102,.3);color:var(--wa)">📣 Disparo</button>
     <button class="hdr-btn" onclick="openFoco()" style="background:rgba(255,107,43,.15);border-color:rgba(255,107,43,.4);color:var(--acc);font-weight:800">⚡ Foco</button>
     <button class="hdr-btn" onclick="openRelatorio()">📊 Relatório</button>
   </div>
@@ -534,6 +535,51 @@ select.inp option{background:var(--s1)}
   <div class="field"><label class="inp-lbl">Projeto B</label><select class="inp" id="cmp-b" onchange="renderComparador()"></select></div>
   <div id="cmp-content" style="margin-bottom:12px"></div>
   <button class="btn" onclick="copiarComparador()" style="width:100%;background:var(--wa);color:#fff">📲 Copiar para WhatsApp</button>
+</div></div>
+
+<!-- DISPARO EM MASSA -->
+<div class="overlay" id="m-disparo" style="z-index:300"><div class="modal" style="max-height:95vh">
+  <div class="modal-hdr"><span>📣 DISPARO EM MASSA</span><button class="modal-close" onclick="closeM('m-disparo')">✕</button></div>
+
+  <div class="field">
+    <label class="inp-lbl">📝 Título da campanha</label>
+    <input class="inp" id="disp-titulo" placeholder="Ex: Lançamento Vitacon Jardins, Feliz Natal...">
+  </div>
+
+  <div class="field">
+    <label class="inp-lbl">💬 Mensagem</label>
+    <textarea class="inp" id="disp-msg" placeholder="Digite a mensagem que será enviada para todos os leads selecionados...&#10;&#10;Use [NOME] para personalizar com o primeiro nome de cada lead." style="min-height:120px"></textarea>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Use [NOME] para personalizar. Ex: "Oi [NOME], tenho uma novidade!"</div>
+  </div>
+
+  <div class="field">
+    <label class="inp-lbl">🎯 Filtrar destinatários</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="disp-filtros">
+      <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:12px">
+        <input type="checkbox" id="disp-hot" checked style="accent-color:var(--acc)"> 🔥 Quentes
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:12px">
+        <input type="checkbox" id="disp-warm" checked style="accent-color:var(--yellow)"> 🌡️ Mornos
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:12px">
+        <input type="checkbox" id="disp-cold" style="accent-color:var(--blue)"> ❄️ Frios
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--s2);border:1px solid var(--br);border-radius:8px;cursor:pointer;font-size:12px">
+        <input type="checkbox" id="disp-soowa" checked style="accent-color:var(--wa)"> 📲 Só com WA
+      </label>
+    </div>
+  </div>
+
+  <div id="disp-preview-wrap" style="display:none">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">👥 DESTINATÁRIOS</div>
+    <div id="disp-lista" style="max-height:200px;overflow-y:auto;background:var(--s2);border-radius:10px;padding:10px;margin-bottom:12px"></div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button class="btn btn-ghost" onclick="previewDisparo()" style="flex:1">👁️ Ver destinatários</button>
+    <button class="btn" onclick="iniciarDisparo()" style="flex:1;background:var(--wa);color:#fff;border:none">📲 Iniciar disparo</button>
+  </div>
+  <p style="font-size:10px;color:var(--txt3);text-align:center">O app abre o WhatsApp para cada lead em sequência. Você confirma o envio de cada mensagem.</p>
 </div></div>
 
 <!-- MODO FOCO -->
@@ -2259,6 +2305,87 @@ const TEMA_DIA={
   5:{tema:'Abordagem & Fechamento',icon:'💬',foco:'Enviar proposta formal de parceria para os mais promissores',leitura:'Script de parceria · material Vitacon',cor:'var(--yellow)'},
   6:{tema:'Análise & Descanso',icon:'📊',foco:'Contar contatos feitos na semana e ajustar estratégia',leitura:'Lista de parceiros · métricas da semana',cor:'var(--txt2)'},
 };
+// ════ DISPARO EM MASSA ════
+let disparoFila=[],disparoIdx=0;
+
+function getDestinatarios(){
+  const hot=document.getElementById('disp-hot')?.checked;
+  const warm=document.getElementById('disp-warm')?.checked;
+  const cold=document.getElementById('disp-cold')?.checked;
+  const soowa=document.getElementById('disp-soowa')?.checked;
+  return leads.filter(l=>{
+    if(l.stage==='won')return false;
+    if(soowa&&!l.wa)return false;
+    if(l.stage==='hot'&&hot)return true;
+    if(l.stage==='warm'&&warm)return true;
+    if(l.stage==='cold'&&cold)return true;
+    return false;
+  });
+}
+
+function previewDisparo(){
+  const lista=getDestinatarios();
+  const el=document.getElementById('disp-lista');
+  document.getElementById('disp-preview-wrap').style.display='block';
+  if(!lista.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px">Nenhum lead encontrado.</div>';return}
+  el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--txt2);margin-bottom:8px">${lista.length} destinatário${lista.length>1?'s':''}</div>`+
+    lista.map(l=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--br)">
+      <div style="font-size:16px">${l.stage==='hot'?'🔥':l.stage==='warm'?'🌡️':'❄️'}</div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">${l.name}</div><div style="font-size:10px;color:var(--txt3)">${l.wa?'📲 '+l.wa:'Sem WhatsApp'}</div></div>
+    </div>`).join('');
+}
+
+function iniciarDisparo(){
+  const msg=(document.getElementById('disp-msg')?.value||'').trim();
+  if(!msg){toast('Escreva a mensagem!');return}
+  const lista=getDestinatarios().filter(l=>l.wa);
+  if(!lista.length){toast('Nenhum lead com WhatsApp!');return}
+  if(!confirm('Iniciar disparo para '+lista.length+' leads?\n\nO WhatsApp abre para cada lead em sequência.\nVocê confirma cada envio individualmente.'))return;
+  disparoFila=lista;disparoIdx=0;
+  closeM('m-disparo');
+  toast('Iniciando disparo para '+lista.length+' leads...');
+  setTimeout(proximoDisparo,800);
+}
+
+function proximoDisparo(){
+  if(disparoIdx>=disparoFila.length){
+    toast('Disparo concluido! '+disparoFila.length+' mensagens.');
+    showNotif('OK','Disparo concluido!',disparoFila.length+' leads contatados');
+    disparoFila=[];disparoIdx=0;return;
+  }
+  const l=disparoFila[disparoIdx];
+  const msg=(document.getElementById('disp-msg')?.value||'').trim();
+  const titulo=document.getElementById('disp-titulo')?.value||'Disparo em massa';
+  const nome=l.name.split(' ')[0];
+  const msgP=msg.replace(/\[NOME\]/g,nome);
+  // Histórico
+  const now=new Date();
+  const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const idx=leads.findIndex(ld=>ld.id===l.id);
+  if(idx!==-1){leads[idx].hist=(leads[idx].hist||'')+'\n\n['+ds+'] — '+titulo+':\n'+msgP;ls('leads',leads)}
+  // Abre WA
+  window.open('https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msgP),'_blank');
+  disparoIdx++;
+  // Banner de controle
+  const notif=document.getElementById('notif');
+  const ni=document.getElementById('ni'),nt=document.getElementById('nt'),ns=document.getElementById('ns');
+  if(ni)ni.textContent='📣';
+  if(nt)nt.textContent=disparoIdx+'/'+disparoFila.length+': '+nome;
+  if(ns)ns.textContent=disparoIdx<disparoFila.length?'Toque em Proximo apos enviar':'Ultimo lead!';
+  if(notif){
+    notif.classList.add('show');
+    const ex=notif.querySelector('.alarm-wa-btn');if(ex)ex.remove();
+    const btn=document.createElement('button');
+    btn.textContent=disparoIdx<disparoFila.length?'Proximo':'Concluir';
+    btn.className='alarm-wa-btn';
+    btn.style.cssText='background:var(--acc);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0';
+    btn.onclick=()=>{notif.classList.remove('show');setTimeout(proximoDisparo,500)};
+    const cb=notif.querySelector('button');if(cb)notif.insertBefore(btn,cb);
+    setTimeout(()=>notif.classList.remove('show'),60000);
+  }
+}
+
+// ════ PAINEL DO DIA ════
 function renderPainelDia(){
   const el=document.getElementById('painel-dia');if(!el)return;
   const dow=new Date().getDay(),hora=new Date().getHours();
