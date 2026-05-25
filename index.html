@@ -2647,6 +2647,8 @@ function extrairTexto(raw,campo){
          .replace(/\|\|\|MENSAGEM_INICIO\|\|\|/g,'')
          .replace(/\*{0,3}MENSAGEM_FIM\*{0,3}/g,'')
          .replace(/\*{0,3}MENSAGEM_INICIO\*{0,3}/g,'')
+         .replace(/^\|+/,'')   // pipes no início
+         .replace(/\|+$/,'')   // pipes no final
          .trim();
 
   if(msg.length>2){
