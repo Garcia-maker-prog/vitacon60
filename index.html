@@ -1474,45 +1474,61 @@ function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads'
 
 // ════ IA NO CADASTRO ════
 function gerarMsgIALead(){
-  const name=(document.getElementById('lf-name').value||'').trim();
+  const name=(document.getElementById('lf-name').value||'Lead').trim();
   const hist=(document.getElementById('lf-hist').value||'').trim();
   const product=document.getElementById('lf-product').value||'';
   const fu=document.getElementById('lf-fu').value||'';
   const stage=document.getElementById('lf-stage').value||'hot';
-  if(!hist){toast('⚠️ Preencha o histórico primeiro!');return}
+  const status=document.getElementById('lf-status')?.value||'';
+  const interesse=document.getElementById('lf-interesse')?.value||'';
   const stageLabel={hot:'QUENTE',warm:'MORNO',cold:'FRIO',won:'FECHADO'};
   const h=new Date().getHours();
   const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+
   const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise o histórico deste lead e crie UMA mensagem de WhatsApp para o follow-up agendado.
 
 HORARIO ATUAL: ${h}h — use obrigatoriamente a saudacao "${saud}" no inicio da mensagem.
 
 === LEAD ===
-Nome: ${name||'não informado'}
+Nome: ${name}
 Produto: ${product||'não informado'}
+Etapa: ${status||'não informado'}
+Interesse: ${interesse||'não informado'}
 Temperatura: ${stageLabel[stage]||stage}
-Follow-up agendado: ${fu?fd(fu):'não definido'}
+Follow-up: ${fu?fd(fu):'não definido'}
 
 === HISTÓRICO / CONVERSA ===
-${hist}
+${hist||'Sem histórico registrado.'}
 
 === TAREFA ===
-1. Leia o histórico completo — entenda o contexto, interesse e tom da conversa
-2. Crie UMA mensagem de WhatsApp para enviar no dia do follow-up
-3. A mensagem deve dar continuidade natural ao histórico, não recomeçar do zero
+1. Leia o histórico completo e entenda o contexto real da conversa
+2. Crie UMA mensagem de WhatsApp personalizada para este momento
+3. Continuidade natural — não recomeçar do zero
 4. Máximo 5 linhas. Natural. Sem parecer robô
-5. Use o primeiro nome: ${name.split(' ')[0]||'[Nome]'}
-6. Comece com "${saud}, [Nome]!"
+5. Comece com "${saud}, ${name.split(' ')[0]}!"
 
-FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
+FORMATO OBRIGATÓRIO:
 
-CONTEXTO: [sua análise em 1 linha]
+CONTEXTO: [análise em 1 linha]
 MENSAGEM_INICIO
-[apenas a mensagem aqui, sem título, pronta para WhatsApp]
+[mensagem aqui, pronta para WhatsApp]
 MENSAGEM_FIM`;
 
-  window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
-  toast('🤖 Claude aberto! Cole a mensagem no campo abaixo.');
+  try{
+    const w=window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
+    if(!w){
+      // Popup bloqueado — copia o prompt para a área de transferência
+      navigator.clipboard.writeText(prompt).then(()=>{
+        toast('📋 Popup bloqueado! Prompt copiado — abra o Claude e cole.');
+      }).catch(()=>{
+        toast('⚠️ Permita popups para este site ou abra o Claude manualmente.');
+      });
+    } else {
+      toast('🤖 Claude aberto! Cole a resposta no campo abaixo.');
+    }
+  }catch(e){
+    toast('⚠️ Erro ao abrir Claude: '+e.message);
+  }
 }
 
 function gerarMsgIALeadIdx(i){
