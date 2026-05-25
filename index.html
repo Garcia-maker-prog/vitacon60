@@ -2598,50 +2598,56 @@ function limparEmojis(txt){
 function extrairTexto(raw,campo){
   if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
 
-  // Normaliza
+  // Normaliza quebras e remove asteriscos/underscores dos delimiters
   let txt=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  txt=txt.replace(/\*{0,3}(MENSAGEM_FIM|MENSAGEM_INICIO)\*{0,3}/g,'|||$1|||');
+  txt=txt.replace(/_{0,3}(MENSAGEM_FIM|MENSAGEM_INICIO)_{0,3}/g,'|||$1|||');
 
-  // Remove variações do delimiter MENSAGEM_FIM
-  txt=txt
-    .replace(/\*{0,2}MENSAGEM_FIM\*{0,2}/g,'|||FIM|||')
-    .replace(/\*{0,2}MENSAGEM_INICIO\*{0,2}/g,'|||INICIO|||')
-    .replace(/_{0,2}MENSAGEM_FIM_{0,2}/g,'|||FIM|||')
-    .replace(/_{0,2}MENSAGEM_INICIO_{0,2}/g,'|||INICIO|||');
-
-  const idxInicio=txt.indexOf('|||INICIO|||');
-  const idxFim=txt.indexOf('|||FIM|||');
+  // Encontra todas as ocorrências dos marcadores
+  const posInicio=txt.indexOf('|||MENSAGEM_INICIO|||');
+  const posFimAll=[...txt.matchAll(/\|\|\|MENSAGEM_FIM\|\|\|/g)].map(m=>m.index);
 
   let msg='';
 
-  if(idxInicio!==-1&&idxFim!==-1){
-    // Tem os dois — pega entre eles
-    msg=txt.substring(idxInicio+12,idxFim);
-  } else if(idxFim!==-1){
-    // Só tem FIM — pega tudo antes
-    msg=txt.substring(0,idxFim);
-  } else if(idxInicio!==-1){
-    // Só tem INICIO — pega tudo depois
-    msg=txt.substring(idxInicio+12);
+  if(posInicio!==-1&&posFimAll.length>0){
+    // Tem INICIO e FIM — pega entre eles
+    const posFim=posFimAll.find(p=>p>posInicio);
+    if(posFim){
+      msg=txt.substring(posInicio+21,posFim).trim();
+    }
+  } else if(posFimAll.length>=2){
+    // Dois MENSAGEM_FIM — pega entre o primeiro e o segundo
+    msg=txt.substring(posFimAll[0]+19,posFimAll[1]).trim();
+  } else if(posFimAll.length===1){
+    // Só um MENSAGEM_FIM — pega tudo antes dele
+    msg=txt.substring(0,posFimAll[0]).trim();
+    // Remove linhas de contexto do início
+    const lines=msg.split('\n');
+    const start=lines.findIndex(l=>{
+      const t=l.trim();
+      return t.length>3&&
+        !t.match(/^(CONTEXTO|FORMATO|REGRA|HORARIO|===|---)/i)&&
+        !t.match(/^[*_#\-=|]+$/);
+    });
+    msg=(start>=0?lines.slice(start):lines).join('\n').trim();
   } else {
-    msg=txt;
+    // Sem delimiters — remove linhas de contexto
+    const lines=txt.split('\n');
+    const start=lines.findIndex(l=>{
+      const t=l.trim();
+      return t.length>3&&
+        !t.match(/^(CONTEXTO|FORMATO|REGRA|HORARIO|===|---)/i)&&
+        !t.match(/^[*_#\-=|]+$/);
+    });
+    msg=(start>=0?lines.slice(start):lines).join('\n').trim();
   }
 
-  // Limpa o resultado
-  msg=msg.trim();
-
-  // Remove linhas de contexto do início (CONTEXTO:, linhas de separação, etc)
-  const lines=msg.split('\n');
-  const start=lines.findIndex(l=>{
-    const t=l.trim();
-    return t.length>3&&
-      !t.match(/^(CONTEXTO|FORMATO|MENSAGEM|REGRA|HORARIO|===|---|INICIO|FIM|\|\|\|)/i)&&
-      !t.match(/^[*_#\-=|]+$/);
-  });
-  if(start>0) msg=lines.slice(start).join('\n').trim();
-  else if(start===0) msg=lines.join('\n').trim(); // sem contexto, usa tudo
-
-  // Remove qualquer MENSAGEM_FIM residual
-  msg=msg.replace(/\*{0,2}MENSAGEM_FIM\*{0,2}/g,'').replace(/\|\|\|FIM\|\|\|/g,'').trim();
+  // Limpa qualquer resíduo de marcadores
+  msg=msg.replace(/\|\|\|MENSAGEM_FIM\|\|\|/g,'')
+         .replace(/\|\|\|MENSAGEM_INICIO\|\|\|/g,'')
+         .replace(/\*{0,3}MENSAGEM_FIM\*{0,3}/g,'')
+         .replace(/\*{0,3}MENSAGEM_INICIO\*{0,3}/g,'')
+         .trim();
 
   if(msg.length>2){
     campo.value=msg;
