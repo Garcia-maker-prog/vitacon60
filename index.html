@@ -2523,16 +2523,18 @@ function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].spli
 
 // ════ WHATSAPP — ABRE DIRETO NO APP ════
 function abrirWA(numero, msg=''){
-  // Remove non-digits, ensure 55 prefix
-  const num=('55'+numero).replace(/\D/g,'').replace(/^55+55/,'55');
-  // whatsapp:// opens the desktop app directly, no new browser tabs
+  const num=String(numero).replace(/\D/g,'');
+  const numFull=num.startsWith('55')?num:'55'+num;
   const link=msg
-    ?'whatsapp://send?phone='+num+'&text='+encodeURIComponent(msg)
-    :'whatsapp://send?phone='+num;
-  // Try native protocol first
-  const a=document.createElement('a');
-  a.href=link;
-  a.click();
+    ?'https://wa.me/'+numFull+'?text='+encodeURIComponent(msg)
+    :'https://wa.me/'+numFull;
+  // Reutiliza sempre a mesma aba WA
+  if(!window._waTab||window._waTab.closed){
+    window._waTab=window.open(link,'whatsapp_vitacon');
+  } else {
+    window._waTab.location.href=link;
+    window._waTab.focus();
+  }
 }
 
 // ════ ENVIO WA COM HISTÓRICO SEMPRE ════
