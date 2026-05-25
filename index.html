@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2598,51 +2599,56 @@ function limparEmojis(txt){
 function extrairTexto(raw,campo){
   if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
 
-  const txt=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
-    .replace(/\*{1,2}(MENSAGEM_INICIO|MENSAGEM_FIM)\*{1,2}/g,'$1')
-    .replace(/_{1,2}(MENSAGEM_INICIO|MENSAGEM_FIM)_{1,2}/g,'$1');
+  // Normaliza
+  let txt=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
 
-  const idx1=txt.indexOf('MENSAGEM_INICIO');
-  const idx2=txt.indexOf('MENSAGEM_FIM');
+  // Remove variações do delimiter MENSAGEM_FIM
+  txt=txt
+    .replace(/\*{0,2}MENSAGEM_FIM\*{0,2}/g,'|||FIM|||')
+    .replace(/\*{0,2}MENSAGEM_INICIO\*{0,2}/g,'|||INICIO|||')
+    .replace(/_{0,2}MENSAGEM_FIM_{0,2}/g,'|||FIM|||')
+    .replace(/_{0,2}MENSAGEM_INICIO_{0,2}/g,'|||INICIO|||');
 
-  // Caso 1: tem os dois delimiters
-  if(idx1!==-1&&idx2!==-1&&idx2>idx1){
-    const msg=txt.substring(idx1+15,idx2).replace(/^\n+|\n+$/g,'').trim();
-    if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
+  const idxInicio=txt.indexOf('|||INICIO|||');
+  const idxFim=txt.indexOf('|||FIM|||');
+
+  let msg='';
+
+  if(idxInicio!==-1&&idxFim!==-1){
+    // Tem os dois — pega entre eles
+    msg=txt.substring(idxInicio+12,idxFim);
+  } else if(idxFim!==-1){
+    // Só tem FIM — pega tudo antes
+    msg=txt.substring(0,idxFim);
+  } else if(idxInicio!==-1){
+    // Só tem INICIO — pega tudo depois
+    msg=txt.substring(idxInicio+12);
+  } else {
+    msg=txt;
   }
 
-  // Caso 2: só tem MENSAGEM_FIM — pega tudo antes dele
-  if(idx2!==-1){
-    // Pega o bloco antes do MENSAGEM_FIM, remove linhas de contexto do início
-    const antes=txt.substring(0,idx2).trim();
-    const lines=antes.split('\n');
-    const skip=lines.findIndex(l=>{
-      const t=l.trim();
-      return t.length>3&&
-        !t.match(/^(CONTEXTO|FORMATO|MENSAGEM|REGRA|HORARIO|===|---)/i)&&
-        !t.match(/^[*_#\-=]+$/);
-    });
-    const msg=(skip>=0?lines.slice(skip):lines).join('\n').trim();
-    if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
-  }
+  // Limpa o resultado
+  msg=msg.trim();
 
-  // Caso 3: só tem MENSAGEM_INICIO — pega tudo depois
-  if(idx1!==-1){
-    const msg=txt.substring(idx1+15).replace(/^\n+/,'').trim();
-    if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
-  }
-
-  // Caso 4: sem delimiters — remove linhas de contexto
-  const lines=txt.split('\n');
-  const skip=lines.findIndex(l=>{
+  // Remove linhas de contexto do início (CONTEXTO:, linhas de separação, etc)
+  const lines=msg.split('\n');
+  const start=lines.findIndex(l=>{
     const t=l.trim();
     return t.length>3&&
-      !t.match(/^(CONTEXTO|FORMATO|MENSAGEM|REGRA|HORARIO|===|---)/i)&&
-      !t.match(/^[*_#\-=]+$/);
+      !t.match(/^(CONTEXTO|FORMATO|MENSAGEM|REGRA|HORARIO|===|---|INICIO|FIM|\|\|\|)/i)&&
+      !t.match(/^[*_#\-=|]+$/);
   });
-  if(skip>0){campo.value=lines.slice(skip).join('\n').trim();toast('✅ Contexto removido!');return}
+  if(start>0) msg=lines.slice(start).join('\n').trim();
 
-  campo.value=txt.trim();toast('ℹ️ Texto mantido');
+  // Remove qualquer MENSAGEM_FIM residual
+  msg=msg.replace(/\*{0,2}MENSAGEM_FIM\*{0,2}/g,'').replace(/\|\|\|FIM\|\|\|/g,'').trim();
+
+  if(msg.length>2){
+    campo.value=msg;
+    toast('✅ Mensagem extraída!');
+  } else {
+    toast('⚠️ Não foi possível extrair. Cole só a mensagem manualmente.');
+  }
 }
 
 function filterLeads(){
