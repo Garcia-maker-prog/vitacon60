@@ -1474,39 +1474,35 @@ function delLead(){if(!confirm('Excluir?'))return;leads.splice(eiL,1);ls('leads'
 
 // ════ IA NO CADASTRO ════
 function gerarMsgIALead(){
-  // Called from inside the form — uses current form values
   const name=(document.getElementById('lf-name').value||'').trim();
   const hist=(document.getElementById('lf-hist').value||'').trim();
   const product=document.getElementById('lf-product').value||'';
   const fu=document.getElementById('lf-fu').value||'';
   const stage=document.getElementById('lf-stage').value||'hot';
   if(!hist){toast('⚠️ Preencha o histórico primeiro!');return}
-  const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
-  const _h2=new Date().getHours();
-  const _saud2=_h2<12?'Bom dia':_h2<18?'Boa tarde':'Boa noite';
-  const _h4=new Date().getHours();
-  const _saud4=_h4<12?'Bom dia':_h4<18?'Boa tarde':'Boa noite';
+  const stageLabel={hot:'QUENTE',warm:'MORNO',cold:'FRIO',won:'FECHADO'};
+  const h=new Date().getHours();
+  const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
   const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise o histórico deste lead e crie UMA mensagem de WhatsApp para o follow-up agendado.
 
-HORARIO ATUAL: ${_h4}h — saudacao para agora: "${_saud4}". Como o follow-up e para ${fd(l.fu||'')}, use "Bom dia" (mensagem sera enviada de manha).
+HORARIO ATUAL: ${h}h — use obrigatoriamente a saudacao "${saud}" no inicio da mensagem.
 
-HORARIO ATUAL: ${_h2}h — saudacao adequada agora: "${_saud2}". Use-a no inicio da mensagem.
-
-═══ LEAD ═══
+=== LEAD ===
 Nome: ${name||'não informado'}
 Produto: ${product||'não informado'}
 Temperatura: ${stageLabel[stage]||stage}
 Follow-up agendado: ${fu?fd(fu):'não definido'}
 
-═══ HISTÓRICO / CONVERSA ═══
+=== HISTÓRICO / CONVERSA ===
 ${hist}
 
-═══ TAREFA ═══
+=== TAREFA ===
 1. Leia o histórico completo — entenda o contexto, interesse e tom da conversa
 2. Crie UMA mensagem de WhatsApp para enviar no dia do follow-up
 3. A mensagem deve dar continuidade natural ao histórico, não recomeçar do zero
 4. Máximo 5 linhas. Natural. Sem parecer robô
 5. Use o primeiro nome: ${name.split(' ')[0]||'[Nome]'}
+6. Comece com "${saud}, [Nome]!"
 
 FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
