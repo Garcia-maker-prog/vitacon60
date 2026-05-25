@@ -1017,7 +1017,11 @@ function agendarProximoFU(i){
   const l=leads[i];
   const s=scr(l),comm=gc(l);
   const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
+  const _h=new Date().getHours();
+  const _saud=_h<12?'Bom dia':_h<18?'Boa tarde':'Boa noite';
   const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Acabei de enviar uma mensagem para este lead. Analise o histórico completo e crie a PRÓXIMA mensagem de follow-up para enviar em ${fd(novaData)}.
+
+HORARIO ATUAL: ${_h}h — use a saudacao "${_saud}" se a mensagem for enviada agora, ou adeque para o horario do envio (${fd(novaData)} de manha).
 
 ═══ LEAD ═══
 Nome: ${l.name}
@@ -1091,7 +1095,11 @@ function abrirIAFollowUp(i){
   const ov=l.fu&&l.fu<td();
   const waLink=l.wa?`https://wa.me/55${l.wa}`:'';
 
+  const _h3=new Date().getHours();
+  const _saud3=_h3<12?'Bom dia':_h3<18?'Boa tarde':'Boa noite';
   const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise este lead e gere UMA mensagem de WhatsApp personalizada para enviar agora.
+
+HORARIO ATUAL: ${_h3}h — use obrigatoriamente a saudacao "${_saud3}" no inicio da mensagem.
 
 ═══ LEAD ═══
 Nome: ${l.name}
@@ -1474,7 +1482,15 @@ function gerarMsgIALead(){
   const stage=document.getElementById('lf-stage').value||'hot';
   if(!hist){toast('⚠️ Preencha o histórico primeiro!');return}
   const stageLabel={hot:'🔥 QUENTE',warm:'🌡️ MORNO',cold:'❄️ FRIO',won:'✅ FECHADO'};
+  const _h2=new Date().getHours();
+  const _saud2=_h2<12?'Bom dia':_h2<18?'Boa tarde':'Boa noite';
+  const _h4=new Date().getHours();
+  const _saud4=_h4<12?'Bom dia':_h4<18?'Boa tarde':'Boa noite';
   const prompt=`Você é especialista em vendas de imóveis de alto padrão em SP. Analise o histórico deste lead e crie UMA mensagem de WhatsApp para o follow-up agendado.
+
+HORARIO ATUAL: ${_h4}h — saudacao para agora: "${_saud4}". Como o follow-up e para ${fd(l.fu||'')}, use "Bom dia" (mensagem sera enviada de manha).
+
+HORARIO ATUAL: ${_h2}h — saudacao adequada agora: "${_saud2}". Use-a no inicio da mensagem.
 
 ═══ LEAD ═══
 Nome: ${name||'não informado'}
