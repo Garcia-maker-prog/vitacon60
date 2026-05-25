@@ -2598,39 +2598,49 @@ function limparEmojis(txt){
 function extrairTexto(raw,campo){
   if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
 
-  // 1. Tenta extrair entre MENSAGEM_INICIO / MENSAGEM_FIM
-  const match=raw.match(/MENSAGEM_INICIO\s*\n([\s\S]*?)\nMENSAGEM_FIM/);
+  // Normaliza — remove markdown bold/italic dos delimiters
+  const txt=raw
+    .replace(/\*\*MENSAGEM_INICIO\*\*/g,'MENSAGEM_INICIO')
+    .replace(/\*\*MENSAGEM_FIM\*\*/g,'MENSAGEM_FIM')
+    .replace(/\*MENSAGEM_INICIO\*/g,'MENSAGEM_INICIO')
+    .replace(/\*MENSAGEM_FIM\*/g,'MENSAGEM_FIM')
+    .replace(/__MENSAGEM_INICIO__/g,'MENSAGEM_INICIO')
+    .replace(/__MENSAGEM_FIM__/g,'MENSAGEM_FIM');
+
+  // 1. Extrai entre MENSAGEM_INICIO / MENSAGEM_FIM
+  const match=txt.match(/MENSAGEM_INICIO\s*\n([\s\S]*?)\nMENSAGEM_FIM/);
   if(match&&match[1]&&match[1].trim()){
-    campo.value=limparEmojis(match[1].trim());
+    campo.value=match[1].trim();
     toast('✅ Mensagem extraída!');return;
   }
 
-  // 2. Tenta extrair entre --- delimiters
-  const match2=raw.match(/---+\s*\n([\s\S]*?)\n\s*---+/);
+  // 2. Tenta entre --- delimiters
+  const match2=txt.match(/---+\s*\n([\s\S]*?)\n\s*---+/);
   if(match2&&match2[1]&&match2[1].trim()){
-    campo.value=limparEmojis(match2[1].trim());
+    campo.value=match2[1].trim();
     toast('✅ Mensagem extraída!');return;
   }
 
   // 3. Remove linhas de contexto do início
-  const lines=raw.split('\n');
+  const lines=txt.split('\n');
   const skip=lines.findIndex(l=>{
     const t=l.trim();
     return t.length>0&&
       !t.startsWith('CONTEXTO')&&
       !t.startsWith('FORMATO')&&
       !t.startsWith('MENSAGEM')&&
+      !t.startsWith('REGRA')&&
       !t.startsWith('📊')&&
       !t.match(/^[-─═✦◆*]+$/)&&
       !t.match(/^(contexto|análise|analise|context):/i);
   });
   if(skip>0){
-    campo.value=limparEmojis(lines.slice(skip).join('\n').trim());
+    campo.value=lines.slice(skip).join('\n').trim();
     toast('✅ Contexto removido!');return;
   }
 
-  campo.value=limparEmojis(raw.trim());
-  toast('ℹ️ Texto limpo aplicado');
+  campo.value=txt.trim();
+  toast('ℹ️ Texto mantido como está');
 }
 
 function filterLeads(){
