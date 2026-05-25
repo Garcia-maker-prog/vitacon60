@@ -2529,23 +2529,31 @@ function abrirWA(numero, msg=''){
   if(!numero)return;
   const num=String(numero).replace(/\D/g,'');
   const numFull=num.startsWith('55')?num:'55'+num;
-  const link=msg
+
+  // Tenta abrir o WhatsApp Desktop instalado (Business ou normal)
+  const linkApp=msg
+    ?'whatsapp://send?phone='+numFull+'&text='+encodeURIComponent(msg)
+    :'whatsapp://send?phone='+numFull;
+  const linkWeb=msg
     ?'https://wa.me/'+numFull+'?text='+encodeURIComponent(msg)
     :'https://wa.me/'+numFull;
 
-  try{
-    if(window._waTab&&!window._waTab.closed){
-      // Reutiliza a aba existente
-      window._waTab.location.href=link;
-      window._waTab.focus();
+  // Tenta o app instalado primeiro via iframe invisível
+  const iframe=document.createElement('iframe');
+  iframe.style.display='none';
+  iframe.src=linkApp;
+  document.body.appendChild(iframe);
+  setTimeout(()=>{document.body.removeChild(iframe)},2000);
+
+  // Fallback para web na mesma aba reutilizada
+  setTimeout(()=>{
+    if(!window._waTab||window._waTab.closed){
+      window._waTab=window.open(linkWeb,'wa');
     } else {
-      // Abre uma nova aba com nome fixo
-      window._waTab=window.open(link,'vitacon_wa');
+      try{window._waTab.location.replace(linkWeb);window._waTab.focus();}
+      catch(e){window._waTab=window.open(linkWeb,'wa');}
     }
-  }catch(e){
-    // Fallback se cross-origin bloquear
-    window._waTab=window.open(link,'vitacon_wa');
-  }
+  },300);
 }
 
 // ════ ENVIO WA COM HISTÓRICO SEMPRE ════
