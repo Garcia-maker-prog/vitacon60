@@ -2638,6 +2638,7 @@ function extrairTexto(raw,campo){
       !t.match(/^[*_#\-=|]+$/);
   });
   if(start>0) msg=lines.slice(start).join('\n').trim();
+  else if(start===0) msg=lines.join('\n').trim(); // sem contexto, usa tudo
 
   // Remove qualquer MENSAGEM_FIM residual
   msg=msg.replace(/\*{0,2}MENSAGEM_FIM\*{0,2}/g,'').replace(/\|\|\|FIM\|\|\|/g,'').trim();
