@@ -2598,29 +2598,41 @@ function limparEmojis(txt){
 function extrairTexto(raw,campo){
   if(!raw||!raw.trim()){toast('⚠️ Campo vazio!');return}
 
-  // Normaliza quebras de linha e remove markdown dos delimiters
-  const txt=raw
-    .replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+  const txt=raw.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
     .replace(/\*{1,2}(MENSAGEM_INICIO|MENSAGEM_FIM)\*{1,2}/g,'$1')
     .replace(/_{1,2}(MENSAGEM_INICIO|MENSAGEM_FIM)_{1,2}/g,'$1');
 
-  // 1. Entre MENSAGEM_INICIO e MENSAGEM_FIM (qualquer espaçamento)
   const idx1=txt.indexOf('MENSAGEM_INICIO');
   const idx2=txt.indexOf('MENSAGEM_FIM');
+
+  // Caso 1: tem os dois delimiters
   if(idx1!==-1&&idx2!==-1&&idx2>idx1){
-    let msg=txt.substring(idx1+15,idx2).trim();
-    // Remove linha vazia inicial
-    msg=msg.replace(/^\n+/,'').replace(/\n+$/,'');
+    const msg=txt.substring(idx1+15,idx2).replace(/^\n+|\n+$/g,'').trim();
     if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
   }
 
-  // 2. Entre --- delimiters
-  const match2=txt.match(/---+\s*\n([\s\S]*?)\n\s*---+/);
-  if(match2&&match2[1]&&match2[1].trim()){
-    campo.value=match2[1].trim();toast('✅ Mensagem extraída!');return;
+  // Caso 2: só tem MENSAGEM_FIM — pega tudo antes dele
+  if(idx2!==-1){
+    // Pega o bloco antes do MENSAGEM_FIM, remove linhas de contexto do início
+    const antes=txt.substring(0,idx2).trim();
+    const lines=antes.split('\n');
+    const skip=lines.findIndex(l=>{
+      const t=l.trim();
+      return t.length>3&&
+        !t.match(/^(CONTEXTO|FORMATO|MENSAGEM|REGRA|HORARIO|===|---)/i)&&
+        !t.match(/^[*_#\-=]+$/);
+    });
+    const msg=(skip>=0?lines.slice(skip):lines).join('\n').trim();
+    if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
   }
 
-  // 3. Remove tudo antes da primeira linha que não é contexto/formato
+  // Caso 3: só tem MENSAGEM_INICIO — pega tudo depois
+  if(idx1!==-1){
+    const msg=txt.substring(idx1+15).replace(/^\n+/,'').trim();
+    if(msg.length>2){campo.value=msg;toast('✅ Mensagem extraída!');return}
+  }
+
+  // Caso 4: sem delimiters — remove linhas de contexto
   const lines=txt.split('\n');
   const skip=lines.findIndex(l=>{
     const t=l.trim();
