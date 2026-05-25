@@ -582,6 +582,23 @@ select.inp option{background:var(--s1)}
   <p style="font-size:10px;color:var(--txt3);text-align:center">O app abre o WhatsApp para cada lead em sequência. Você confirma o envio de cada mensagem.</p>
 </div></div>
 
+<!-- DISPARO CONTROLE -->
+<div class="overlay" id="m-disparo-ctrl" style="z-index:500"><div class="modal">
+  <div class="modal-hdr"><span>📣 DISPARO EM ANDAMENTO</span></div>
+  <div style="text-align:center;padding:10px 0 16px">
+    <div style="font-family:var(--d);font-size:36px;color:var(--acc)" id="ctrl-num">1/10</div>
+    <div style="font-size:14px;font-weight:700;margin-top:4px" id="ctrl-nome">Nome do Lead</div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:4px" id="ctrl-wa"></div>
+  </div>
+  <div style="background:var(--s2);border-radius:10px;padding:11px;margin-bottom:14px;font-size:12px;color:var(--txt2);line-height:1.6;max-height:120px;overflow-y:auto" id="ctrl-msg-preview"></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button onclick="abrirWADisparo()" class="btn" style="flex:2;background:var(--wa);color:#fff;border:none;font-size:13px">📲 Abrir WhatsApp</button>
+    <button onclick="cancelarDisparo()" class="btn btn-ghost" style="flex:1;font-size:12px">✕ Cancelar</button>
+  </div>
+  <button onclick="avancarDisparo()" class="btn" style="width:100%;background:var(--acc);color:#fff;border:none;font-size:14px;font-weight:800;padding:13px">➡️ Próximo lead</button>
+  <div style="font-size:10px;color:var(--txt3);text-align:center;margin-top:8px">Abra o WhatsApp, envie e volte aqui para continuar</div>
+</div></div>
+
 <!-- MODO FOCO -->
 <div class="overlay" id="m-foco" style="z-index:300"><div class="modal" style="max-height:95vh">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
@@ -1179,7 +1196,7 @@ Formato de resposta:
   if(l.wa){
     setTimeout(()=>{
       if(confirm('Abrir WhatsApp de '+l.name.split(' ')[0]+'?\n\nCopie a mensagem do Claude e cole no WhatsApp.')){
-        window.open('https://wa.me/55'+l.wa,'_blank');
+        abrirWA(l.wa);
       }
     },1800);
   }
@@ -1672,8 +1689,7 @@ function dispararAlarme(i){
       if(l.wa&&msg){
         const btn=document.createElement('a');
         btn.className='alarm-wa-btn';
-        btn.href='https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msg);
-        btn.target='_blank';
+        btn.onclick=function(e){e.preventDefault();abrirWA(l.wa,msg);};
         btn.style.cssText='background:#25D366;color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0';
         btn.textContent='📲 Enviar';
         btn.onclick=function(){
@@ -1702,7 +1718,7 @@ function dispararAlarme(i){
         });
         if(l.wa&&msg){
           n.onclick=function(){
-            try{window.focus();window.open('https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msg),'_blank')}catch(e){}
+            try{window.focus();abrirWA(l.wa,msg)}catch(e){}
             n.close();
           };
         }
@@ -1728,7 +1744,7 @@ function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t|
   ls('leads',leads);
   renderHdr();
   toast('💬 Enviado! Próximo follow-up agendado ✅');
-  window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(preview)}`,'_blank');
+  abrirWA(l.wa, preview);
 };wb.style.opacity='1'}else{wb.onclick=()=>toast('⚠️ Adicione o WhatsApp primeiro!');wb.style.opacity='.6'}renderTplList()}
 function saveMsgFu(){
   const d=document.getElementById('msg-fu').value;
@@ -2119,7 +2135,7 @@ function previewApres(pi,ai,li){
       const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
       leads[li].hist=(leads[li].hist||'')+`\n\n📤 [${ds}] — ${a.nome} (${p.name}):\n${msg}`;
       ls('leads',leads);toast('💬 Salvo no histórico!');
-      window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(msg)}`,'_blank');
+      abrirWA(l.wa, msg);
     };
     waBtn.style.opacity='1';
   }else{
@@ -2159,7 +2175,7 @@ function enviarApresWA(pi,ai,li){
   agendarProximoFU(li);
   ls('leads',leads);
   toast('💬 Enviado! Próximo follow-up agendado ✅');
-  window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(txt)}`,'_blank');
+  abrirWA(l.wa, txt);
 }
 
 function openApresParaLead(pi){
@@ -2201,7 +2217,7 @@ function selectApres(ai){
       leads[apresLeadIdx].hist=(leads[apresLeadIdx].hist||'')+`\n\n📤 [${ds}] — Apresentação ${p.name}:\n${msg}`;
       ls('leads',leads);
       toast('💬 Enviando...');
-      window.open(`https://wa.me/55${l.wa}?text=${encodeURIComponent(msg)}`,'_blank');
+      abrirWA(l.wa, msg);
     };
     waBtn.style.opacity='1';
     waBtn.textContent='📲 Enviar por WhatsApp';
@@ -2244,7 +2260,7 @@ function renderParceiros(){
       ${p.perfil?`<a href="${p.perfil}" target="_blank" style="font-size:10px;color:var(--blue);text-decoration:none">🔗 Ver perfil</a>`:''}
       ${p.obs?`<div style="font-size:11px;color:var(--txt2);margin-top:6px;padding:6px 8px;background:var(--s3);border-radius:6px">${p.obs}</div>`:''}
       <div style="display:flex;gap:6px;margin-top:8px">
-        ${p.wa?`<a href="https://wa.me/55${p.wa}" target="_blank" style="flex:1;background:var(--wa);color:#fff;border-radius:7px;padding:6px;text-align:center;text-decoration:none;font-size:11px;font-weight:700">📲 WhatsApp</a>`:''}
+        ${p.wa?`<button onclick="abrirWA('${p.wa}')" style="flex:1;background:var(--wa);color:#fff;border:none;border-radius:7px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 WhatsApp</button>`:''}
         <button onclick="copiarScriptPara('${p.nome.split(' ')[0]}')" style="flex:1;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--purple);border-radius:7px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Script</button>
       </div>
     </div>`).join('');
@@ -2306,7 +2322,7 @@ const TEMA_DIA={
   6:{tema:'Análise & Descanso',icon:'📊',foco:'Contar contatos feitos na semana e ajustar estratégia',leitura:'Lista de parceiros · métricas da semana',cor:'var(--txt2)'},
 };
 // ════ DISPARO EM MASSA ════
-let disparoFila=[],disparoIdx=0;
+let disparoFila=[],disparoIdx=0,disparoMsg='',disparoTitulo='';
 
 function getDestinatarios(){
   const hot=document.getElementById('disp-hot')?.checked;
@@ -2331,7 +2347,7 @@ function previewDisparo(){
   el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--txt2);margin-bottom:8px">${lista.length} destinatário${lista.length>1?'s':''}</div>`+
     lista.map(l=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--br)">
       <div style="font-size:16px">${l.stage==='hot'?'🔥':l.stage==='warm'?'🌡️':'❄️'}</div>
-      <div style="flex:1"><div style="font-size:12px;font-weight:700">${l.name}</div><div style="font-size:10px;color:var(--txt3)">${l.wa?'📲 '+l.wa:'Sem WhatsApp'}</div></div>
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">${l.name}</div><div style="font-size:10px;color:var(--txt3)">${l.wa?l.wa:'Sem WhatsApp'}</div></div>
     </div>`).join('');
 }
 
@@ -2340,49 +2356,60 @@ function iniciarDisparo(){
   if(!msg){toast('Escreva a mensagem!');return}
   const lista=getDestinatarios().filter(l=>l.wa);
   if(!lista.length){toast('Nenhum lead com WhatsApp!');return}
-  if(!confirm('Iniciar disparo para '+lista.length+' leads?\n\nO WhatsApp abre para cada lead em sequência.\nVocê confirma cada envio individualmente.'))return;
-  disparoFila=lista;disparoIdx=0;
+  if(!confirm('Iniciar disparo para '+lista.length+' leads?\n\nO app vai guiar o envio lead a lead.\nVocê confirma cada envio individualmente.'))return;
+  disparoMsg=msg;
+  disparoTitulo=document.getElementById('disp-titulo')?.value||'Disparo em massa';
+  disparoFila=lista;
+  disparoIdx=0;
   closeM('m-disparo');
-  toast('Iniciando disparo para '+lista.length+' leads...');
-  setTimeout(proximoDisparo,800);
+  setTimeout(mostrarCtrlDisparo,300);
 }
 
-function proximoDisparo(){
+function mostrarCtrlDisparo(){
   if(disparoIdx>=disparoFila.length){
-    toast('Disparo concluido! '+disparoFila.length+' mensagens.');
-    showNotif('OK','Disparo concluido!',disparoFila.length+' leads contatados');
+    // Concluído
+    document.getElementById('m-disparo-ctrl').classList.remove('open');
+    toast('Disparo concluido! '+disparoFila.length+' leads contactados.');
+    showNotif('OK','Disparo concluido!',disparoFila.length+' mensagens enviadas');
     disparoFila=[];disparoIdx=0;return;
   }
   const l=disparoFila[disparoIdx];
-  const msg=(document.getElementById('disp-msg')?.value||'').trim();
-  const titulo=document.getElementById('disp-titulo')?.value||'Disparo em massa';
   const nome=l.name.split(' ')[0];
-  const msgP=msg.replace(/\[NOME\]/g,nome);
-  // Histórico
+  const msgP=disparoMsg.replace(/\[NOME\]/g,nome);
+
+  // Atualiza modal de controle
+  document.getElementById('ctrl-num').textContent=(disparoIdx+1)+'/'+disparoFila.length;
+  document.getElementById('ctrl-nome').textContent=l.name;
+  document.getElementById('ctrl-wa').textContent=l.wa;
+  document.getElementById('ctrl-msg-preview').textContent=msgP;
+  openM('m-disparo-ctrl');
+}
+
+function abrirWADisparo(){
+  const l=disparoFila[disparoIdx];if(!l)return;
+  const nome=l.name.split(' ')[0];
+  const msgP=disparoMsg.replace(/\[NOME\]/g,nome);
+  // Registra no histórico
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   const idx=leads.findIndex(ld=>ld.id===l.id);
-  if(idx!==-1){leads[idx].hist=(leads[idx].hist||'')+'\n\n['+ds+'] — '+titulo+':\n'+msgP;ls('leads',leads)}
-  // Abre WA
-  window.open('https://wa.me/55'+l.wa+'?text='+encodeURIComponent(msgP),'_blank');
-  disparoIdx++;
-  // Banner de controle
-  const notif=document.getElementById('notif');
-  const ni=document.getElementById('ni'),nt=document.getElementById('nt'),ns=document.getElementById('ns');
-  if(ni)ni.textContent='📣';
-  if(nt)nt.textContent=disparoIdx+'/'+disparoFila.length+': '+nome;
-  if(ns)ns.textContent=disparoIdx<disparoFila.length?'Toque em Proximo apos enviar':'Ultimo lead!';
-  if(notif){
-    notif.classList.add('show');
-    const ex=notif.querySelector('.alarm-wa-btn');if(ex)ex.remove();
-    const btn=document.createElement('button');
-    btn.textContent=disparoIdx<disparoFila.length?'Proximo':'Concluir';
-    btn.className='alarm-wa-btn';
-    btn.style.cssText='background:var(--acc);color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f);white-space:nowrap;flex-shrink:0';
-    btn.onclick=()=>{notif.classList.remove('show');setTimeout(proximoDisparo,500)};
-    const cb=notif.querySelector('button');if(cb)notif.insertBefore(btn,cb);
-    setTimeout(()=>notif.classList.remove('show'),60000);
+  if(idx!==-1){
+    leads[idx].hist=(leads[idx].hist||'')+'\n\n['+ds+'] — '+disparoTitulo+':\n'+msgP;
+    ls('leads',leads);
   }
+  abrirWA(l.wa, msgP);
+}
+
+function avancarDisparo(){
+  disparoIdx++;
+  mostrarCtrlDisparo();
+}
+
+function cancelarDisparo(){
+  if(!confirm('Cancelar disparo? Foram enviados '+disparoIdx+' de '+disparoFila.length+' leads.'))return;
+  document.getElementById('m-disparo-ctrl').classList.remove('open');
+  toast('Disparo cancelado. '+disparoIdx+' enviados.');
+  disparoFila=[];disparoIdx=0;
 }
 
 // ════ PAINEL DO DIA ════
@@ -2494,6 +2521,20 @@ function addArgumento(){
 }
 function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].splice(i,1);ls('argumentos',argumentos);renderArgs();toast('🗑️ Removido!')}
 
+// ════ WHATSAPP — ABRE DIRETO NO APP ════
+function abrirWA(numero, msg=''){
+  // Remove non-digits, ensure 55 prefix
+  const num=('55'+numero).replace(/\D/g,'').replace(/^55+55/,'55');
+  // whatsapp:// opens the desktop app directly, no new browser tabs
+  const link=msg
+    ?'whatsapp://send?phone='+num+'&text='+encodeURIComponent(msg)
+    :'whatsapp://send?phone='+num;
+  // Try native protocol first
+  const a=document.createElement('a');
+  a.href=link;
+  a.click();
+}
+
 // ════ ENVIO WA COM HISTÓRICO SEMPRE ════
 function enviarWA(i, msg=''){
   const l=leads[i];if(!l||!l.wa)return;
@@ -2505,8 +2546,7 @@ function enviarWA(i, msg=''){
     leads[i].tentativas=(leads[i].tentativas||0)+1;
     ls('leads',leads);
   }
-  const url=msgReal?`https://wa.me/55${l.wa}?text=${encodeURIComponent(msgReal)}`:`https://wa.me/55${l.wa}`;
-  window.open(url,'_blank');
+  abrirWA(l.wa, msgReal);
   if(msgReal)agendarProximoFU(i);
   setTimeout(()=>{renderHdr();renderFuHoje();renderLeads();renderReport()},400);
 }
@@ -2757,7 +2797,7 @@ function openQuickWA(){
           <div style="font-size:10px;color:${l.cor};font-weight:700">${l.urg}${dias!==null?' · '+dias+'d sem contato':''}</div>
           <div style="font-size:10px;color:var(--txt3)">${l.product||''}${l.fu?' · '+fd(l.fu):''}</div>
         </div>
-        ${l.wa?`<a href="https://wa.me/55${l.wa}" target="_blank" style="background:var(--wa);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;text-decoration:none;flex-shrink:0">📲</a>`:''}
+        ${l.wa?`<button onclick="abrirWA('${l.wa}')" style="background:var(--wa);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;font-family:var(--f);flex-shrink:0">📲</button>`:''}
         <button onclick="closeM('m-quickwa');openMsg(${i})" style="background:var(--blue);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f);flex-shrink:0">💬</button>
       </div>`;
     }).join('');
