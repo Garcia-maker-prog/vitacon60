@@ -1107,6 +1107,8 @@ ${l.hist||'Sem histórico.'}
 5. Máximo 5 linhas. Natural. Direto. Primeiro nome: ${l.name.split(' ')[0]}
 6. Não repita o que já foi dito — dê continuidade real à conversa
 
+REGRA CRITICA: A mensagem NAO pode ter emojis. Emojis viram pontos de interrogacao no WhatsApp. Use apenas texto puro.
+
 FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
 CONTEXTO: [sua análise em 1 linha]
@@ -1564,17 +1566,16 @@ Follow-up: ${fu?fd(fu):'não definido'}
 ${hist||'Sem histórico registrado.'}
 
 === TAREFA ===
+(REGRA: sem emojis na mensagem — viram ? no WhatsApp)
 1. Leia o histórico completo e entenda o contexto real da conversa
 2. Crie UMA mensagem de WhatsApp personalizada para este momento
 3. Continuidade natural — não recomeçar do zero
 4. Máximo 5 linhas. Natural. Sem parecer robô
 5. Comece com "${saud}, ${name.split(' ')[0]}!"
 
-FORMATO OBRIGATÓRIO:
+REGRA CRITICA: A mensagem NAO pode ter emojis. Emojis viram pontos de interrogacao no WhatsApp. Use apenas texto puro.
 
-CONTEXTO: [análise em 1 linha]
-MENSAGEM_INICIO
-[mensagem aqui, pronta para WhatsApp]
+FORMATO OBRIGATÓRIO:
 MENSAGEM_FIM`;
 
   try{
@@ -1618,6 +1619,8 @@ ${l.hist||'Sem histórico.'}
 3. Continuidade natural ao histórico, não recomeçar do zero
 4. Máximo 5 linhas. Natural. Direto
 5. Primeiro nome: ${l.name.split(' ')[0]}
+
+REGRA CRITICA: A mensagem NAO pode ter emojis. Emojis viram pontos de interrogacao no WhatsApp. Use apenas texto puro.
 
 FORMATO OBRIGATÓRIO — siga exatamente assim, sem alterar:
 
@@ -2521,19 +2524,27 @@ function addArgumento(){
 }
 function delArgumento(cat,i){if(!confirm('Excluir?'))return;argumentos[cat].splice(i,1);ls('argumentos',argumentos);renderArgs();toast('🗑️ Removido!')}
 
-// ════ WHATSAPP — ABRE DIRETO NO APP ════
+// ════ WHATSAPP — SEMPRE NA MESMA ABA ════
 function abrirWA(numero, msg=''){
+  if(!numero)return;
   const num=String(numero).replace(/\D/g,'');
   const numFull=num.startsWith('55')?num:'55'+num;
   const link=msg
     ?'https://wa.me/'+numFull+'?text='+encodeURIComponent(msg)
     :'https://wa.me/'+numFull;
-  // Reutiliza sempre a mesma aba WA
-  if(!window._waTab||window._waTab.closed){
-    window._waTab=window.open(link,'whatsapp_vitacon');
-  } else {
-    window._waTab.location.href=link;
-    window._waTab.focus();
+
+  try{
+    if(window._waTab&&!window._waTab.closed){
+      // Reutiliza a aba existente
+      window._waTab.location.href=link;
+      window._waTab.focus();
+    } else {
+      // Abre uma nova aba com nome fixo
+      window._waTab=window.open(link,'vitacon_wa');
+    }
+  }catch(e){
+    // Fallback se cross-origin bloquear
+    window._waTab=window.open(link,'vitacon_wa');
   }
 }
 
@@ -2566,13 +2577,13 @@ function extrairMsgIABtn(){
   extrairTexto(campo.value,campo);
 }
 function limparEmojis(txt){
-  // Remove caracteres problemáticos que viram ? no Windows
+  // Remove apenas variation selectors e caracteres invisíveis que causam ?
   return txt
-    .replace(/[\u{1F300}-\u{1F9FF}]/gu,'')  // emojis
-    .replace(/[\u{2600}-\u{26FF}]/gu,'')     // símbolos
-    .replace(/[\u{2700}-\u{27BF}]/gu,'')     // dingbats
-    .replace(/[\u{FE00}-\u{FEFF}]/gu,'')     // variation selectors
-    .replace(/  +/g,' ')                      // espaços duplos
+    .replace(/\uFE0F/g,'')    // variation selector 16 (causa ? em alguns sistemas)
+    .replace(/\uFE0E/g,'')    // variation selector 15
+    .replace(/\u200D/g,'')    // zero width joiner
+    .replace(/\u200B/g,'')    // zero width space
+    .replace(/  +/g,' ')
     .trim();
 }
 
@@ -2968,7 +2979,7 @@ function calcGerarWhatsapp(){
   msg+=`*Valor Total: ${calcFmtR(total)}*\n\n`;
   msg+=`_Valores sujeitos a confirmacao pela tabela oficial Vitacon._`;
 
-  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  window._waTab=window.open('https://wa.me/?text='+encodeURIComponent(msg),'whatsapp_vitacon');
 }
 
 function openCalcFluxo(i){
