@@ -1149,7 +1149,7 @@ MENSAGEM_FIM`;
 function registrarEnvioFU(i){
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up enviado:\n'+(leads[i].fu_msg||'');
+  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Mensagem enviada';
   leads[i].tentativas=(leads[i].tentativas||0)+1;
   agendarProximoFU(i);
   setTimeout(()=>{renderHdr();renderFuHoje();renderReport()},300);
@@ -1699,7 +1699,7 @@ function dispararAlarme(i){
           try{
             const now=new Date();
             const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-            leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up automático:\n'+msg;
+            leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Follow-up automático enviado';
             agendarProximoFU(i);
             ls('leads',leads);renderHdr();
           }catch(e){}
@@ -1742,7 +1742,7 @@ function selTpl(id){selT=id;const t=tpls.find(t=>t.id===id),l=leads[msgI];if(!t|
   const preview=document.getElementById('msg-prev').value;
   const now=new Date();
   const ds=`${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — ${t.name}:\n${preview}`;
+  leads[msgI].hist=(leads[msgI].hist||'')+`\n\n📤 [${ds}] — Mensagem enviada (${t.name})`;
   agendarProximoFU(msgI);
   ls('leads',leads);
   renderHdr();
@@ -2562,11 +2562,10 @@ function enviarWA(i, msg=''){
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   const msgReal=msg||l.fu_msg||'';
-  if(msgReal){
-    leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Mensagem enviada:\n'+msgReal;
-    leads[i].tentativas=(leads[i].tentativas||0)+1;
-    ls('leads',leads);
-  }
+  // Só registra data/hora — não duplica o texto da mensagem
+  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+']: Mensagem enviada';
+  leads[i].tentativas=(leads[i].tentativas||0)+1;
+  ls('leads',leads);
   abrirWA(l.wa, msgReal);
   if(msgReal)agendarProximoFU(i);
   setTimeout(()=>{renderHdr();renderFuHoje();renderLeads();renderReport()},400);
@@ -2804,7 +2803,7 @@ function regAcaoFoco(i,tipo){
   if(tipo==='nota'){closeM('m-foco');openNotaRapida(i);return}
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  leads[i].hist=(leads[i].hist||'')+'\n\n📲 ['+ds+']: Contato via WhatsApp';
+  leads[i].hist=(leads[i].hist||'')+'\n\n📲 ['+ds+']: Contato WhatsApp';
   agendarProximoFU(i);
   renderHdr();renderFuHoje();renderReport();
 }
