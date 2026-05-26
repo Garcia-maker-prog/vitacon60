@@ -1147,12 +1147,7 @@ MENSAGEM_FIM`;
 }
 
 function registrarEnvioFU(i){
-  const now=new Date();
-  const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+'] — Mensagem enviada';
-  leads[i].tentativas=(leads[i].tentativas||0)+1;
-  agendarProximoFU(i);
-  setTimeout(()=>{renderHdr();renderFuHoje();renderReport()},300);
+  enviarWA(i, leads[i]?.fu_msg||'');
 }
 function abrirIAFollowUp(i){
   const l=leads[i];if(!l)return;
