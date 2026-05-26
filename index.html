@@ -423,9 +423,12 @@ select.inp option{background:var(--s1)}
       <span>💬 Mensagem do follow-up</span>
       <button onclick="gerarMsgIALead()" type="button" style="background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:3px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">🤖 Gerar com IA</button>
     </label>
-    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a resposta completa do Claude e toque em Extrair..." style="min-height:80px"></textarea>
-    <button type="button" onclick="extrairMsgIABtn()" style="width:100%;margin-top:6px;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">✂️ Extrair só a mensagem</button>
-    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole a resposta completa do Claude acima, depois toque em Extrair.</div>
+    <textarea class="inp" id="lf-fu-msg" placeholder="Cole aqui a resposta completa do Claude e toque em Extrair..." style="min-height:80px" onfocus="this.select()"></textarea>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <button type="button" onclick="extrairMsgIABtn()" style="flex:1;background:linear-gradient(135deg,#a855f7,#3b82f6);color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">✂️ Extrair mensagem</button>
+      <button type="button" onclick="document.getElementById('lf-fu-msg').value='';toast('🗑️ Campo limpo')" style="background:var(--s3);border:1px solid var(--br);color:var(--txt3);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--f)">🗑️</button>
+    </div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Cole a resposta do Claude, toque em Extrair. Use 🗑️ para limpar antes de colar.</div>
   </div>
 
   <div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-ghost" onclick="closeM('m-lead')" style="flex:1">Cancelar</button><button class="btn btn-primary" onclick="saveLead()" style="flex:1">💾 Salvar</button></div>
@@ -1445,7 +1448,7 @@ function openEditLead(i){
   document.getElementById('lead-del').style.display='block';
   ['name','product','valor','pct','wa','fu','hist'].forEach(f=>{const e=document.getElementById('lf-'+f);if(e)e.value=l[f]||''});
   document.getElementById('lf-fu-time').value=l.fu_time||'';
-  document.getElementById('lf-fu-msg').value=l.fu_msg||'';
+  document.getElementById('lf-fu-msg').value=''; // sempre limpa — evita acúmulo ao colar nova mensagem
   document.getElementById('lf-fu').style.borderColor=l.fu?'var(--br)':'var(--acc)';
   document.getElementById('lf-stage').value=l.stage||'hot';
   document.getElementById('lf-status').value=l.status||'Primeiro Contato';
