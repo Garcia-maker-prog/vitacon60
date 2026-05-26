@@ -1136,8 +1136,8 @@ MENSAGEM_FIM`;
       btn.onclick=function(){
         window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
         notif.classList.remove('show');
-        // Reabre o lead para colar a mensagem
-        setTimeout(()=>{openEditLead(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"')},800);
+        // Abre direto no modal de mensagem do follow-up, não no formulário completo
+        setTimeout(()=>{openMsg(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"')},800);
       };
       const closeBtn=notif.querySelector('button');
       if(closeBtn)notif.insertBefore(btn,closeBtn);
@@ -1626,7 +1626,7 @@ MENSAGEM_FIM`;
 
   window.open('https://claude.ai/new?q='+encodeURIComponent(prompt),'_blank');
   // After Claude opens, open the lead for editing so user can paste the message
-  setTimeout(()=>{openEditLead(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"');},1000);
+  setTimeout(()=>{openMsg(i);toast('📋 Cole a mensagem no campo "Mensagem do follow-up"');},1000);
 }
 
 // ════ ALARMES DE FOLLOW-UP ════
