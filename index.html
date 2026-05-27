@@ -2450,14 +2450,37 @@ const BASE_CFG_KEY='fv14_base_cfg';
 const STATUS_BASE=['Primeiro Contato','Aguardando Resposta','Em Negociação','Convertido','Sem Interesse'];
 const STATUS_BASE_COR={'Primeiro Contato':'var(--blue)','Aguardando Resposta':'var(--yellow)','Em Negociação':'var(--acc)','Convertido':'var(--green)','Sem Interesse':'var(--txt3)'};
 
-let baseLeads=JSON.parse(localStorage.getItem(BASE_KEY)||'[]');
+let baseLeads=[];
 let baseCfg=JSON.parse(localStorage.getItem(BASE_CFG_KEY)||JSON.stringify({
   msg:'Boa tarde, [NOME]! Sou o Flávio, corretor especializado em studios para investimento em São Paulo pela Vitacon. Tenho um lançamento em Perdizes com rentabilidade acima de 12% ao ano que pode ser do seu interesse. Posso te enviar os detalhes?',
   lote:50
 }));
+// Carrega após definir funções — inicializado no final do bloco
 
-function salvarBase(){localStorage.setItem(BASE_KEY,JSON.stringify(baseLeads))}
+function salvarBase(){
+  try{
+    // Salva apenas campos essenciais para economizar storage
+    const slim=baseLeads.map(b=>({
+      i:b.id,n:b.nome,t:b.tel,s:b.status,d:b.dataLote
+    }));
+    localStorage.setItem(BASE_KEY,JSON.stringify(slim));
+  }catch(e){
+    if(e.name==='QuotaExceededError'||e.message.includes('quota')){
+      toast('⚠️ Storage cheio! Exporte um backup e limpe dados antigos em Config.');
+    }
+  }
+}
+
+function carregarBase(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(BASE_KEY)||'[]');
+    // Suporta formato antigo e novo (slim)
+    return raw.map(b=>b.i?{id:b.i,nome:b.n||'',tel:b.t||'',status:b.s||'Primeiro Contato',dataLote:b.d||td(),dataCriacao:b.d||td(),obs:''}:b);
+  }catch(e){return[]}
+}
 function salvarBaseCfg(){localStorage.setItem(BASE_CFG_KEY,JSON.stringify(baseCfg))}
+// Inicializa baseLeads após funções definidas
+baseLeads=carregarBase();
 
 function openBaseConfig(){
   document.getElementById('base-msg-tpl').value=baseCfg.msg||'';
