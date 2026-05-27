@@ -2638,9 +2638,18 @@ function renderBase(){
     </div>`;
 
   if(!hojeLeads.length){
+    // Verifica se há lote pendente para liberar
+    const proximosPendentes=leads.filter(l=>l.status==='Primeiro Contato'&&!l.dataLote);
+    const loteAtual=leads.filter(l=>l.dataLote===hoje);
+    const loteEnviado=loteAtual.length>0&&loteAtual.every(l=>l.status!=='Primeiro Contato');
+
     hojeEl.innerHTML=`<div style="background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:14px;text-align:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Sem envios para hoje</div>
-      <div style="font-size:11px;color:var(--txt3)">Próximo lote: ${proximoLoteData()}</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">${loteEnviado?'Lote de hoje concluido!':'Sem envios para hoje'}</div>
+      <div style="font-size:11px;color:var(--txt3);margin-bottom:${proximosPendentes.length||loteEnviado?'10':'0'}px">
+        ${proximosPendentes.length?proximosPendentes.length+' leads aguardando liberacao':proximoLoteData()!=='Nenhum pendente'?'Proximo lote: '+proximoLoteData():'Todos os leads foram contatados!'}
+      </div>
+      ${loteEnviado&&proximosPendentes.length?`<button onclick="liberarProximoLote()" style="background:var(--acc);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--f)">🚀 Liberar próximo lote (${Math.min(b.lote||50,proximosPendentes.length)} leads)</button>`:''}
+      ${!loteEnviado&&proximosPendentes.length?`<button onclick="liberarProximoLote()" style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">📋 Liberar lote manualmente</button>`:''}
     </div>`;
     return;
   }
@@ -2698,6 +2707,31 @@ function excluirBaseLead(idx){
   bases[baseAtualIdx].leads.splice(idx,1);
   salvarBases();renderBase();
   toast('🗑️ Lead removido!');
+}
+
+function liberarProximoLote(){
+  const b=baseAtual();
+  const hoje=td();
+  const lote=b.lote||50;
+  // Verifica se lote de hoje está concluído
+  const loteHoje=b.leads.filter(l=>l.dataLote===hoje);
+  const pendentesHoje=loteHoje.filter(l=>l.status==='Primeiro Contato');
+  if(pendentesHoje.length>0){
+    if(!confirm(pendentesHoje.length+' leads de hoje ainda nao foram enviados. Liberar mesmo assim?'))return;
+  }
+  // Libera próximos leads sem data
+  const semData=b.leads.filter(l=>!l.dataLote&&l.status==='Primeiro Contato');
+  if(!semData.length){toast('Todos os leads ja tem lote atribuido!');return}
+  const qtd=Math.min(lote,semData.length);
+  let count=0;
+  bases[baseAtualIdx].leads.forEach((l,i)=>{
+    if(!l.dataLote&&l.status==='Primeiro Contato'&&count<qtd){
+      bases[baseAtualIdx].leads[i].dataLote=hoje;
+      count++;
+    }
+  });
+  salvarBases();renderBase();
+  toast('🚀 '+count+' leads liberados para hoje!');
 }
 
 function mudarStatusBase(idx,status){
@@ -2783,8 +2817,9 @@ function importarBaseXLSX(e){
         const nome=nomeRaw.match(/^[0-9a-f-]{20,}$/i)?'':nomeRaw;
         if(b.leads.some(x=>x.tel===tel))return;
         const lote=b.lote||50;
-        const diaOffset=Math.floor((b.leads.length+novos.length)/lote);
-        const dataLote=addDias(hoje,diaOffset);
+        // Primeiro lote do dia — atribui hoje. Resto fica sem data até liberar
+        const jaTemHoje=b.leads.filter(x=>x.dataLote===hoje).length+novos.filter(x=>x.dataLote===hoje).length;
+        const dataLote=jaTemHoje<lote?hoje:'';
         novos.push({id:Date.now()+Math.random(),nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje});
       });
       if(!novos.length){toast('⚠️ Nenhum lead novo valido encontrado.');e.target.value='';return}
