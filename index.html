@@ -2489,8 +2489,8 @@ function importarBaseXLSX(e){
       const header=rows[0].map(h=>String(h).toLowerCase().trim());
       let colNome=-1,colTel=-1;
       header.forEach((h,i)=>{
-        if(/nome|name|contato/.test(h))colNome=i;
-        if(/tel|fone|phone|celular|whats|numero|número|cel/.test(h))colTel=i;
+        if(/nome|name|contato|cliente|lead|pessoa/.test(h))colNome=i;
+      if(/tel|fone|phone|celular|whats|numero|número|cel|mobile|movel|móvel/.test(h))colTel=i;
       });
       // Se não achou, assume col 0 = nome, col 1 = tel (ou col 0 = tel se só 1 col)
       if(colTel===-1){
