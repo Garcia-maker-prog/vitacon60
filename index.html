@@ -2485,6 +2485,10 @@ function importarBaseXLSX(e){
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
       if(!rows.length){toast('⚠️ Arquivo vazio!');return}
 
+      // Log header para diagnóstico
+      console.log('Header detectado:',rows[0]);
+      console.log('Primeira linha de dados:',rows[1]);
+
       // Detecta colunas
       const header=rows[0].map(h=>String(h).toLowerCase().trim());
       let colNome=-1,colTel=-1;
@@ -2492,41 +2496,56 @@ function importarBaseXLSX(e){
         if(/nome|name|contato|cliente|lead|pessoa/.test(h))colNome=i;
         if(/tel|fone|phone|celular|whats|numero|número|cel|mobile|movel|móvel/.test(h))colTel=i;
       });
+
+      console.log('colNome:',colNome,'colTel:',colTel,'header:',header);
+
       if(colTel===-1){
-        if(header.length===1){colTel=0}
-        else{colNome=colNome===-1?0:colNome;colTel=colNome===0?1:0}
+        // Tenta encontrar coluna com números de telefone
+        if(rows[1]){
+          rows[1].forEach((val,i)=>{
+            const digits=String(val||'').replace(/\D/g,'');
+            if(digits.length>=10&&digits.length<=13&&colTel===-1)colTel=i;
+          });
+        }
+        if(colTel===-1){
+          toast('⚠️ Coluna de telefone não encontrada. Cabeçalho: '+rows[0].join(', '));
+          e.target.value='';return;
+        }
       }
 
       const hoje=td();
       const novos=[];
-      const dataRows=rows.slice(1); // sempre pula header
+      const dataRows=rows.slice(1);
 
       dataRows.forEach((row,ri)=>{
-        // Limpa o telefone — remove tudo que não é dígito
         let tel=String(row[colTel]||'').replace(/\D/g,'').replace(/\.0+$/,'');
         if(!tel||tel.length<8)return;
-        // Remove 55 duplicado no início
-        if(tel.startsWith('55')&&tel.length>11)tel=tel.substring(2);
-        // Filtra números de fora do Brasil (começam com +1 etc)
-        if(tel.length<10||tel.length>11)return;
-
+        // Remove prefixo 55 se número ficar com 10-11 dígitos
+        if(tel.startsWith('55')&&tel.length>=12)tel=tel.substring(2);
+        // Aceita 8 a 13 dígitos
+        if(tel.length<8||tel.length>13)return;
         const nome=colNome>=0?String(row[colNome]||'').trim():'';
-        if(baseLeads.some(b=>b.tel===tel))return; // evita duplicata
-
+        if(baseLeads.some(b=>b.tel===tel))return;
         const lote=baseCfg.lote||50;
         const diaOffset=Math.floor((baseLeads.length+novos.length)/lote);
         const dataLote=addDias(hoje,diaOffset);
         novos.push({id:Date.now()+ri,nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje,obs:''});
       });
 
-      if(!novos.length){toast('⚠️ Nenhum lead novo encontrado. Verifique se a coluna de telefone está correta.');e.target.value='';return}
+      console.log('Novos leads encontrados:',novos.length);
+
+      if(!novos.length){
+        const sample=dataRows.slice(0,3).map(r=>r[colTel]);
+        toast('⚠️ Nenhum lead válido. Exemplos na coluna tel: '+sample.join(', '));
+        e.target.value='';return;
+      }
       baseLeads=baseLeads.concat(novos);
       salvarBase();renderBase();
       toast('✅ '+novos.length+' leads importados!');
       e.target.value='';
     }catch(err){
       toast('❌ Erro: '+err.message);
-      console.error(err);
+      console.error('Erro completo:',err);
       e.target.value='';
     }
   };
