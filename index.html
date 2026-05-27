@@ -2480,56 +2480,53 @@ function importarBaseXLSX(e){
   const reader=new FileReader();
   reader.onload=function(ev){
     try{
-      const wb=XLSX.read(ev.target.result,{type:'binary'});
+      const wb=XLSX.read(ev.target.result,{type:'binary',cellText:true,cellDates:true});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
       if(!rows.length){toast('⚠️ Arquivo vazio!');return}
 
-      // Detecta colunas — busca por Nome e Telefone
+      // Detecta colunas
       const header=rows[0].map(h=>String(h).toLowerCase().trim());
       let colNome=-1,colTel=-1;
       header.forEach((h,i)=>{
         if(/nome|name|contato|cliente|lead|pessoa/.test(h))colNome=i;
-      if(/tel|fone|phone|celular|whats|numero|número|cel|mobile|movel|móvel/.test(h))colTel=i;
+        if(/tel|fone|phone|celular|whats|numero|número|cel|mobile|movel|móvel/.test(h))colTel=i;
       });
-      // Se não achou, assume col 0 = nome, col 1 = tel (ou col 0 = tel se só 1 col)
       if(colTel===-1){
         if(header.length===1){colTel=0}
-        else{colNome=0;colTel=1}
+        else{colNome=colNome===-1?0:colNome;colTel=colNome===0?1:0}
       }
 
       const hoje=td();
       const novos=[];
-      const dataRows=rows.slice(header.some(h=>/nome|tel|fone|phone/i.test(h))?1:0);
+      const dataRows=rows.slice(1); // sempre pula header
 
       dataRows.forEach((row,ri)=>{
-        const tel=String(row[colTel]||'').replace(/\D/g,'');
+        // Limpa o telefone — remove tudo que não é dígito
+        let tel=String(row[colTel]||'').replace(/\D/g,'').replace(/\.0+$/,'');
         if(!tel||tel.length<8)return;
+        // Remove 55 duplicado no início
+        if(tel.startsWith('55')&&tel.length>11)tel=tel.substring(2);
+        // Filtra números de fora do Brasil (começam com +1 etc)
+        if(tel.length<10||tel.length>11)return;
+
         const nome=colNome>=0?String(row[colNome]||'').trim():'';
-        // Evita duplicatas por telefone
-        if(baseLeads.some(b=>b.tel===tel))return;
-        // Atribui data do lote
+        if(baseLeads.some(b=>b.tel===tel))return; // evita duplicata
+
         const lote=baseCfg.lote||50;
         const diaOffset=Math.floor((baseLeads.length+novos.length)/lote);
         const dataLote=addDias(hoje,diaOffset);
-        novos.push({
-          id:Date.now()+ri,
-          nome,tel,
-          status:'Primeiro Contato',
-          dataLote,
-          dataCriacao:hoje,
-          obs:''
-        });
+        novos.push({id:Date.now()+ri,nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje,obs:''});
       });
 
-      if(!novos.length){toast('⚠️ Nenhum lead novo encontrado (verifique colunas de telefone)');e.target.value='';return}
+      if(!novos.length){toast('⚠️ Nenhum lead novo encontrado. Verifique se a coluna de telefone está correta.');e.target.value='';return}
       baseLeads=baseLeads.concat(novos);
-      salvarBase();
-      renderBase();
+      salvarBase();renderBase();
       toast('✅ '+novos.length+' leads importados!');
       e.target.value='';
     }catch(err){
-      toast('❌ Erro ao ler arquivo: '+err.message);
+      toast('❌ Erro: '+err.message);
+      console.error(err);
       e.target.value='';
     }
   };
