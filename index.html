@@ -2452,7 +2452,7 @@ const STATUS_BASE_COR={'Primeiro Contato':'var(--blue)','Aguardando Resposta':'v
 
 let baseLeads=[];
 let baseCfg=JSON.parse(localStorage.getItem(BASE_CFG_KEY)||JSON.stringify({
-  msg:'Boa tarde, [NOME]! Sou o Flávio, corretor especializado em studios para investimento em São Paulo pela Vitacon. Tenho um lançamento em Perdizes com rentabilidade acima de 12% ao ano que pode ser do seu interesse. Posso te enviar os detalhes?',
+  msg:'Ola, [NOME]! Sou o Flavio, corretor especializado em studios para investimento em Sao Paulo pela Vitacon. Tenho um lancamento em Perdizes com rentabilidade acima de 12% ao ano que pode ser do seu interesse. Posso te enviar os detalhes?',
   lote:50
 }));
 // Carrega após definir funções — inicializado no final do bloco
@@ -2515,25 +2515,33 @@ function importarBaseXLSX(e){
       // Detecta colunas
       const header=rows[0].map(h=>String(h).toLowerCase().trim());
       let colNome=-1,colTel=-1;
+
+      // Busca exata primeiro
       header.forEach((h,i)=>{
-        if(/nome|name|contato|cliente|lead|pessoa/.test(h))colNome=i;
-        if(/tel|fone|phone|celular|whats|numero|número|cel|mobile|movel|móvel/.test(h))colTel=i;
+        if(/^nome$|^name$|^cliente$/.test(h))colNome=i;
+        if(/^telefone$|^celular$|^whatsapp$|^fone$/.test(h))colTel=i;
+      });
+      // Busca parcial se não achou
+      if(colNome===-1)header.forEach((h,i)=>{
+        if(/nome|name|contato|cliente|lead|pessoa/.test(h)&&colNome===-1)colNome=i;
+      });
+      if(colTel===-1)header.forEach((h,i)=>{
+        if(/tel|fone|phone|celular|whats|numero|número|cel|mobile/.test(h)&&colTel===-1)colTel=i;
       });
 
-      console.log('colNome:',colNome,'colTel:',colTel,'header:',header);
+      // Se ainda não achou telefone, busca pela primeira coluna com números de 10+ dígitos
+      if(colTel===-1&&rows[1]){
+        rows[1].forEach((val,i)=>{
+          const digits=String(val||'').replace(/\D/g,'');
+          if(digits.length>=10&&colTel===-1)colTel=i;
+        });
+      }
+
+      console.log('Colunas detectadas — Nome:',colNome,'('+header[colNome]+') Tel:',colTel,'('+header[colTel]+')');
 
       if(colTel===-1){
-        // Tenta encontrar coluna com números de telefone
-        if(rows[1]){
-          rows[1].forEach((val,i)=>{
-            const digits=String(val||'').replace(/\D/g,'');
-            if(digits.length>=10&&digits.length<=13&&colTel===-1)colTel=i;
-          });
-        }
-        if(colTel===-1){
-          toast('⚠️ Coluna de telefone não encontrada. Cabeçalho: '+rows[0].join(', '));
-          e.target.value='';return;
-        }
+        toast('⚠️ Coluna de telefone não encontrada. Cabeçalho: '+header.join(', '));
+        e.target.value='';return;
       }
 
       const hoje=td();
@@ -2548,12 +2556,14 @@ function importarBaseXLSX(e){
         if(tel.length===12&&tel.startsWith('55'))tel=tel.substring(2);
         // Aceita qualquer número com 8+ dígitos
         if(tel.length<8)return;
-        const nome=colNome>=0?String(row[colNome]||'').trim():'';
+        const nomeRaw=colNome>=0?String(row[colNome]||'').trim():'';
+        // Ignora UUIDs e códigos como nome
+        const nome=nomeRaw.match(/^[0-9a-f-]{20,}$/i)?'':nomeRaw;
         if(baseLeads.some(b=>b.tel===tel))return;
         const lote=baseCfg.lote||50;
         const diaOffset=Math.floor((baseLeads.length+novos.length)/lote);
         const dataLote=addDias(hoje,diaOffset);
-        novos.push({id:Date.now()+ri,nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje,obs:''});
+        novos.push({id:Date.now()+Math.random(),nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje,obs:''});
       });
 
       console.log('Novos leads encontrados:',novos.length);
