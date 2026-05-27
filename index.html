@@ -2518,12 +2518,13 @@ function importarBaseXLSX(e){
       const dataRows=rows.slice(1);
 
       dataRows.forEach((row,ri)=>{
-        let tel=String(row[colTel]||'').replace(/\D/g,'').replace(/\.0+$/,'');
-        if(!tel||tel.length<8)return;
-        // Remove prefixo 55 se número ficar com 10-11 dígitos
-        if(tel.startsWith('55')&&tel.length>=12)tel=tel.substring(2);
-        // Aceita 8 a 13 dígitos
-        if(tel.length<8||tel.length>13)return;
+        let tel=String(row[colTel]||'').replace(/\D/g,'').replace(/\.0*$/,'');
+        if(!tel)return;
+        // Remove prefixo 55 Brasil se presente
+        if(tel.length===13&&tel.startsWith('55'))tel=tel.substring(2);
+        if(tel.length===12&&tel.startsWith('55'))tel=tel.substring(2);
+        // Aceita qualquer número com 8+ dígitos
+        if(tel.length<8)return;
         const nome=colNome>=0?String(row[colNome]||'').trim():'';
         if(baseLeads.some(b=>b.tel===tel))return;
         const lote=baseCfg.lote||50;
