@@ -268,12 +268,10 @@ select.inp option{background:var(--s1)}
   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:10px">
     <div class="grp" style="margin:0">📥 BASE DE LEADS</div>
     <div style="display:flex;gap:6px">
-      <button onclick="openBaseConfig()" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⚙️ Config</button>
-      <label style="background:var(--acc);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">
-        📥 Importar XLSX<input type="file" accept=".xlsx,.xls" onchange="importarBaseXLSX(event)" style="display:none">
-      </label>
+      <button onclick="openNovaBase()" style="background:var(--green);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">+ Nova Base</button>
     </div>
   </div>
+  <div id="bases-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
   <div id="base-stats" style="display:none;background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:10px"></div>
   <div id="base-hoje"></div>
 </div>
@@ -618,19 +616,37 @@ select.inp option{background:var(--s1)}
 
 <!-- BASE CONFIG -->
 <div class="overlay" id="m-base-cfg" style="z-index:300"><div class="modal">
-  <div class="modal-hdr"><span>⚙️ CONFIG BASE DE LEADS</span><button class="modal-close" onclick="closeM('m-base-cfg')">✕</button></div>
-  <div class="field"><label class="inp-lbl">💬 Mensagem padrão de primeiro contato</label>
-    <textarea class="inp" id="base-msg-tpl" style="min-height:120px" placeholder="Olá [NOME], tudo bem? Sou o Flávio, corretor Vitacon..."></textarea>
-    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Use [NOME] para personalizar. Se o lead não tiver nome, será substituído por "tudo bem?"</div>
+  <div class="modal-hdr"><span id="base-cfg-title">⚙️ CONFIG DA BASE</span><button class="modal-close" onclick="closeM('m-base-cfg')">✕</button></div>
+  <div class="field"><label class="inp-lbl">📋 Nome da base</label>
+    <input class="inp" id="base-cfg-nome" placeholder="Ex: Vila Olimpia, Perdizes...">
   </div>
-  <div class="field"><label class="inp-lbl">📦 Lote diário (leads por dia)</label>
-    <input class="inp" type="number" id="base-lote" value="50" min="1" max="200">
+  <div class="field"><label class="inp-lbl">🎨 Cor</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap" id="base-cfg-cores">
+      <button onclick="selCorBase('#3b82f6',this)" style="width:32px;height:32px;border-radius:50%;background:#3b82f6;border:3px solid transparent;cursor:pointer"></button>
+      <button onclick="selCorBase('#f59e0b',this)" style="width:32px;height:32px;border-radius:50%;background:#f59e0b;border:3px solid transparent;cursor:pointer"></button>
+      <button onclick="selCorBase('#10b981',this)" style="width:32px;height:32px;border-radius:50%;background:#10b981;border:3px solid transparent;cursor:pointer"></button>
+      <button onclick="selCorBase('#a855f7',this)" style="width:32px;height:32px;border-radius:50%;background:#a855f7;border:3px solid transparent;cursor:pointer"></button>
+      <button onclick="selCorBase('#ef4444',this)" style="width:32px;height:32px;border-radius:50%;background:#ef4444;border:3px solid transparent;cursor:pointer"></button>
+      <button onclick="selCorBase('#ff6b2b',this)" style="width:32px;height:32px;border-radius:50%;background:#ff6b2b;border:3px solid transparent;cursor:pointer"></button>
+    </div>
+  </div>
+  <div class="field"><label class="inp-lbl">💬 Mensagem padrão</label>
+    <textarea class="inp" id="base-cfg-msg" style="min-height:100px" placeholder="Ola [NOME]!..."></textarea>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px">Use [NOME] para personalizar.</div>
+  </div>
+  <div class="field"><label class="inp-lbl">📦 Lote diário</label>
+    <input class="inp" type="number" id="base-cfg-lote" value="50" min="1" max="200">
   </div>
   <div style="display:flex;gap:8px;margin-bottom:8px">
     <button class="btn btn-ghost" onclick="closeM('m-base-cfg')" style="flex:1">Cancelar</button>
     <button class="btn btn-primary" onclick="salvarBaseConfig()" style="flex:1">💾 Salvar</button>
   </div>
-  <button onclick="if(confirm('Limpar toda a base? Não pode ser desfeito.'))limparBase()" class="btn btn-danger">🗑️ Limpar base completa</button>
+  <div style="display:flex;gap:8px">
+    <label style="flex:1;background:var(--blue);color:#fff;border-radius:8px;padding:9px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">
+      📥 Importar XLSX<input type="file" accept=".xlsx,.xls" onchange="importarBaseXLSX(event)" style="display:none">
+    </label>
+    <button onclick="limparBase()" class="btn btn-danger" style="flex:1">🗑️ Limpar base</button>
+  </div>
 </div></div>
 
 <!-- MODO FOCO -->
@@ -2444,58 +2460,295 @@ function cancelarDisparo(){
   disparoFila=[];disparoIdx=0;
 }
 
-// ════ BASE DE LEADS ════
-const BASE_KEY='fv14_base';
-const BASE_CFG_KEY='fv14_base_cfg';
+// ════ BASE DE LEADS — MÚLTIPLAS BASES ════
+const BASES_KEY='fv14_bases';
 const STATUS_BASE=['Primeiro Contato','Aguardando Resposta','Em Negociação','Convertido','Sem Interesse'];
 const STATUS_BASE_COR={'Primeiro Contato':'var(--blue)','Aguardando Resposta':'var(--yellow)','Em Negociação':'var(--acc)','Convertido':'var(--green)','Sem Interesse':'var(--txt3)'};
+const CORES_BASE=['#3b82f6','#f59e0b','#10b981','#a855f7','#ef4444','#ff6b2b'];
 
-let baseLeads=[];
-let baseCfg=JSON.parse(localStorage.getItem(BASE_CFG_KEY)||JSON.stringify({
-  msg:'Ola, [NOME]! Sou o Flavio, corretor especializado em studios para investimento em Sao Paulo pela Vitacon. Tenho um lancamento em Perdizes com rentabilidade acima de 12% ao ano que pode ser do seu interesse. Posso te enviar os detalhes?',
-  lote:50
-}));
-// Carrega após definir funções — inicializado no final do bloco
+let bases=[];
+let baseAtualIdx=0;
+let _baseCfgCorSel='#3b82f6';
 
-function salvarBase(){
+function salvarBases(){
   try{
-    // Salva apenas campos essenciais para economizar storage
-    const slim=baseLeads.map(b=>({
-      i:b.id,n:b.nome,t:b.tel,s:b.status,d:b.dataLote
+    const slim=bases.map(b=>({
+      id:b.id,nome:b.nome,cor:b.cor,msg:b.msg,lote:b.lote,
+      leads:b.leads.map(l=>({i:l.id,n:l.nome,t:l.tel,s:l.status,d:l.dataLote}))
     }));
-    localStorage.setItem(BASE_KEY,JSON.stringify(slim));
+    localStorage.setItem(BASES_KEY,JSON.stringify(slim));
   }catch(e){
-    if(e.name==='QuotaExceededError'||e.message.includes('quota')){
-      toast('⚠️ Storage cheio! Exporte um backup e limpe dados antigos em Config.');
+    if(e.name==='QuotaExceededError'||String(e).includes('quota')){
+      toast('⚠️ Storage cheio! Exporte backup e limpe bases antigas.');
     }
   }
 }
 
-function carregarBase(){
+function carregarBases(){
   try{
-    const raw=JSON.parse(localStorage.getItem(BASE_KEY)||'[]');
-    // Suporta formato antigo e novo (slim)
-    return raw.map(b=>b.i?{id:b.i,nome:b.n||'',tel:b.t||'',status:b.s||'Primeiro Contato',dataLote:b.d||td(),dataCriacao:b.d||td(),obs:''}:b);
+    const raw=JSON.parse(localStorage.getItem(BASES_KEY)||'[]');
+    return raw.map(b=>({
+      id:b.id||Date.now(),
+      nome:b.nome||'Base',
+      cor:b.cor||'#3b82f6',
+      msg:b.msg||'Ola, [NOME]!',
+      lote:b.lote||50,
+      leads:(b.leads||[]).map(l=>({
+        id:l.i,nome:l.n||'',tel:l.t||'',
+        status:l.s||'Primeiro Contato',
+        dataLote:l.d||'',dataCriacao:l.d||''
+      }))
+    }));
   }catch(e){return[]}
 }
-function salvarBaseCfg(){localStorage.setItem(BASE_CFG_KEY,JSON.stringify(baseCfg))}
-// Inicializa baseLeads após funções definidas
-baseLeads=carregarBase();
 
-function openBaseConfig(){
-  document.getElementById('base-msg-tpl').value=baseCfg.msg||'';
-  document.getElementById('base-lote').value=baseCfg.lote||50;
+// Migração da base antiga
+function migrarBaseAntiga(){
+  const oldBase=localStorage.getItem('fv14_base');
+  const oldCfg=JSON.parse(localStorage.getItem('fv14_base_cfg')||'{}');
+  if(oldBase&&!localStorage.getItem(BASES_KEY)){
+    try{
+      const raw=JSON.parse(oldBase||'[]');
+      const leads=raw.map(l=>l.i?{id:l.i,nome:l.n||'',tel:l.t||'',status:l.s||'Primeiro Contato',dataLote:l.d||td(),dataCriacao:l.d||td()}:l);
+      if(leads.length){
+        bases=[{id:Date.now(),nome:'Base Principal',cor:'#3b82f6',msg:oldCfg.msg||'Ola, [NOME]!',lote:oldCfg.lote||50,leads}];
+        salvarBases();
+        localStorage.removeItem('fv14_base');
+        localStorage.removeItem('fv14_base_cfg');
+      }
+    }catch(e){}
+  }
+}
+
+bases=carregarBases();
+migrarBaseAntiga();
+if(!bases.length)bases=[{id:Date.now(),nome:'Vila Olimpia',cor:'#3b82f6',msg:'Ola, [NOME]! Sou o Flavio Garcia, Executivo Vitacon em Sao Paulo. Nos somos responsaveis pelos studios mais rentaveis de Sao Paulo - localizacao prime, gestao profissional e retorno de ate 14% ao ano. Muitos investidores estao aproveitando agora antes do lancamento oficial. Posso te enviar um estudo rapido de rentabilidade?',lote:50,leads:[]}];
+
+function baseAtual(){return bases[baseAtualIdx]||bases[0]}
+
+function selCorBase(cor,btn){
+  _baseCfgCorSel=cor;
+  document.querySelectorAll('#base-cfg-cores button').forEach(b=>b.style.borderColor='transparent');
+  if(btn)btn.style.borderColor='#fff';
+}
+
+function openNovaBase(){
+  // Abre config para criar nova base
+  _baseCfgCorSel=CORES_BASE[bases.length%CORES_BASE.length];
+  document.getElementById('base-cfg-title').textContent='➕ NOVA BASE';
+  document.getElementById('base-cfg-nome').value='';
+  document.getElementById('base-cfg-msg').value='Ola, [NOME]! Sou o Flavio Garcia, Executivo Vitacon em Sao Paulo. Tenho um lancamento exclusivo com rentabilidade de 14% ao ano. Posso te enviar os detalhes?';
+  document.getElementById('base-cfg-lote').value='50';
+  document.querySelectorAll('#base-cfg-cores button').forEach(b=>{b.style.borderColor=b.style.background===_baseCfgCorSel?'#fff':'transparent'});
+  // Flag para criar nova
+  document.getElementById('m-base-cfg').dataset.modo='novo';
   openM('m-base-cfg');
 }
-function salvarBaseConfig(){
-  baseCfg.msg=document.getElementById('base-msg-tpl').value||'';
-  baseCfg.lote=parseInt(document.getElementById('base-lote').value)||50;
-  salvarBaseCfg();
-  closeM('m-base-cfg');
-  toast('✅ Config salva!');
+
+function openBaseConfig(){
+  const b=baseAtual();
+  _baseCfgCorSel=b.cor||'#3b82f6';
+  document.getElementById('base-cfg-title').textContent='⚙️ '+b.nome;
+  document.getElementById('base-cfg-nome').value=b.nome||'';
+  document.getElementById('base-cfg-msg').value=b.msg||'';
+  document.getElementById('base-cfg-lote').value=b.lote||50;
+  document.querySelectorAll('#base-cfg-cores button').forEach(btn=>{
+    btn.style.borderColor=btn.style.background===_baseCfgCorSel?'#fff':'transparent';
+  });
+  document.getElementById('m-base-cfg').dataset.modo='editar';
+  openM('m-base-cfg');
 }
+
+function salvarBaseConfig(){
+  const nome=document.getElementById('base-cfg-nome').value.trim()||'Base';
+  const msg=document.getElementById('base-cfg-msg').value||'';
+  const lote=parseInt(document.getElementById('base-cfg-lote').value)||50;
+  const modo=document.getElementById('m-base-cfg').dataset.modo;
+  if(modo==='novo'){
+    bases.push({id:Date.now(),nome,cor:_baseCfgCorSel,msg,lote,leads:[]});
+    baseAtualIdx=bases.length-1;
+  } else {
+    bases[baseAtualIdx].nome=nome;
+    bases[baseAtualIdx].cor=_baseCfgCorSel;
+    bases[baseAtualIdx].msg=msg;
+    bases[baseAtualIdx].lote=lote;
+  }
+  salvarBases();renderBase();closeM('m-base-cfg');toast('✅ Salvo!');
+}
+
 function limparBase(){
-  baseLeads=[];salvarBase();renderBase();closeM('m-base-cfg');toast('🗑️ Base limpa!');
+  if(!confirm('Limpar todos os leads de "'+baseAtual().nome+'"?'))return;
+  bases[baseAtualIdx].leads=[];
+  salvarBases();renderBase();closeM('m-base-cfg');toast('🗑️ Base limpa!');
+}
+
+function renderBaseTabs(){
+  const el=document.getElementById('bases-tabs');if(!el)return;
+  el.innerHTML=bases.map((b,i)=>`
+    <button onclick="baseAtualIdx=${i};renderBase()" style="padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);border:2px solid ${b.cor};background:${i===baseAtualIdx?b.cor:'transparent'};color:${i===baseAtualIdx?'#fff':b.cor}">
+      ${b.nome} <span style="opacity:.7">${b.leads.length}</span>
+    </button>`).join('')+
+    `<button onclick="openNovaBase()" style="padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);border:2px dashed var(--br);background:transparent;color:var(--txt3)">+ Nova</button>`;
+}
+
+function renderBase(){
+  renderBaseTabs();
+  const b=baseAtual();
+  const statsEl=document.getElementById('base-stats');
+  const hojeEl=document.getElementById('base-hoje');
+  if(!statsEl||!hojeEl)return;
+
+  const leads=b.leads||[];
+  if(!leads.length){
+    statsEl.style.display='none';
+    hojeEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px;background:var(--s2);border-radius:10px;margin-bottom:8px">
+      <div style="font-size:16px;margin-bottom:6px">📥</div>
+      <div style="font-weight:700;margin-bottom:4px">${b.nome} — sem leads</div>
+      <div>Importe um arquivo .xlsx para começar</div>
+      <label style="display:inline-block;margin-top:10px;background:${b.cor};color:#fff;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">
+        📥 Importar XLSX<input type="file" accept=".xlsx,.xls" onchange="importarBaseXLSX(event)" style="display:none">
+      </label>
+    </div>
+    <button onclick="openBaseConfig()" style="width:100%;background:transparent;border:1px solid var(--br);color:var(--txt3);border-radius:8px;padding:8px;font-size:11px;cursor:pointer;font-family:var(--f);margin-bottom:8px">⚙️ Configurar ${b.nome}</button>`;
+    return;
+  }
+
+  const hoje=td();
+  const hojeLeads=leads.filter(l=>l.dataLote===hoje);
+  const total=leads.length;
+  const convertidos=leads.filter(l=>l.status==='Convertido').length;
+  const pendentes=leads.filter(l=>l.status==='Primeiro Contato').length;
+
+  statsEl.style.display='block';
+  statsEl.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:${b.cor}">${b.nome}</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="openBaseConfig()" style="background:transparent;border:1px solid var(--br);color:var(--txt3);border-radius:6px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:var(--f)">⚙️</button>
+        <label style="background:${b.cor};color:#fff;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--f)">
+          📥<input type="file" accept=".xlsx,.xls" onchange="importarBaseXLSX(event)" style="display:none">
+        </label>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px"><div style="font-family:var(--d);font-size:18px;color:var(--txt)">${total}</div><div style="font-size:9px;color:var(--txt3)">TOTAL</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px"><div style="font-family:var(--d);font-size:18px;color:${b.cor}">${hojeLeads.length}</div><div style="font-size:9px;color:var(--txt3)">HOJE</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px"><div style="font-family:var(--d);font-size:18px;color:var(--green)">${convertidos}</div><div style="font-size:9px;color:var(--txt3)">CONVERT.</div></div>
+      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px"><div style="font-family:var(--d);font-size:18px;color:var(--blue)">${pendentes}</div><div style="font-size:9px;color:var(--txt3)">PENDENTES</div></div>
+    </div>`;
+
+  if(!hojeLeads.length){
+    hojeEl.innerHTML=`<div style="background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:14px;text-align:center;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Sem envios para hoje</div>
+      <div style="font-size:11px;color:var(--txt3)">Próximo lote: ${proximoLoteData()}</div>
+    </div>`;
+    return;
+  }
+
+  hojeEl.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:700;color:${b.cor}">📅 HOJE — ${hojeLeads.length} leads</div>
+      <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar todos</button>
+    </div>
+    ${hojeLeads.map((l,i)=>baseCard(l,leads.indexOf(l),b)).join('')}`;
+}
+
+function baseCard(l,idx,b){
+  const cor=STATUS_BASE_COR[l.status]||'var(--txt3)';
+  const msg=montarMsgBase(l,b);
+  return`<div style="background:var(--s2);border:1px solid var(--br);border-left:3px solid ${b.cor};border-radius:11px;padding:12px;margin-bottom:8px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+      <div>
+        <div style="font-size:13px;font-weight:700">${l.nome||'Sem nome'} <span style="font-size:10px;color:var(--txt3);font-weight:400">${l.tel}</span></div>
+        <span style="font-size:10px;font-weight:700;color:${cor}">${l.status}</span>
+      </div>
+      <select onchange="mudarStatusBase(${idx},this.value)" style="background:var(--s3);border:1px solid var(--br);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:10px;cursor:pointer;font-family:var(--f)">
+        ${STATUS_BASE.map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div style="font-size:11px;color:var(--txt2);background:var(--s3);border-radius:7px;padding:7px 9px;margin-bottom:8px;line-height:1.5;max-height:50px;overflow:hidden">${msg.substring(0,100)}...</div>
+    <div style="display:flex;gap:6px">
+      <button onclick="enviarBaseWA(${idx})" style="flex:2;background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Enviar</button>
+      <button onclick="promoverBase(${idx})" style="flex:1;background:rgba(255,107,43,.15);border:1px solid rgba(255,107,43,.3);color:var(--acc);border-radius:8px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⬆️</button>
+      <button onclick="excluirBaseLead(${idx})" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);border-radius:8px;padding:8px;font-size:13px;cursor:pointer;font-family:var(--f)">🗑️</button>
+    </div>
+  </div>`;
+}
+
+function montarMsgBase(l,b){
+  const tpl=(b||baseAtual()).msg||'Ola!';
+  const nome=l.nome?(l.nome.split(' ')[0]):'';
+  if(nome)return tpl.replace(/\[NOME\]/g,nome);
+  return tpl.replace(/[Oo]la,? \[NOME\]!?/,'Ola, tudo bem?').replace(/\[NOME\]/g,'');
+}
+
+function enviarBaseWA(idx){
+  const b=baseAtual();
+  const l=b.leads[idx];if(!l||!l.tel)return;
+  const msg=montarMsgBase(l,b);
+  const num=l.tel.startsWith('55')?l.tel:'55'+l.tel;
+  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
+  bases[baseAtualIdx].leads[idx].status='Aguardando Resposta';
+  salvarBases();renderBase();
+}
+
+function excluirBaseLead(idx){
+  const l=bases[baseAtualIdx].leads[idx];
+  if(!l)return;
+  bases[baseAtualIdx].leads.splice(idx,1);
+  salvarBases();renderBase();
+  toast('🗑️ Lead removido!');
+}
+
+function mudarStatusBase(idx,status){
+  bases[baseAtualIdx].leads[idx].status=status;
+  salvarBases();renderBase();
+}
+
+function promoverBase(idx){
+  const b=baseAtual();
+  const l=b.leads[idx];
+  if(!confirm('Promover '+( l.nome||l.tel)+' para o pipeline?'))return;
+  const dupWA=leads.findIndex(ld=>ld.wa===l.tel);
+  if(dupWA!==-1){toast('⚠️ Já existe no pipeline: '+leads[dupWA].name);return}
+  leads.push({id:Date.now(),name:l.nome||'Lead '+l.tel,product:'',valor:'',pct:'',status:'Primeiro Contato',interesse:'',motivo:'',origem:b.nome,avatar:(l.nome?l.nome[0]:'L').toUpperCase(),wa:l.tel,stage:'cold',fu:'',fu_time:'',fu_msg:'',hist:'Base: '+b.nome+' — '+td(),tentativas:0});
+  ls('leads',leads);
+  bases[baseAtualIdx].leads[idx].status='Convertido';
+  salvarBases();renderBase();renderLeads();renderReport();
+  toast('✅ Promovido para o pipeline!');
+}
+
+function enviarTodosHoje(){
+  const b=baseAtual();
+  const hoje=td();
+  const pendentes=b.leads.filter(l=>l.dataLote===hoje&&l.status==='Primeiro Contato');
+  if(!pendentes.length){toast('Todos ja foram contatados hoje!');return}
+  if(!confirm('Disparar para '+pendentes.length+' leads de '+b.nome+'?'))return;
+  disparoFila=pendentes.map(l=>({...l,name:l.nome||l.tel,wa:l.tel,fu_msg:montarMsgBase(l,b),_baseId:b.id,_leadId:l.id}));
+  disparoMsg='';disparoTitulo=b.nome+' '+hoje;disparoIdx=0;
+  setTimeout(()=>{
+    mostrarCtrlDisparo();
+    // Override abrirWADisparo para marcar status na base
+    const orig=window.abrirWADisparo;
+    window.abrirWADisparo=function(){
+      const item=disparoFila[disparoIdx];
+      if(item&&item._baseId){
+        const bi=bases.findIndex(x=>x.id===item._baseId);
+        if(bi!==-1){
+          const li=bases[bi].leads.findIndex(x=>x.id===item._leadId);
+          if(li!==-1){bases[bi].leads[li].status='Aguardando Resposta';salvarBases();}
+        }
+        window.open('https://wa.me/55'+item.wa+'?text='+encodeURIComponent(item.fu_msg||''),'_blank');
+      } else orig&&orig();
+    };
+  },300);
+}
+
+function proximoLoteData(){
+  const b=baseAtual();
+  const pendentes=(b.leads||[]).filter(l=>l.status==='Primeiro Contato').sort((a,c)=>a.dataLote>c.dataLote?1:-1);
+  if(!pendentes.length)return 'Nenhum pendente';
+  return fd(pendentes[0].dataLote);
 }
 
 function importarBaseXLSX(e){
@@ -2507,81 +2760,39 @@ function importarBaseXLSX(e){
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
       if(!rows.length){toast('⚠️ Arquivo vazio!');return}
-
-      // Log header para diagnóstico
-      console.log('Header detectado:',rows[0]);
-      console.log('Primeira linha de dados:',rows[1]);
-
-      // Detecta colunas
       const header=rows[0].map(h=>String(h).toLowerCase().trim());
       let colNome=-1,colTel=-1;
-
-      // Busca exata primeiro
       header.forEach((h,i)=>{
         if(/^nome$|^name$|^cliente$/.test(h))colNome=i;
         if(/^telefone$|^celular$|^whatsapp$|^fone$/.test(h))colTel=i;
       });
-      // Busca parcial se não achou
-      if(colNome===-1)header.forEach((h,i)=>{
-        if(/nome|name|contato|cliente|lead|pessoa/.test(h)&&colNome===-1)colNome=i;
-      });
-      if(colTel===-1)header.forEach((h,i)=>{
-        if(/tel|fone|phone|celular|whats|numero|número|cel|mobile/.test(h)&&colTel===-1)colTel=i;
-      });
-
-      // Se ainda não achou telefone, busca pela primeira coluna com números de 10+ dígitos
-      if(colTel===-1&&rows[1]){
-        rows[1].forEach((val,i)=>{
-          const digits=String(val||'').replace(/\D/g,'');
-          if(digits.length>=10&&colTel===-1)colTel=i;
-        });
-      }
-
-      console.log('Colunas detectadas — Nome:',colNome,'('+header[colNome]+') Tel:',colTel,'('+header[colTel]+')');
-
-      if(colTel===-1){
-        toast('⚠️ Coluna de telefone não encontrada. Cabeçalho: '+header.join(', '));
-        e.target.value='';return;
-      }
-
+      if(colNome===-1)header.forEach((h,i)=>{if(/nome|name|contato|cliente|lead|pessoa/.test(h)&&colNome===-1)colNome=i});
+      if(colTel===-1)header.forEach((h,i)=>{if(/tel|fone|phone|celular|whats|numero|cel|mobile/.test(h)&&colTel===-1)colTel=i});
+      if(colTel===-1&&rows[1]){rows[1].forEach((val,i)=>{const d=String(val||'').replace(/\D/g,'');if(d.length>=10&&colTel===-1)colTel=i})}
+      if(colTel===-1){toast('⚠️ Coluna de telefone nao encontrada. Cabecalho: '+header.join(', '));e.target.value='';return}
+      const b=baseAtual();
       const hoje=td();
       const novos=[];
-      const dataRows=rows.slice(1);
-
-      dataRows.forEach((row,ri)=>{
+      rows.slice(1).forEach((row,ri)=>{
         let tel=String(row[colTel]||'').replace(/\D/g,'').replace(/\.0*$/,'');
         if(!tel)return;
-        // Remove prefixo 55 Brasil se presente
         if(tel.length===13&&tel.startsWith('55'))tel=tel.substring(2);
         if(tel.length===12&&tel.startsWith('55'))tel=tel.substring(2);
-        // Aceita qualquer número com 8+ dígitos
         if(tel.length<8)return;
         const nomeRaw=colNome>=0?String(row[colNome]||'').trim():'';
-        // Ignora UUIDs e códigos como nome
         const nome=nomeRaw.match(/^[0-9a-f-]{20,}$/i)?'':nomeRaw;
-        if(baseLeads.some(b=>b.tel===tel))return;
-        const lote=baseCfg.lote||50;
-        const diaOffset=Math.floor((baseLeads.length+novos.length)/lote);
+        if(b.leads.some(x=>x.tel===tel))return;
+        const lote=b.lote||50;
+        const diaOffset=Math.floor((b.leads.length+novos.length)/lote);
         const dataLote=addDias(hoje,diaOffset);
-        novos.push({id:Date.now()+Math.random(),nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje,obs:''});
+        novos.push({id:Date.now()+Math.random(),nome,tel,status:'Primeiro Contato',dataLote,dataCriacao:hoje});
       });
-
-      console.log('Novos leads encontrados:',novos.length);
-
-      if(!novos.length){
-        const sample=dataRows.slice(0,3).map(r=>r[colTel]);
-        toast('⚠️ Nenhum lead válido. Exemplos na coluna tel: '+sample.join(', '));
-        e.target.value='';return;
-      }
-      baseLeads=baseLeads.concat(novos);
-      salvarBase();renderBase();
-      toast('✅ '+novos.length+' leads importados!');
+      if(!novos.length){toast('⚠️ Nenhum lead novo valido encontrado.');e.target.value='';return}
+      bases[baseAtualIdx].leads=bases[baseAtualIdx].leads.concat(novos);
+      salvarBases();renderBase();
+      toast('✅ '+novos.length+' leads importados para "'+b.nome+'"!');
       e.target.value='';
-    }catch(err){
-      toast('❌ Erro: '+err.message);
-      console.error('Erro completo:',err);
-      e.target.value='';
-    }
+    }catch(err){toast('❌ Erro: '+err.message);e.target.value='';}
   };
   reader.readAsBinaryString(file);
 }
@@ -2590,202 +2801,6 @@ function addDias(dateStr,dias){
   const d=new Date(dateStr+'T12:00:00');
   d.setDate(d.getDate()+dias);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-
-function renderBase(){
-  const statsEl=document.getElementById('base-stats');
-  const hojeEl=document.getElementById('base-hoje');
-  if(!statsEl||!hojeEl)return;
-
-  if(!baseLeads.length){
-    statsEl.style.display='none';
-    hojeEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px;background:var(--s2);border-radius:10px;margin-bottom:12px">Nenhuma base importada.<br>Importe um arquivo .xlsx para começar.</div>';
-    return;
-  }
-
-  const hoje=td();
-  const hojeLeads=baseLeads.filter(b=>b.dataLote===hoje);
-  const total=baseLeads.length;
-  const enviados=baseLeads.filter(b=>b.status!=='Primeiro Contato').length;
-  const convertidos=baseLeads.filter(b=>b.status==='Convertido').length;
-  const semInteresse=baseLeads.filter(b=>b.status==='Sem Interesse').length;
-  const pendentes=baseLeads.filter(b=>b.status==='Primeiro Contato').length;
-
-  // Stats
-  statsEl.style.display='block';
-  statsEl.innerHTML=`
-    <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--txt3);margin-bottom:8px">📊 RESUMO DA BASE</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px">
-        <div style="font-family:var(--d);font-size:18px;color:var(--txt)">${total}</div>
-        <div style="font-size:9px;color:var(--txt3)">TOTAL</div>
-      </div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px">
-        <div style="font-family:var(--d);font-size:18px;color:var(--yellow)">${hojeLeads.length}</div>
-        <div style="font-size:9px;color:var(--txt3)">HOJE</div>
-      </div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px">
-        <div style="font-family:var(--d);font-size:18px;color:var(--green)">${convertidos}</div>
-        <div style="font-size:9px;color:var(--txt3)">CONVERT.</div>
-      </div>
-      <div style="text-align:center;background:var(--s3);border-radius:8px;padding:8px">
-        <div style="font-family:var(--d);font-size:18px;color:var(--blue)">${pendentes}</div>
-        <div style="font-size:9px;color:var(--txt3)">PENDENTES</div>
-      </div>
-    </div>`;
-
-  // Leads de hoje
-  if(!hojeLeads.length){
-    hojeEl.innerHTML=`<div style="background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:14px;text-align:center;margin-bottom:8px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:4px">Sem envios para hoje</div>
-      <div style="font-size:11px;color:var(--txt3)">Próximo lote: ${proximoLoteData()}</div>
-    </div>`;
-    return;
-  }
-
-  hojeEl.innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:700;color:var(--yellow)">📅 ENVIOS DE HOJE — ${hojeLeads.length} leads</div>
-      <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar todos</button>
-    </div>
-    ${hojeLeads.map((b,i)=>baseCard(b,baseLeads.indexOf(b))).join('')}`;
-}
-
-function baseCard(b,idx){
-  const cor=STATUS_BASE_COR[b.status]||'var(--txt3)';
-  const nome=b.nome||'';
-  const msg=montarMsgBase(b);
-  return`<div style="background:var(--s2);border:1px solid var(--br);border-left:3px solid ${cor};border-radius:11px;padding:12px;margin-bottom:8px">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-      <div>
-        <div style="font-size:13px;font-weight:700">${nome||'Lead sem nome'} <span style="font-size:10px;color:var(--txt3);font-weight:400">${b.tel}</span></div>
-        <span style="font-size:10px;font-weight:700;color:${cor}">${b.status}</span>
-      </div>
-      <select onchange="mudarStatusBase(${idx},this.value)" style="background:var(--s3);border:1px solid var(--br);color:var(--txt);border-radius:6px;padding:3px 6px;font-size:10px;cursor:pointer;font-family:var(--f)">
-        ${STATUS_BASE.map(s=>`<option value="${s}" ${b.status===s?'selected':''}>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div style="font-size:11px;color:var(--txt2);background:var(--s3);border-radius:7px;padding:7px 9px;margin-bottom:8px;line-height:1.5;max-height:60px;overflow:hidden">${msg.substring(0,120)}...</div>
-    <div style="display:flex;gap:6px">
-      <button onclick="enviarBaseWA(${idx})" style="flex:2;background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Enviar WhatsApp</button>
-      <button onclick="promoverBase(${idx})" style="flex:1;background:rgba(255,107,43,.15);border:1px solid rgba(255,107,43,.3);color:var(--acc);border-radius:8px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">⬆️ Pipeline</button>
-      <button onclick="verMsgBase(${idx})" style="background:var(--s3);border:1px solid var(--br);color:var(--txt2);border-radius:8px;padding:8px;font-size:13px;cursor:pointer">👁️</button>
-    </div>
-  </div>`;
-}
-
-function montarMsgBase(b){
-  const tpl=baseCfg.msg||'Ola, tudo bem?';
-  const nome=b.nome?b.nome.split(' ')[0]:'';
-  if(nome) return tpl.replace(/\[NOME\]/g,nome);
-  // Sem nome — substitui saudação
-  return tpl.replace(/[Bb]oa [a-z]+, \[NOME\]!?/,'Ola, tudo bem?').replace(/\[NOME\]/g,'');
-}
-
-function enviarBaseWA(idx){
-  const b=baseLeads[idx];if(!b||!b.tel)return;
-  const msg=montarMsgBase(b);
-  const num=b.tel.startsWith('55')?b.tel:'55'+b.tel;
-  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg),'_blank');
-  baseLeads[idx].status='Aguardando Resposta';
-  salvarBase();
-  renderBase();
-  toast('📲 WhatsApp aberto — status atualizado!');
-}
-
-function mudarStatusBase(idx,status){
-  baseLeads[idx].status=status;
-  salvarBase();
-  renderBase();
-}
-
-function verMsgBase(idx){
-  const b=baseLeads[idx];
-  const msg=montarMsgBase(b);
-  const nome=b.nome||b.tel;
-  if(confirm('Mensagem para '+nome+':\n\n'+msg+'\n\nCopiar para área de transferência?')){
-    navigator.clipboard.writeText(msg).then(()=>toast('✅ Copiado!')).catch(()=>toast('✅ Copiado!'));
-  }
-}
-
-function promoverBase(idx){
-  const b=baseLeads[idx];
-  if(!confirm('Promover '+( b.nome||b.tel)+' para o pipeline principal?'))return;
-  // Cria lead no pipeline
-  const novoLead={
-    id:Date.now(),
-    name:b.nome||'Lead '+b.tel,
-    product:'',valor:'',pct:'',
-    status:'Primeiro Contato',
-    interesse:'',motivo:'',origem:'Base',
-    avatar:(b.nome?b.nome[0]:'L').toUpperCase(),
-    wa:b.tel,
-    stage:'cold',
-    fu:'',fu_time:'',fu_msg:'',
-    hist:'Importado da base em '+td()+'\nTelefone: '+b.tel+(b.nome?'\nNome: '+b.nome:''),
-    tentativas:0
-  };
-  const dupWA=leads.findIndex(l=>l.wa===b.tel);
-  if(dupWA!==-1){toast('⚠️ Este número já existe no pipeline: '+leads[dupWA].name);return}
-  leads.push(novoLead);
-  ls('leads',leads);
-  // Remove da base
-  baseLeads[idx].status='Convertido';
-  salvarBase();
-  renderBase();renderLeads();renderReport();
-  toast('✅ Lead promovido para o pipeline!');
-}
-
-function enviarTodosHoje(){
-  const hoje=td();
-  const pendentes=baseLeads.filter(b=>b.dataLote===hoje&&b.status==='Primeiro Contato');
-  if(!pendentes.length){toast('Todos os leads de hoje já foram contatados!');return}
-  if(!confirm('Iniciar disparo para '+pendentes.length+' leads de hoje?'))return;
-  // Reutiliza o sistema de disparo existente
-  disparoFila=pendentes.map(b=>({
-    id:b.id,
-    name:b.nome||'Lead '+b.tel,
-    wa:b.tel,
-    fu_msg:montarMsgBase(b),
-    _isBase:true,
-    _baseIdx:baseLeads.indexOf(b)
-  }));
-  disparoMsg='';
-  disparoTitulo='Base '+hoje;
-  disparoIdx=0;
-  setTimeout(mostrarCtrlDisparoBase,300);
-}
-
-function mostrarCtrlDisparoBase(){
-  if(disparoIdx>=disparoFila.length){
-    document.getElementById('m-disparo-ctrl').classList.remove('open');
-    toast('Disparo concluido! '+disparoFila.length+' leads contatados.');
-    renderBase();return;
-  }
-  const l=disparoFila[disparoIdx];
-  document.getElementById('ctrl-num').textContent=(disparoIdx+1)+'/'+disparoFila.length;
-  document.getElementById('ctrl-nome').textContent=l.name;
-  document.getElementById('ctrl-wa').textContent=l.wa;
-  document.getElementById('ctrl-msg-preview').textContent=l.fu_msg||'';
-  openM('m-disparo-ctrl');
-  // Override botões do modal de controle para base
-  document.querySelector('#m-disparo-ctrl button[onclick="abrirWADisparo()"]').onclick=function(){
-    const b=disparoFila[disparoIdx];
-    window.open('https://wa.me/55'+b.wa+'?text='+encodeURIComponent(b.fu_msg||''),'_blank');
-    // Atualiza status na base
-    const bIdx=baseLeads.findIndex(x=>x.id===b.id);
-    if(bIdx!==-1){baseLeads[bIdx].status='Aguardando Resposta';salvarBase();}
-  };
-  document.querySelector('#m-disparo-ctrl button[onclick="avancarDisparo()"]').onclick=function(){
-    disparoIdx++;
-    mostrarCtrlDisparoBase();
-  };
-}
-
-function proximoLoteData(){
-  const pendentes=baseLeads.filter(b=>b.status==='Primeiro Contato').sort((a,b)=>a.dataLote>b.dataLote?1:-1);
-  if(!pendentes.length)return 'Nenhum pendente';
-  return fd(pendentes[0].dataLote);
 }
 
 // ════ PAINEL DO DIA ════
