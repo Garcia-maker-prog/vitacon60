@@ -2656,11 +2656,65 @@ function renderBase(){
   }
 
   hojeEl.innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:700;color:${b.cor}">📅 HOJE — ${hojeLeads.length} leads</div>
-      <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar todos</button>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
+        <span style="color:var(--txt3)">🔍</span>
+        <input id="base-search" class="inp" placeholder="Buscar nome ou telefone..." style="border:none;background:transparent;padding:8px 0;font-size:12px" oninput="renderBase()">
+      </div>
+      <select id="base-filter" class="inp" style="width:auto;padding:8px;font-size:11px" onchange="renderBaseCards()">
+        <option value="hoje">📅 Hoje</option>
+        <option value="todos">📋 Todos</option>
+        <option value="Primeiro Contato">🔵 Primeiro Contato</option>
+        <option value="Aguardando Resposta">🟡 Aguardando</option>
+        <option value="Em Negociação">🟠 Em Negociação</option>
+        <option value="Convertido">🟢 Convertido</option>
+        <option value="Sem Interesse">⚫ Sem Interesse</option>
+      </select>
     </div>
-    ${hojeLeads.map((l,i)=>baseCard(l,leads.indexOf(l),b)).join('')}`;
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:700;color:${b.cor}" id="base-count"></div>
+      <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar lote</button>
+    </div>
+    <div id="base-cards"></div>`;
+  renderBaseCards();
+}
+
+function renderBaseCards(){
+  const el=document.getElementById('base-cards');
+  const countEl=document.getElementById('base-count');
+  if(!el)return;
+  const b=baseAtual();
+  const leads=b.leads||[];
+  const hoje=td();
+  const filtro=(document.getElementById('base-filter')?.value)||'hoje';
+  const busca=(document.getElementById('base-search')?.value||'').toLowerCase().trim();
+
+  let lista=leads.filter((l,i)=>{
+    // Filtro por status/data
+    if(filtro==='hoje')return l.dataLote===hoje;
+    if(filtro==='todos')return true;
+    return l.status===filtro;
+  });
+
+  // Busca por nome ou telefone
+  if(busca){
+    lista=lista.filter(l=>
+      (l.nome||'').toLowerCase().includes(busca)||
+      (l.tel||'').includes(busca)
+    );
+  }
+
+  if(countEl)countEl.textContent=(filtro==='hoje'?'📅 Hoje':filtro==='todos'?'📋 Todos':filtro)+' — '+lista.length+' leads';
+
+  if(!lista.length){
+    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px">Nenhum lead encontrado.</div>`;
+    return;
+  }
+
+  // Limita exibição a 100 por vez para não travar
+  const exibir=lista.slice(0,100);
+  el.innerHTML=exibir.map(l=>baseCard(l,leads.indexOf(l),b)).join('')+
+    (lista.length>100?`<div style="text-align:center;padding:10px;color:var(--txt3);font-size:11px">Mostrando 100 de ${lista.length}. Use a busca para encontrar um lead específico.</div>`:'');
 }
 
 function baseCard(l,idx,b){
