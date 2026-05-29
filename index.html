@@ -272,7 +272,27 @@ select.inp option{background:var(--s1)}
     </div>
   </div>
   <div id="bases-tabs" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
-  <div id="base-stats" style="display:none;background:var(--s2);border:1px solid var(--br);border-radius:10px;padding:12px;margin-bottom:10px"></div>
+  <!-- BUSCA BASE — fora do ciclo de render -->
+  <div style="display:flex;gap:6px;margin-bottom:10px" id="base-search-bar" style="display:none">
+    <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
+      <span style="color:var(--txt3)">🔍</span>
+      <input id="base-search" class="inp" placeholder="Buscar nome ou telefone..." style="border:none;background:transparent;padding:8px 0;font-size:12px" oninput="renderBaseCards()">
+    </div>
+    <select id="base-filter" class="inp" style="width:auto;padding:8px;font-size:11px" onchange="renderBaseCards()">
+      <option value="hoje">📅 Hoje</option>
+      <option value="todos">📋 Todos</option>
+      <option value="Primeiro Contato">🔵 1º Contato</option>
+      <option value="Aguardando Resposta">🟡 Aguardando</option>
+      <option value="Em Negociação">🟠 Negociação</option>
+      <option value="Convertido">🟢 Convertido</option>
+      <option value="Sem Interesse">⚫ Sem Interesse</option>
+    </select>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px" id="base-action-bar" style="display:none">
+    <div style="font-size:12px;font-weight:700" id="base-count"></div>
+    <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar lote</button>
+  </div>
+  <div id="base-cards"></div>
   <div id="base-hoje"></div>
 </div>
 <!-- MÍDIA SOCIAL -->
@@ -2598,8 +2618,14 @@ function renderBase(){
   const statsEl=document.getElementById('base-stats');
   const hojeEl=document.getElementById('base-hoje');
   if(!statsEl||!hojeEl)return;
+  hojeEl.innerHTML='';
 
   const leads=b.leads||[];
+  const sb=document.getElementById('base-search-bar');
+  const ab=document.getElementById('base-action-bar');
+  if(sb)sb.style.display='none';
+  if(ab)ab.style.display='none';
+
   if(!leads.length){
     statsEl.style.display='none';
     hojeEl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--txt3);font-size:12px;background:var(--s2);border-radius:10px;margin-bottom:8px">
@@ -2655,30 +2681,12 @@ function renderBase(){
     return;
   }
 
-  // Only rebuild the full UI if search bar doesn't exist yet
-  if(!document.getElementById('base-search')){
-    hojeEl.innerHTML=`
-      <div style="display:flex;gap:6px;margin-bottom:10px">
-        <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
-          <span style="color:var(--txt3)">🔍</span>
-          <input id="base-search" class="inp" placeholder="Buscar nome ou telefone..." style="border:none;background:transparent;padding:8px 0;font-size:12px" oninput="renderBaseCards()">
-        </div>
-        <select id="base-filter" class="inp" style="width:auto;padding:8px;font-size:11px" onchange="renderBaseCards()">
-          <option value="hoje">📅 Hoje</option>
-          <option value="todos">📋 Todos</option>
-          <option value="Primeiro Contato">🔵 Primeiro Contato</option>
-          <option value="Aguardando Resposta">🟡 Aguardando</option>
-          <option value="Em Negociação">🟠 Em Negociação</option>
-          <option value="Convertido">🟢 Convertido</option>
-          <option value="Sem Interesse">⚫ Sem Interesse</option>
-        </select>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:12px;font-weight:700;color:${b.cor}" id="base-count"></div>
-        <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar lote</button>
-      </div>
-      <div id="base-cards"></div>`;
-  }
+  // Mostra barras de busca e ação
+  if(sb)sb.style.display='flex';
+  if(ab)ab.style.display='flex';
+  // Atualiza cor do contador
+  const countEl=document.getElementById('base-count');
+  if(countEl)countEl.style.color=b.cor;
   renderBaseCards();
 }
 
