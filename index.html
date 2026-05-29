@@ -645,7 +645,8 @@ select.inp option{background:var(--s1)}
     <label style="flex:1;background:var(--blue);color:#fff;border-radius:8px;padding:9px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--f)">
       📥 Importar XLSX<input type="file" accept=".xlsx,.xls" onchange="importarBaseXLSX(event)" style="display:none">
     </label>
-    <button onclick="limparBase()" class="btn btn-danger" style="flex:1">🗑️ Limpar base</button>
+    <button onclick="reatribuirLotes()" class="btn" style="flex:1;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue)">🔄 Reatribuir lotes</button>
+    <button onclick="limparBase()" class="btn btn-danger" style="flex:1">🗑️ Limpar</button>
   </div>
 </div></div>
 
@@ -2707,6 +2708,25 @@ function excluirBaseLead(idx){
   bases[baseAtualIdx].leads.splice(idx,1);
   salvarBases();renderBase();
   toast('🗑️ Lead removido!');
+}
+
+function reatribuirLotes(){
+  const b=baseAtual();
+  const lote=b.lote||50;
+  const hoje=td();
+  // Reseta todas as datas e reatribui: primeiro lote = hoje, resto = sem data
+  let count=0;
+  bases[baseAtualIdx].leads.forEach((l,i)=>{
+    if(l.status==='Convertido'||l.status==='Sem Interesse')return;
+    if(count<lote){
+      bases[baseAtualIdx].leads[i].dataLote=hoje;
+      count++;
+    } else {
+      bases[baseAtualIdx].leads[i].dataLote='';
+    }
+  });
+  salvarBases();renderBase();closeM('m-base-cfg');
+  toast('🔄 Lotes reatribuídos! '+count+' leads no lote de hoje.');
 }
 
 function liberarProximoLote(){
