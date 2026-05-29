@@ -2655,27 +2655,30 @@ function renderBase(){
     return;
   }
 
-  hojeEl.innerHTML=`
-    <div style="display:flex;gap:6px;margin-bottom:10px">
-      <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
-        <span style="color:var(--txt3)">🔍</span>
-        <input id="base-search" class="inp" placeholder="Buscar nome ou telefone..." style="border:none;background:transparent;padding:8px 0;font-size:12px" oninput="renderBase()">
+  // Only rebuild the full UI if search bar doesn't exist yet
+  if(!document.getElementById('base-search')){
+    hojeEl.innerHTML=`
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <div style="flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--br);border-radius:8px;padding:0 10px;gap:8px">
+          <span style="color:var(--txt3)">🔍</span>
+          <input id="base-search" class="inp" placeholder="Buscar nome ou telefone..." style="border:none;background:transparent;padding:8px 0;font-size:12px" oninput="renderBaseCards()">
+        </div>
+        <select id="base-filter" class="inp" style="width:auto;padding:8px;font-size:11px" onchange="renderBaseCards()">
+          <option value="hoje">📅 Hoje</option>
+          <option value="todos">📋 Todos</option>
+          <option value="Primeiro Contato">🔵 Primeiro Contato</option>
+          <option value="Aguardando Resposta">🟡 Aguardando</option>
+          <option value="Em Negociação">🟠 Em Negociação</option>
+          <option value="Convertido">🟢 Convertido</option>
+          <option value="Sem Interesse">⚫ Sem Interesse</option>
+        </select>
       </div>
-      <select id="base-filter" class="inp" style="width:auto;padding:8px;font-size:11px" onchange="renderBaseCards()">
-        <option value="hoje">📅 Hoje</option>
-        <option value="todos">📋 Todos</option>
-        <option value="Primeiro Contato">🔵 Primeiro Contato</option>
-        <option value="Aguardando Resposta">🟡 Aguardando</option>
-        <option value="Em Negociação">🟠 Em Negociação</option>
-        <option value="Convertido">🟢 Convertido</option>
-        <option value="Sem Interesse">⚫ Sem Interesse</option>
-      </select>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-      <div style="font-size:12px;font-weight:700;color:${b.cor}" id="base-count"></div>
-      <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar lote</button>
-    </div>
-    <div id="base-cards"></div>`;
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:700;color:${b.cor}" id="base-count"></div>
+        <button onclick="enviarTodosHoje()" style="background:var(--wa);color:#fff;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f)">📲 Disparar lote</button>
+      </div>
+      <div id="base-cards"></div>`;
+  }
   renderBaseCards();
 }
 
