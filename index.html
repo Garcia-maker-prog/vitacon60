@@ -3070,7 +3070,8 @@ function enviarWA(i, msg=''){
   const now=new Date();
   const ds=String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   const msgReal=dedupMsg(msg||l.fu_msg||'');
-  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+']: Mensagem enviada';
+  // Salva mensagem completa no histórico
+  leads[i].hist=(leads[i].hist||'')+'\n\n📤 ['+ds+']:\n'+(msgReal||'Mensagem enviada');
   leads[i].tentativas=(leads[i].tentativas||0)+1;
   ls('leads',leads);
   abrirWA(l.wa, msgReal);
